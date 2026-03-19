@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cliente1-frontend
+  namespace: cliente1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cliente1-frontend
+  template:
+    metadata:
+      labels:
+        app: cliente1-frontend
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
