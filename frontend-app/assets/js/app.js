@@ -32,6 +32,9 @@ let header = $(`
 
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
    <li class="nav-item">
+   <button id="loginBtn" onclick="login()">Login</button>
+   <button id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
+   <button onclick="callAPI()">Chamar API</button>
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
    </li>
    <div class="bike">
