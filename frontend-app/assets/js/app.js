@@ -30,13 +30,6 @@ let header = $(`
    <li class="nav-item nav-item-hover"><a class="nav-link" href="web.html">Web</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="techstack.html">TechStack</a></li>
 
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="design.html">design</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="event.html">event</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="reference.html">reference</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="sem_temp.html">sem_temp</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="travel_temp.html">travel_temp</a></li>
-
-
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
    <li class="nav-item">
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
