@@ -518,10 +518,16 @@ function login() {
 }
 
 function logout() {
+  const logoutUrl = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
+
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    post_logout_redirect_uri: REDIRECT_URI
+  });
+
   localStorage.removeItem("access_token");
 
-  window.location.href =
-    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout?redirect_uri=${REDIRECT_URI}`;
+  window.location.href = `${logoutUrl}?${params.toString()}`;
 }
 
 // ================= CODE FLOW =================
