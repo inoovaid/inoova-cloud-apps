@@ -496,6 +496,8 @@ $(function submitAnimation() {
   });
 });
 
+
+
 // ================= CONFIG =================
 const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
 const REALM = "Inoova-Plataforma";
@@ -609,7 +611,6 @@ async function refreshToken() {
   }
 }
 
-// roda refresh automático
 setInterval(refreshToken, 60000);
 
 // ================= API HELPER =================
@@ -635,6 +636,7 @@ function protectPage() {
 // ================= UI =================
 function updateNavbar() {
   const authLink = document.getElementById("authLink");
+  const avatarImg = document.getElementById("userAvatar"); // opcional
 
   if (!authLink) {
     setTimeout(updateNavbar, 300);
@@ -646,14 +648,28 @@ function updateNavbar() {
   if (token) {
     const user = getUserInfo();
 
-    authLink.innerText = user?.preferred_username
-      ? `Logout (${user.preferred_username})`
-      : "Logout";
+    const name =
+      user?.name ||
+      user?.preferred_username ||
+      user?.email ||
+      "User";
 
+    authLink.innerText = `👤 ${name} | Logout`;
     authLink.href = "#";
+
+    // 🔥 Avatar automático (Google/GitHub se disponível)
+    if (avatarImg && user?.picture) {
+      avatarImg.src = user.picture;
+      avatarImg.style.display = "block";
+    }
+
   } else {
     authLink.innerText = "Login";
     authLink.href = "#";
+
+    if (avatarImg) {
+      avatarImg.style.display = "none";
+    }
   }
 }
 
@@ -678,7 +694,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (code) {
     await exchangeCodeForToken(code);
-
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
