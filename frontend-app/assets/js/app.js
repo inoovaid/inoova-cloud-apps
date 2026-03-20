@@ -559,32 +559,26 @@ async function exchangeCodeForToken(code) {
 // ================= UI =================
 function updateNavbar() {
   const authLink = document.getElementById("authLink");
+
   if (!authLink) {
-    setTimeout(updateNavbar, 200); // espera o header carregar
+    console.log("authLink ainda não existe...");
+    setTimeout(updateNavbar, 300);
     return;
   }
+
+  console.log("authLink encontrado ✅");
 
   const token = localStorage.getItem("access_token");
 
   if (token) {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-
-    authLink.innerText = `Logout (${payload.preferred_username})`;
-    authLink.href = "#";
-    authLink.onclick = (e) => {
+    authLink.innerText = "Logout";
+    authLink.onclick = function (e) {
       e.preventDefault();
-      logout(); // ✅ CORRIGIDO
+      logout();
     };
-
-    const header = document.querySelector(".header");
-    if (header && payload.preferred_username) {
-      header.innerText = payload.preferred_username;
-    }
-
   } else {
     authLink.innerText = "Login";
-    authLink.href = "#";
-    authLink.onclick = (e) => {
+    authLink.onclick = function (e) {
       e.preventDefault();
       login();
     };
@@ -604,3 +598,8 @@ window.onload = async () => {
 
   updateNavbar();
 };
+
+// 🔧 1. GARANTA QUE O SCRIPT RODE DEPOIS DO LOAD
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(updateNavbar, 300);
+});
