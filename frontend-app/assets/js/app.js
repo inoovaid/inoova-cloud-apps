@@ -578,12 +578,14 @@ function updateNavbar() {
 
   if (token) {
     authLink.innerText = "Logout";
+    authLink.href = "#"; // 🔥 ESSENCIAL
     authLink.onclick = function (e) {
       e.preventDefault();
       logout();
     };
   } else {
     authLink.innerText = "Login";
+    authLink.href = "#"; // 🔥 ESSENCIAL
     authLink.onclick = function (e) {
       e.preventDefault();
       login();
