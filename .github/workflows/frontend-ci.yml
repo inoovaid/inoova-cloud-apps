@@ -7,6 +7,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,12 +34,12 @@ jobs:
 
       - name: Atualizar deployment.yaml
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/frontend-app:${{ github.sha }}|" frontend-app/deployment.yaml
+          sed -i '/image:/c\        image: '${{ secrets.DOCKER_USERNAME }}'/frontend-app:'${{ github.sha }}'' frontend-app/deployment.yaml
 
       - name: Commit da nova imagem
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add frontend-app/deployment.yaml
-          git commit -m "update image ${{ github.sha }}"
+          git commit -m "update image ${{ github.sha }} [skip ci]" || echo "Sem mudanças"
           git push
