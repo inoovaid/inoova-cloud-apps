@@ -536,3 +536,69 @@ function login() {
 
   window.location.href = url;
 }
+
+// 🧩 PASSO 1 — PEGAR O CODE
+
+function getCodeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("code");
+}
+
+//🚀 PASSO 2 — TROCAR CODE POR TOKEN
+
+async function exchangeCodeForToken(code) {
+  const response = await fetch("https://login-cloud.dnn.lat/realms/cliente1/protocol/openid-connect/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      client_id: "frontend",
+      grant_type: "authorization_code",
+      code: code,
+      redirect_uri: "https://frontend-cloud.dnn.lat"
+    })
+  });
+
+  const data = await response.json();
+
+  console.log("TOKEN:", data);
+
+  localStorage.setItem("access_token", data.access_token);
+}
+
+//🚀 PASSO 3 — EXECUTAR AUTOMATICAMENTE
+
+window.onload = async () => {
+  const code = getCodeFromUrl();
+
+  if (code) {
+    await exchangeCodeForToken(code);
+
+    // limpa URL (remove ?code)
+    window.history.replaceState({}, document.title, "/");
+
+    updateNavbar();
+  }
+};
+
+//🎯 PASSO 4 — LOGOUT FUNCIONAL
+
+function logout() {
+  localStorage.removeItem("access_token");
+
+  window.location.href =
+    "https://login-cloud.dnn.lat/realms/cliente1/protocol/openid-connect/logout?redirect_uri=https://frontend-cloud.dnn.lat";
+}
+
+//Mostrar usuário logado:
+
+function getUser() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return;
+
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  console.log(payload);
+
+  document.getElementById("authLink").innerText = payload.preferred_username;
+}
