@@ -10,7 +10,7 @@ document.body.appendChild(script);
 
 let header = $(`
 <nav class="navbar navbar-expand-lg fixed-top dark-theme" id="navbar">
-<a class="navbar-brand" href="index.html">Inoova Cloud Alpha Plataforma</a>
+<a class="navbar-brand" href="index.html">Inoova Cloud Plataforma</a>
 <div class="hamburger_wrapper navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 
   <div id="js-hamburger" class="hamburger">
@@ -32,9 +32,7 @@ let header = $(`
 
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
    <li class="nav-item">
-   <button id="loginBtn" onclick="login()">Login</button>
-   <button id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
-   <button onclick="callAPI()">Chamar API</button>
+
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
    </li>
    <div class="bike">
