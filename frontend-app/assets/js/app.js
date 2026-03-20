@@ -496,6 +496,7 @@ $(function submitAnimation() {
   });
 });
 
+
 // ================= CONFIG =================
 const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
 const REALM = "cliente1";
@@ -555,8 +556,6 @@ async function exchangeCodeForToken(code) {
 
   const data = await response.json();
 
-  console.log("TOKEN:", data);
-
   if (data.access_token) {
     localStorage.setItem("access_token", data.access_token);
   }
@@ -567,47 +566,46 @@ function updateNavbar() {
   const authLink = document.getElementById("authLink");
 
   if (!authLink) {
-    console.log("authLink ainda não existe...");
     setTimeout(updateNavbar, 300);
     return;
   }
-
-  console.log("authLink encontrado ✅");
 
   const token = localStorage.getItem("access_token");
 
   if (token) {
     authLink.innerText = "Logout";
-    authLink.href = "#"; // 🔥 ESSENCIAL
-    authLink.onclick = function (e) {
-      e.preventDefault();
-      logout();
-    };
+    authLink.href = "#";
   } else {
     authLink.innerText = "Login";
-    authLink.href = "#"; // 🔥 ESSENCIAL
-    authLink.onclick = function (e) {
-      e.preventDefault();
-      login();
-    };
+    authLink.href = "#";
   }
 }
 
-// ================= INIT =================
-window.onload = async () => {
+// ================= CLICK GLOBAL (🔥 CORREÇÃO FINAL) =================
+document.addEventListener("click", function (e) {
+  if (e.target && e.target.id === "authLink") {
+    e.preventDefault();
+
+    const token = localStorage.getItem("access_token");
+
+    if (token) {
+      logout();
+    } else {
+      login();
+    }
+  }
+});
+
+// ================= INIT (🔥 CORRETO) =================
+document.addEventListener("DOMContentLoaded", async () => {
   const code = getCodeFromUrl();
 
   if (code) {
     await exchangeCodeForToken(code);
 
-    // limpa URL (remove ?code)
-    window.history.replaceState({}, document.title, "/");
+    // limpa URL corretamente
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   updateNavbar();
-};
-
-// 🔧 1. GARANTA QUE O SCRIPT RODE DEPOIS DO LOAD
-document.addEventListener("DOMContentLoaded", function () {
-  setTimeout(updateNavbar, 300);
 });
