@@ -10,7 +10,7 @@ document.body.appendChild(script);
 
 let header = $(`
 <nav class="navbar navbar-expand-lg fixed-top dark-theme" id="navbar">
-<a class="navbar-brand" href="index.html">Inoova Cloud Plataforma</a>
+<a class="navbar-brand" href="index.html">Inoova Plataforma</a>
 <div class="hamburger_wrapper navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 
   <div id="js-hamburger" class="hamburger">
@@ -30,7 +30,7 @@ let header = $(`
    <li class="nav-item nav-item-hover"><a class="nav-link" href="web.html">Web</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="techstack.html">TechStack</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="https://login-cloud.dnn.lat/auth/realms/cliente1/protocol/openid-connect/auth?client_id=frontend&response_type=code&redirect_uri=https://frontend-cloud.dnn.lat" id="authLink" onclick="handleAuth()">Login</a></li>
+   <li class="nav-item nav-item-hover"><a class="nav-link" href="javascript:void(0)" id="authLink" onclick="handleAuth()">Login</a></li>
    <li class="nav-item">
 
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
@@ -528,5 +528,11 @@ function updateNavbar() {
 document.addEventListener("DOMContentLoaded", updateNavbar);
 
 function login() {
-  window.location.href = "https://login-cloud.dnn.lat/auth/realms/cliente1/protocol/openid-connect/auth?client_id=frontend&response_type=code&redirect_uri=https://frontend-cloud.dnn.lat";
+  const url = "https://login-cloud.dnn.lat/realms/cliente1/protocol/openid-connect/auth" +
+    "?client_id=frontend" +
+    "&response_type=code" +
+    "&scope=openid" +
+    "&redirect_uri=https://frontend-cloud.dnn.lat";
+
+  window.location.href = url;
 }
