@@ -602,3 +602,50 @@ function getUser() {
 
   document.getElementById("authLink").innerText = payload.preferred_username;
 }
+
+//✅ 2. CRIAR FUNÇÃO updateNavbar()
+
+function updateNavbar() {
+  const authLink = document.getElementById("authLink");
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    authLink.innerText = "Logout";
+    authLink.onclick = logout;
+    authLink.href = "#";
+  } else {
+    authLink.innerText = "Login";
+    authLink.onclick = null;
+    authLink.href = "https://login-cloud.dnn.lat/auth/realms/cliente1/protocol/openid-connect/auth?client_id=frontend&response_type=code&redirect_uri=https://frontend-cloud.dnn.lat";
+  }
+}
+
+// ✅ 3. CHAMAR ISSO AO CARREGAR A PÁGINA
+
+window.onload = async () => {
+  const code = getCodeFromUrl();
+
+  if (code) {
+    await exchangeCodeForToken(code);
+    window.history.replaceState({}, document.title, "/");
+  }
+
+  updateNavbar(); // 🔥 ESSENCIAL
+};
+
+//Você pode mostrar o nome do usuário (igual já apareceu “Teste2” 👇)
+
+function updateNavbar() {
+  const authLink = document.getElementById("authLink");
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+
+    authLink.innerText = "Logout (" + payload.preferred_username + ")";
+    authLink.onclick = logout;
+    authLink.href = "#";
+  } else {
+    authLink.innerText = "Login";
+  }
+}
