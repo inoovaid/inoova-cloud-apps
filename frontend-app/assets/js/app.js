@@ -496,79 +496,95 @@ $(function submitAnimation() {
   });
 });
 
-//🚀 PASSO 2 — ADICIONAR FUNÇÃO INTELIGENTE
+// ================= CONFIG =================
+const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
+const REALM = "cliente1";
+const CLIENT_ID = "frontend";
+const REDIRECT_URI = window.location.origin;
 
+// ================= AUTH =================
 function isLoggedIn() {
   return localStorage.getItem("access_token") !== null;
 }
 
-function handleAuth() {
-  if (isLoggedIn()) {
-    logout();
-  } else {
-    login();
-  }
-}
-
-//🚀 PASSO 3 — MUDAR TEXTO AUTOMATICAMENTE
-
-function updateNavbar() {
-  const authLink = document.getElementById("authLink");
-
-  if (!authLink) return;
-
-  if (isLoggedIn()) {
-    authLink.innerText = "Logout";
-  } else {
-    authLink.innerText = "Login";
-  }
-}
-
-// roda quando carregar
-document.addEventListener("DOMContentLoaded", updateNavbar);
-
 function login() {
-  const url = "https://login-cloud.dnn.lat/realms/cliente1/protocol/openid-connect/auth" +
-    "?client_id=frontend" +
-    "&response_type=code" +
-    "&scope=openid" +
-    "&redirect_uri=https://frontend-cloud.dnn.lat";
+  const url = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth` +
+    `?client_id=${CLIENT_ID}` +
+    `&response_type=code` +
+    `&scope=openid` +
+    `&redirect_uri=${REDIRECT_URI}`;
 
   window.location.href = url;
 }
 
-// 🧩 PASSO 1 — PEGAR O CODE
+function logout() {
+  localStorage.removeItem("access_token");
 
+  window.location.href =
+    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout?redirect_uri=${REDIRECT_URI}`;
+}
+
+// ================= CODE FLOW =================
 function getCodeFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return params.get("code");
 }
 
-//🚀 PASSO 2 — TROCAR CODE POR TOKEN
-
 async function exchangeCodeForToken(code) {
-  const response = await fetch("https://login-cloud.dnn.lat/realms/cliente1/protocol/openid-connect/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: new URLSearchParams({
-      client_id: "frontend",
-      grant_type: "authorization_code",
-      code: code,
-      redirect_uri: "https://frontend-cloud.dnn.lat"
-    })
-  });
+  const response = await fetch(
+    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: CLIENT_ID,
+        code: code,
+        redirect_uri: REDIRECT_URI
+      })
+    }
+  );
 
   const data = await response.json();
 
   console.log("TOKEN:", data);
 
-  localStorage.setItem("access_token", data.access_token);
+  if (data.access_token) {
+    localStorage.setItem("access_token", data.access_token);
+  }
 }
 
-//🚀 PASSO 3 — EXECUTAR AUTOMATICAMENTE
+// ================= UI =================
+function updateNavbar() {
+  const authLink = document.getElementById("authLink");
+  if (!authLink) return;
 
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+
+    // botão
+    authLink.innerText = `Logout (${payload.preferred_username})`;
+    authLink.href = "#";
+    authLink.onclick = logout;
+
+    // nome no banner (se quiser manter)
+    const header = document.querySelector(".header");
+    if (header && payload.preferred_username) {
+      header.innerText = payload.preferred_username;
+    }
+
+  } else {
+    authLink.innerText = "Login";
+    authLink.onclick = login;
+    authLink.href = "#";
+  }
+}
+
+// ================= INIT =================
 window.onload = async () => {
   const code = getCodeFromUrl();
 
@@ -577,75 +593,7 @@ window.onload = async () => {
 
     // limpa URL (remove ?code)
     window.history.replaceState({}, document.title, "/");
-
-    updateNavbar();
   }
+
+  updateNavbar();
 };
-
-//🎯 PASSO 4 — LOGOUT FUNCIONAL
-
-function logout() {
-  localStorage.removeItem("access_token");
-
-  window.location.href =
-    "https://login-cloud.dnn.lat/realms/cliente1/protocol/openid-connect/logout?redirect_uri=https://frontend-cloud.dnn.lat";
-}
-
-//Mostrar usuário logado:
-
-function getUser() {
-  const token = localStorage.getItem("access_token");
-  if (!token) return;
-
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  console.log(payload);
-
-  document.getElementById("authLink").innerText = payload.preferred_username;
-}
-
-//✅ 2. CRIAR FUNÇÃO updateNavbar()
-
-function updateNavbar() {
-  const authLink = document.getElementById("authLink");
-  const token = localStorage.getItem("access_token");
-
-  if (token) {
-    authLink.innerText = "Logout";
-    authLink.onclick = logout;
-    authLink.href = "#";
-  } else {
-    authLink.innerText = "Login";
-    authLink.onclick = null;
-    authLink.href = "https://login-cloud.dnn.lat/auth/realms/cliente1/protocol/openid-connect/auth?client_id=frontend&response_type=code&redirect_uri=https://frontend-cloud.dnn.lat";
-  }
-}
-
-// ✅ 3. CHAMAR ISSO AO CARREGAR A PÁGINA
-
-window.onload = async () => {
-  const code = getCodeFromUrl();
-
-  if (code) {
-    await exchangeCodeForToken(code);
-    window.history.replaceState({}, document.title, "/");
-  }
-
-  updateNavbar(); // 🔥 ESSENCIAL
-};
-
-//Você pode mostrar o nome do usuário (igual já apareceu “Teste2” 👇)
-
-function updateNavbar() {
-  const authLink = document.getElementById("authLink");
-  const token = localStorage.getItem("access_token");
-
-  if (token) {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-
-    authLink.innerText = "Logout (" + payload.preferred_username + ")";
-    authLink.onclick = logout;
-    authLink.href = "#";
-  } else {
-    authLink.innerText = "Login";
-  }
-}
