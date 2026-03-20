@@ -30,7 +30,7 @@ let header = $(`
    <li class="nav-item nav-item-hover"><a class="nav-link" href="web.html">Web</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="techstack.html">TechStack</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="javascript:void(0)" id="authLink" onclick="handleAuth()">Login</a></li>
+   <li class="nav-item nav-item-hover"><a class="nav-link" href="#" id="authLink">Login</a></li>
    <li class="nav-item">
 
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
@@ -569,7 +569,10 @@ function updateNavbar() {
     // botão
     authLink.innerText = `Logout (${payload.preferred_username})`;
     authLink.href = "#";
-    authLink.onclick = logout;
+    authLink.onclick = (e) => {
+      e.preventDefault();
+      login();
+    };
 
     // nome no banner (se quiser manter)
     const header = document.querySelector(".header");
@@ -579,7 +582,10 @@ function updateNavbar() {
 
   } else {
     authLink.innerText = "Login";
-    authLink.onclick = login;
+    authLink.onclick = (e) => {
+      e.preventDefault();
+      login();
+    };
     authLink.href = "#";
   }
 }
