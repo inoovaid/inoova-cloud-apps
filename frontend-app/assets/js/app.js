@@ -29,7 +29,7 @@ let header = $(`
    <li class="nav-item nav-item-hover"><a class="nav-link" href="education.html">Educação</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="web.html">Web</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="techstack.html">TechStack</a></li>
-
+   <a href="#" id="authLink" onclick="handleAuth()">Login</a>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
    <li class="nav-item">
 
@@ -495,3 +495,34 @@ $(function submitAnimation() {
     }
   });
 });
+
+//🚀 PASSO 2 — ADICIONAR FUNÇÃO INTELIGENTE
+
+function isLoggedIn() {
+  return localStorage.getItem("access_token") !== null;
+}
+
+function handleAuth() {
+  if (isLoggedIn()) {
+    logout();
+  } else {
+    login();
+  }
+}
+
+//🚀 PASSO 3 — MUDAR TEXTO AUTOMATICAMENTE
+
+function updateNavbar() {
+  const authLink = document.getElementById("authLink");
+
+  if (!authLink) return;
+
+  if (isLoggedIn()) {
+    authLink.innerText = "Logout";
+  } else {
+    authLink.innerText = "Login";
+  }
+}
+
+// roda quando carregar
+document.addEventListener("DOMContentLoaded", updateNavbar);
