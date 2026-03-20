@@ -496,7 +496,6 @@ $(function submitAnimation() {
   });
 });
 
-
 // ================= CONFIG =================
 const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
 const REALM = "cliente1";
@@ -527,8 +526,21 @@ function logout() {
   });
 
   localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
 
   window.location.href = `${logoutUrl}?${params.toString()}`;
+}
+
+// ================= USER INFO =================
+function getUserInfo() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
 }
 
 // ================= CODE FLOW =================
@@ -558,6 +570,65 @@ async function exchangeCodeForToken(code) {
 
   if (data.access_token) {
     localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token);
+  }
+}
+
+// ================= REFRESH TOKEN =================
+async function refreshToken() {
+  const refreshToken = localStorage.getItem("refresh_token");
+  if (!refreshToken) return;
+
+  try {
+    const response = await fetch(
+      `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          client_id: CLIENT_ID,
+          refresh_token: refreshToken
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.access_token) {
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      console.log("🔄 Token renovado");
+    } else {
+      logout();
+    }
+  } catch (err) {
+    console.error("Erro ao renovar token", err);
+  }
+}
+
+// roda refresh automático
+setInterval(refreshToken, 60000);
+
+// ================= API HELPER =================
+async function apiFetch(url, options = {}) {
+  const token = localStorage.getItem("access_token");
+
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
+
+// ================= PROTECT PAGE =================
+function protectPage() {
+  if (!isLoggedIn()) {
+    window.location.href = "/";
   }
 }
 
@@ -573,7 +644,12 @@ function updateNavbar() {
   const token = localStorage.getItem("access_token");
 
   if (token) {
-    authLink.innerText = "Logout";
+    const user = getUserInfo();
+
+    authLink.innerText = user?.preferred_username
+      ? `Logout (${user.preferred_username})`
+      : "Logout";
+
     authLink.href = "#";
   } else {
     authLink.innerText = "Login";
@@ -581,7 +657,7 @@ function updateNavbar() {
   }
 }
 
-// ================= CLICK GLOBAL (🔥 CORREÇÃO FINAL) =================
+// ================= CLICK GLOBAL =================
 document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "authLink") {
     e.preventDefault();
@@ -596,14 +672,13 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// ================= INIT (🔥 CORRETO) =================
+// ================= INIT =================
 document.addEventListener("DOMContentLoaded", async () => {
   const code = getCodeFromUrl();
 
   if (code) {
     await exchangeCodeForToken(code);
 
-    // limpa URL corretamente
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
