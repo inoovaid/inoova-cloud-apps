@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cliente1-frontend
-  namespace: cliente1
+  namespace: Inoova-Plataforma
 spec:
   replicas: 1
   selector:
