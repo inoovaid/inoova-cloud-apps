@@ -533,16 +533,46 @@ function logout() {
   window.location.href = `${logoutUrl}?${params.toString()}`;
 }
 
+// ================= UTF-8 FIX =================
+function parseJwt(token) {
+  try {
+    const base64 = token.split('.')[1];
+    const decoded = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+        .join('')
+    );
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
+// ================= FORMAT NAME =================
+function formatName(name) {
+  if (!name) return "User";
+
+  // remove espaços extras
+  name = name.trim();
+
+  // pega só primeiro nome (melhor UX)
+  const firstName = name.split(" ")[0];
+
+  // limita a 12 caracteres
+  if (firstName.length > 12) {
+    return firstName.substring(0, 12) + "...";
+  }
+
+  return firstName;
+}
+
 // ================= USER INFO =================
 function getUserInfo() {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
 
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch {
-    return null;
-  }
+  return parseJwt(token);
 }
 
 // ================= CODE FLOW =================
@@ -636,7 +666,7 @@ function protectPage() {
 // ================= UI =================
 function updateNavbar() {
   const authLink = document.getElementById("authLink");
-  const avatarImg = document.getElementById("userAvatar"); // opcional
+  const avatarImg = document.getElementById("userAvatar");
 
   if (!authLink) {
     setTimeout(updateNavbar, 300);
@@ -648,16 +678,18 @@ function updateNavbar() {
   if (token) {
     const user = getUserInfo();
 
-    const name =
+    const rawName =
       user?.name ||
       user?.preferred_username ||
       user?.email ||
       "User";
 
+    const name = formatName(rawName);
+
     authLink.innerText = `👤 ${name} | Logout`;
     authLink.href = "#";
 
-    // 🔥 Avatar automático (Google/GitHub se disponível)
+    // avatar
     if (avatarImg && user?.picture) {
       avatarImg.src = user.picture;
       avatarImg.style.display = "block";
