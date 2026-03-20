@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: heiffigjr/frontend-app:4c1c1f776364dbda868b5b05ceeb08b9c299edf3
+        image: heiffigjr/frontend-app:b8c95439529a926b6032779661ec1636ae940937
         ports:
         - containerPort: 80
