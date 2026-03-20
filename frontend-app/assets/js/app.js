@@ -559,22 +559,23 @@ async function exchangeCodeForToken(code) {
 // ================= UI =================
 function updateNavbar() {
   const authLink = document.getElementById("authLink");
-  if (!authLink) return;
+  if (!authLink) {
+    setTimeout(updateNavbar, 200); // espera o header carregar
+    return;
+  }
 
   const token = localStorage.getItem("access_token");
 
   if (token) {
     const payload = JSON.parse(atob(token.split('.')[1]));
 
-    // botão
     authLink.innerText = `Logout (${payload.preferred_username})`;
     authLink.href = "#";
     authLink.onclick = (e) => {
       e.preventDefault();
-      login();
+      logout(); // ✅ CORRIGIDO
     };
 
-    // nome no banner (se quiser manter)
     const header = document.querySelector(".header");
     if (header && payload.preferred_username) {
       header.innerText = payload.preferred_username;
@@ -582,11 +583,11 @@ function updateNavbar() {
 
   } else {
     authLink.innerText = "Login";
+    authLink.href = "#";
     authLink.onclick = (e) => {
       e.preventDefault();
       login();
     };
-    authLink.href = "#";
   }
 }
 
