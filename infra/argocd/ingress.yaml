@@ -1,23 +1,24 @@
-# infra/argocd/ingress.yaml
-apiVersion: argoproj.io/v1alpha1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: root-app
+  name: argocd
   namespace: argocd
-
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  project: default
-
-  source:
-    repoURL: https://github.com/inoovaid/inoova-cloud-apps.git
-    targetRevision: main
-    path: infra
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - argocd-cloud.dnn.lat
+    secretName: argocd-tls
+  rules:
+  - host: argocd-cloud.dnn.lat
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 80
