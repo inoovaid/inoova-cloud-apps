@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-crds
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/inoovaid/inoova-cloud-apps
+    targetRevision: main
+    path: infra/crds/prometheus
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
