@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app
+  name: app-of-apps
   namespace: argocd
 
 spec:
   project: default
 
   source:
-    repoURL: https://github.com/inoovaid/inoova-cloud-apps.git
+    repoURL: https://github.com/inoovaid/inoova-cloud-apps
     targetRevision: main
-    path: infra
+    path: infra   👈 AGORA APONTA PRA RAIZ
 
   destination:
     server: https://kubernetes.default.svc
