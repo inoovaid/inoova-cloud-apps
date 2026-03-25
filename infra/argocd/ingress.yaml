@@ -1,6 +1,6 @@
-# infra/argocd/app-of-apps.yaml
+# infra/argocd/ingress.yaml
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: Ingress
 metadata:
   name: root-app
   namespace: argocd
