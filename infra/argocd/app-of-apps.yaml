@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: app-of-apps
+  name: root-app
   namespace: argocd
 
 spec:
@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/inoovaid/inoova-cloud-apps
     targetRevision: main
-    path: infra   👈 AGORA APONTA PRA RAIZ
+    path: infra   # 👈 TEM QUE EXISTIR kustomization.yaml aqui
 
   destination:
     server: https://kubernetes.default.svc
