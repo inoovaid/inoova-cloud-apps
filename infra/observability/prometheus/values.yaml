@@ -1,6 +1,6 @@
 grafana:
   enabled: true
-  adminPassword: Vila0001!
+  adminPassword: admin
 
   persistence:
     enabled: true
