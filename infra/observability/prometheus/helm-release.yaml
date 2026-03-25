@@ -15,6 +15,9 @@ spec:
     helm:
       valueFiles:
         - values.yaml
+      parameters:
+        - name: crds.enabled
+          value: "true"
 
   destination:
     server: https://kubernetes.default.svc
@@ -24,6 +27,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
-  syncOptions:
-    - ServerSideApply=true
+    syncOptions:
+      - ServerSideApply=true   ✅ AGORA SIM
