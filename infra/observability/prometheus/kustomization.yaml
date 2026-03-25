@@ -2,12 +2,4 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - alertmanagers.yaml
-  - prometheuses.yaml
-  - prometheusagents.yaml
-  - servicemonitors.yaml
-  - podmonitors.yaml
-  - probes.yaml
-  - prometheusrules.yaml
-  - thanosrulers.yaml
-  - scrapeconfigs.yaml
+  - helm-release.yaml
