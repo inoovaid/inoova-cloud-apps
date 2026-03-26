@@ -4,14 +4,21 @@ grafana:
   persistence:
     enabled: true
     type: pvc
-    storageClassName: local-path   # ou o seu StorageClass
+    storageClassName: local-path
     accessModes:
       - ReadWriteOnce
     size: 5Gi
 
+  service:
+    type: ClusterIP
+    port: 80
+
   ingress:
     enabled: true
     ingressClassName: nginx
+
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
 
     hosts:
       - grafana-cloud.dnn.lat
@@ -20,6 +27,6 @@ grafana:
     pathType: Prefix
 
     tls:
-      - hosts:
+      - secretName: wildcard-dnn
+        hosts:
           - grafana-cloud.dnn.lat
-        secretName: wildcard-dnn
