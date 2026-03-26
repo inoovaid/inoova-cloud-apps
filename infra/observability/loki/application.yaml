@@ -20,4 +20,10 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+  ignoreDifferences:
+  - group: "cilium.io"
+    kind: "CiliumIdentity"
+  - group: "cilium.io"
+    kind: "CiliumEndpoint" 
       
