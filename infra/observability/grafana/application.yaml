@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 
 metadata:
-  name: prometheus-grafana
+  name: grafana
   namespace: argocd
 
 spec:
