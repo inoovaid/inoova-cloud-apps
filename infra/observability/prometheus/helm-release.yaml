@@ -33,3 +33,9 @@ spec:
       - ServerSideApply=true
       - RespectIgnoreDifferences=true
       - ApplyOutOfSyncOnly=true
+
+    ignoreDifferences:
+      - group: "*"
+        kind: "*"
+        jsonPointers:
+          - /status
