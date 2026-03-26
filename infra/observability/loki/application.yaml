@@ -25,16 +25,23 @@ spec:
       - RespectIgnoreDifferences=true
 
 ignoreDifferences:
+  - group: "cilium.io"
+    kind: "CiliumIdentity"
+    jqPathExpressions:
+      - .
+
+  - group: "cilium.io"
+    kind: "CiliumEndpoint"
+    jqPathExpressions:
+      - .
+
   - group: "*"
     kind: "Secret"
     jsonPointers:
       - /data
+
   - group: "*"
     kind: "ConfigMap"
     jsonPointers:
       - /data
-  - group: "cilium.io"
-    kind: "CiliumIdentity"
-  - group: "cilium.io"
-    kind: "CiliumEndpoint"
       
