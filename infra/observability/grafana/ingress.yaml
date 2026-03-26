@@ -9,6 +9,11 @@ metadata:
 spec:
   ingressClassName: nginx
 
+  tls:
+    - hosts:
+        - grafana-cloud.dnn.lat
+      secretName: grafana-tls  
+
   rules:
     - host: grafana-cloud.dnn.lat
       http:
@@ -17,6 +22,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: prometheus-grafana
+                name: grafana   
                 port:
                   number: 80
