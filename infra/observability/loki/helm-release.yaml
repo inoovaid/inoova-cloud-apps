@@ -25,6 +25,7 @@ spec:
       selfHeal: true
     syncOptions:
       - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
 
   ignoreDifferences:
     - group: "cilium.io"
