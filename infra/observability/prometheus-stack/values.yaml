@@ -14,12 +14,12 @@ grafana:
     ingressClassName: nginx
 
     hosts:
-      - grafana.dnn.lat
+      - grafana-cloud.dnn.lat
 
     path: /
     pathType: Prefix
 
     tls:
       - hosts:
-          - grafana.dnn.lat
+          - grafana-cloud.dnn.lat
         secretName: wildcard-dnn
