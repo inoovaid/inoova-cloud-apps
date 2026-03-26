@@ -12,7 +12,7 @@ spec:
   tls:
     - hosts:
         - grafana-cloud.dnn.lat
-      secretName: grafana 
+      secretName: wildcard-dnn 
 
   rules:
     - host: grafana-cloud.dnn.lat
