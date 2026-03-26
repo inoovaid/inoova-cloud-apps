@@ -1,21 +1,26 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: grafana-ingress
-  namespace: argocd
+  name: grafana
+  namespace: observability
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  project: default
+  ingressClassName: nginx
 
-  source:
-    repoURL: https://github.com/inoovaid/inoova-cloud-apps.git
-    targetRevision: main
-    path: infra/observability
+  tls:
+    - hosts:
+        - grafana-cloud.dnn.lat
+      secretName: wildcard-dnn
 
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: observability
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  rules:
+    - host: grafana-cloud.dnn.lat
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-stack-grafana
+                port:
+                  number: 80
