@@ -6,4 +6,5 @@ resources:
   - loki/application.yaml
   - prometheus/application.yaml
   - grafana/application.yaml
+  - grafana/ingress.yaml 
 
