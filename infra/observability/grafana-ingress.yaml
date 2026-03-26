@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: grafana
-  namespace: observability-grafana2
+  namespace: observability-grafana
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
