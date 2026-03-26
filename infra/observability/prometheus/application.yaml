@@ -14,7 +14,7 @@ spec:
     helm:
       valueFiles:
         - values.yaml
-      skipCrds: true
+      skipCrds: false
 
   destination:
     server: https://kubernetes.default.svc
