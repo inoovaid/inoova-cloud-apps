@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
-  - loki
-  - prometheus
-  - grafana 
-  
+  - loki/application.yaml
+  - prometheus/application.yaml
+  - grafana/application.yaml
+
