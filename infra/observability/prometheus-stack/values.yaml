@@ -1,0 +1,25 @@
+grafana:
+  enabled: true
+
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: local-path   # ou o seu StorageClass
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+
+    hosts:
+      - grafana.dnn.lat
+
+    path: /
+    pathType: Prefix
+
+    tls:
+      - hosts:
+          - grafana.dnn.lat
+        secretName: wildcard-dnn
