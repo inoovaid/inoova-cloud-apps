@@ -24,9 +24,17 @@ spec:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
 
-  ignoreDifferences:
+ignoreDifferences:
+  - group: "*"
+    kind: "Secret"
+    jsonPointers:
+      - /data
+  - group: "*"
+    kind: "ConfigMap"
+    jsonPointers:
+      - /data
   - group: "cilium.io"
     kind: "CiliumIdentity"
   - group: "cilium.io"
-    kind: "CiliumEndpoint" 
+    kind: "CiliumEndpoint"
       
