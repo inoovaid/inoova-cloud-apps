@@ -25,12 +25,11 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
     syncOptions:
       - CreateNamespace=true
 
-   ignoreDifferences:
-     - group: "cilium.io"
-       kind: "CiliumIdentity"
-     - group: "cilium.io"
-       kind: "CiliumEndpoint"
+  ignoreDifferences:
+    - group: "cilium.io"
+      kind: "CiliumIdentity"
+    - group: "cilium.io"
+      kind: "CiliumEndpoint"
