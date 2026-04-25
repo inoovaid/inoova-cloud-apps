@@ -3,7 +3,11 @@ helm:
   values: |
     grafana:
       enabled: true
-
+      
+      sidecar:
+        datasources:
+          enabled:true
+          
       adminPassword: admin
 
       persistence:
