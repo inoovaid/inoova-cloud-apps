@@ -9,9 +9,12 @@ spec:
   ignoreDifferences:
     - group: cilium.io
       kind: CiliumIdentity
+      jqPathExpressions:
+        - .
     - group: cilium.io
       kind: CiliumEndpoint
-
+      jqPathExpressions:
+        - .
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
@@ -32,3 +35,4 @@ spec:
 
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
