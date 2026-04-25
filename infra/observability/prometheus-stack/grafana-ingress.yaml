@@ -1,27 +1,59 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: grafana
-  namespace: observability
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: grafana-cloud.dnn.lat
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: prometheus-stack-grafana
-                port:
-                  number: 80
-  tls:
-    - hosts:
-        - grafana-cloud.dnn.lat
-      secretName: wildcard-dnn
+# ===============================
+# PROMETHEUS STACK CONFIG
+# ===============================
+
+grafana:
+  enabled: true
+
+  adminPassword: admin
+
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: false   # você já usa ingress separado (CORRETO)
+
+  persistence:
+    enabled: false   # pode ativar depois se quiser
+
+  # 🔥 DATASOURCES (O MAIS IMPORTANTE)
+  additionalDataSources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://prometheus-stack-kube-prom-prometheus.observability:9090
+      isDefault: true
+
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki-stack.observability:3100
+
+# ===============================
+# PROMETHEUS
+# ===============================
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+# ===============================
+# ALERTMANAGER
+# ===============================
+
+alertmanager:
+  enabled: true
+
+# ===============================
+# NODE EXPORTER
+# ===============================
+
+nodeExporter:
+  enabled: true
+
+# ===============================
+# KUBE STATE METRICS
+# ===============================
+
+kubeStateMetrics:
+  enabled: true
