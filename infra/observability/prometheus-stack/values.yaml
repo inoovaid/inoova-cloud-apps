@@ -43,18 +43,6 @@ helm:
               - grafana-cloud.dnn.lat
             secretName: wildcard-dnn
 
-      additionalDataSources:
-        - name: Prometheus
-          type: prometheus
-          access: proxy
-          url: http://prometheus-stack-kube-prom-prometheus.observability:9090
-          isDefault: true
-
-        - name: Loki
-          type: loki
-          access: proxy
-          url: http://loki-stack.observability:3100
-
     prometheus:
       prometheusSpec:
         serviceMonitorSelectorNilUsesHelmValues: false
