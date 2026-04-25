@@ -1,58 +1,30 @@
-helm:
-  skipCrds: true
-  values: |
-    grafana:
-      enabled: true
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-stack
+  namespace: argocd
 
-      adminPassword: admin
+spec:
+  project: default
 
-      persistence:
-        enabled: true
-        storageClassName: local-path
-        accessModes:
-          - ReadWriteOnce
-        size: 5Gi
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 58.0.0
 
-      service:
-        type: ClusterIP
-        port: 80
+    helm:
+      skipCrds: true
+      valueFiles:
+        - values.yaml   # 🔥 USA SOMENTE ISSO
 
-      ingress:
-        enabled: true
-        ingressClassName: nginx
-        annotations:
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-          nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-          nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
 
-        hosts:
-          - grafana-cloud.dnn.lat
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
 
-        path: /
-        pathType: Prefix
-
-        tls:
-          - hosts:
-              - grafana-cloud.dnn.lat
-            secretName: wildcard-dnn
-
-      # 🔥 AQUI É O JEITO CERTO (HELM PURO)
-      additionalDataSources:
-        - name: Loki
-          type: loki
-          access: proxy
-          url: http://loki-stack.observability:3100
-
-    prometheus:
-      prometheusSpec:
-        serviceMonitorSelectorNilUsesHelmValues: false
-
-    alertmanager:
-      enabled: true
-
-    nodeExporter:
-      enabled: true
-
-    kubeStateMetrics:
-      enabled: true
+    syncOptions:
+      - CreateNamespace=true
