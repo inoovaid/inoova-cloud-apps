@@ -36,19 +36,15 @@ grafana:
           - grafana-cloud.dnn.lat
         secretName: wildcard-dnn
 
-  # 🔥 AQUI ESTÁ O SEGREDO
-  datasources:
-    datasources.yaml:
-      apiVersion: 1
-      datasources:
+  # 🔥 CORRETO AQUI
+  additionalDataSources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://prometheus-stack-kube-prom-prometheus.observability:9090
+      isDefault: true
 
-        - name: Prometheus
-          type: prometheus
-          access: proxy
-          url: http://prometheus-stack-kube-prom-prometheus.observability:9090
-          isDefault: true
-
-        - name: Loki
-          type: loki
-          access: proxy
-          url: http://loki-stack.observability:3100
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki-stack.observability:3100
