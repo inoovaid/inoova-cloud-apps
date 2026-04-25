@@ -1,13 +1,6 @@
 grafana:
   enabled: true
 
-  sidecar:
-    datasources:
-      enabled: true
-
-  # ❌ NÃO usar isso
-  additionalDataSources: []
-
   adminPassword: admin
 
   persistence:
@@ -17,17 +10,11 @@ grafana:
       - ReadWriteOnce
     size: 5Gi
 
-  ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - grafana-cloud.dnn.lat
-    path: /
-    pathType: Prefix
-    tls:
-      - hosts:
-          - grafana-cloud.dnn.lat
-        secretName: wildcard-dnn
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki-stack.observability:3100
 
 prometheus:
   prometheusSpec:
