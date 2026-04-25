@@ -21,4 +21,4 @@ data:
         type: loki
         access: proxy
         url: http://loki-stack.observability:3100
-        isDefault: false
+
