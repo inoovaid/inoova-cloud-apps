@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/inoovaid/inoova-cloud-apps.git
     targetRevision: main
-    path: infra/observability/prometheus-stack
+    path: infra/observability
 
   destination:
     server: https://kubernetes.default.svc
