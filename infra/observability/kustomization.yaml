@@ -5,3 +5,4 @@ resources:
   - prometheus-stack/application.yaml
   - loki/application.yaml
   - prometheus-stack/grafana-ingress.yaml
+  - grafana-datasource.yaml
