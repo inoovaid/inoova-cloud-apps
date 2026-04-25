@@ -37,7 +37,7 @@ helm:
               - grafana-cloud.dnn.lat
             secretName: wildcard-dnn
 
-      # 🔥 ÚNICA CONFIG EXTRA
+      # 🔥 AQUI É O JEITO CERTO (HELM PURO)
       additionalDataSources:
         - name: Loki
           type: loki
