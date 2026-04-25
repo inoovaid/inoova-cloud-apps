@@ -6,6 +6,12 @@ metadata:
 spec:
   project: default
 
+  ignoreDifferences:
+    - group: cilium.io
+      kind: CiliumIdentity
+    - group: cilium.io
+      kind: CiliumEndpoint
+
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
