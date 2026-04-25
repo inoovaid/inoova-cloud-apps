@@ -6,7 +6,7 @@ helm:
       
       sidecar:
         datasources:
-          enabled: true
+          enabled: false
           
       adminPassword: admin
 
