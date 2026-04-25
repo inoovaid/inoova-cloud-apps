@@ -3,6 +3,7 @@ kind: Application
 metadata:
   name: observability
   namespace: argocd
+
 spec:
   project: default
 
@@ -13,12 +14,12 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: observability
+    namespace: argocd
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
