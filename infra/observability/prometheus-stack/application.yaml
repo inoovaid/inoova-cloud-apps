@@ -6,6 +6,13 @@ helm:
 
       adminPassword: admin
 
+      persistence:
+        enabled: true
+        storageClassName: local-path
+        accessModes:
+          - ReadWriteOnce
+        size: 5Gi
+
       service:
         type: ClusterIP
         port: 80
@@ -30,7 +37,7 @@ helm:
               - grafana-cloud.dnn.lat
             secretName: wildcard-dnn
 
-      # 🔥 AQUI É A ÚNICA COISA QUE VOCÊ PRECISA
+      # 🔥 ÚNICA CONFIG EXTRA
       additionalDataSources:
         - name: Loki
           type: loki
