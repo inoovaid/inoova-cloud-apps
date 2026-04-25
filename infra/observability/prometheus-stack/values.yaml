@@ -3,6 +3,10 @@ helm:
   values: |
     grafana:
       enabled: true
+
+      additionalDataSources: []   # 🔥 FORÇA NÃO CRIAR NADA
+
+      defaultDashboardsEnabled: false   # 🔥 BLOQUEIA AUTO PROVISION
       
       sidecar:
         datasources:
