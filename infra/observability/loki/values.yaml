@@ -9,3 +9,6 @@ grafana:
 
 prometheus:
   enabled: false
+
+datasource:
+  enabled: false
