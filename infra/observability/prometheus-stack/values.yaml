@@ -4,11 +4,7 @@ grafana:
   adminPassword: admin
 
   persistence:
-    enabled: true
-    storageClassName: local-path
-    accessModes:
-      - ReadWriteOnce
-    size: 5Gi
+    enabled: false   # 🔥 IMPORTANTE (evita lixo antigo)
 
   service:
     type: ClusterIP
@@ -29,23 +25,7 @@ grafana:
           - grafana-cloud.dnn.lat
         secretName: wildcard-dnn
 
-  # 🔥 ESSENCIAL
-  additionalDataSources:
-    - name: Loki
-      type: loki
-      access: proxy
-      url: http://loki-stack.observability:3100
-      isDefault: false   # 🔥 ISSO RESOLVE O ERRO
-
-prometheus:
-  prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false
-
-alertmanager:
-  enabled: true
-
-nodeExporter:
-  enabled: true
-
-kubeStateMetrics:
-  enabled: true
+# ❌ REMOVER COMPLETAMENTE:
+# additionalDataSources
+# datasources
+# sidecar
