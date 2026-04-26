@@ -14,8 +14,32 @@ spec:
 
     helm:
       skipCrds: true
-      valueFiles:
-        - values.yaml   # 🔥 USA ESSE ARQUIVO
+      values: |
+        grafana:
+          enabled: true
+          adminPassword: admin
+
+          persistence:
+            enabled: false
+
+          service:
+            type: ClusterIP
+            port: 80
+
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+
+            hosts:
+              - grafana-cloud.dnn.lat
+
+            path: /
+            pathType: Prefix
+
+            tls:
+              - hosts:
+                  - grafana-cloud.dnn.lat
+                secretName: wildcard-dnn
 
   destination:
     server: https://kubernetes.default.svc
