@@ -13,7 +13,6 @@ spec:
     targetRevision: 58.0.0
 
     helm:
-      skipCrds: false
       values: |
         grafana:
           enabled: true
@@ -37,19 +36,6 @@ spec:
               - hosts:
                   - grafana-cloud.dnn.lat
                 secretName: wildcard-dnn
-
-          # 🔥 PROMETHEUS = DEFAULT (CORRETO)
-          datasources:
-            datasources.yaml:
-              apiVersion: 1
-              datasources:
-                - name: Prometheus
-                  type: prometheus
-                  access: proxy
-                  url: http://prometheus-stack-kube-prom-prometheus:9090
-                  isDefault: true
-
-
 
         prometheus:
           enabled: true
