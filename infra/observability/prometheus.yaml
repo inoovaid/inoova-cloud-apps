@@ -30,3 +30,4 @@ spec:
       selfHeal: true
     syncOptions:
       - Replace=true
+      - ServerSideApply=true
