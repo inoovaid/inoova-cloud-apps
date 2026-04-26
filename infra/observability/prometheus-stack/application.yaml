@@ -15,7 +15,7 @@ spec:
     helm:
       skipCrds: true
       valueFiles:
-        - values.yaml   # 🔥 USA SOMENTE ISSO
+        - values.yaml
 
   destination:
     server: https://kubernetes.default.svc
