@@ -24,7 +24,10 @@ spec:
           enabled: false
 
         monitoring:
-          enabled: false   # 🔥 ESSENCIAL (corrige erro CRD)
+          enabled: false   # 🔥 CRÍTICO (remove agent)
+
+        gateway:
+          enabled: false   # 🔥 simplifica
 
   destination:
     server: https://kubernetes.default.svc
