@@ -1,72 +1,57 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: prometheus-stack
-  namespace: argocd
+helm:
+  skipCrds: false
 
-spec:
-  project: default
+  values: |
+    grafana:
+      enabled: true
+      adminPassword: admin
 
-  source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 58.0.0
+      persistence:
+        enabled: false
 
-    helm:
-      skipCrds: false
+      service:
+        type: ClusterIP
+        port: 80
 
-      values: |
-        grafana:
-          enabled: true
-          adminPassword: admin
-
-          persistence:
-            enabled: false
-
-          service:
-            type: ClusterIP
-            port: 80
-
-          ingress:
-            enabled: true
-            ingressClassName: nginx
-            hosts:
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        hosts:
+          - grafana-cloud.dnn.lat
+        path: /
+        pathType: Prefix
+        tls:
+          - hosts:
               - grafana-cloud.dnn.lat
-            path: /
-            pathType: Prefix
-            tls:
-              - hosts:
-                  - grafana-cloud.dnn.lat
-                secretName: wildcard-dnn
+            secretName: wildcard-dnn
 
-          # 🔥 AQUI É O QUE VOCÊ QUERIA
-          additionalDataSources:
-            - name: Loki
-              type: loki
+      # 🔥 CORREÇÃO DEFINITIVA
+      additionalDataSources:
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki.observability:3100
+          isDefault: false
+
+      # 🔥 AQUI FORÇAMOS O PROMETHEUS
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+            - name: Prometheus
+              type: prometheus
               access: proxy
-              url: http://loki.observability:3100
-              isDefault: false   # ⚠️ NUNCA true
+              url: http://prometheus-stack-kube-prom-prometheus:9090
+              isDefault: true
 
-        prometheus:
-          enabled: true
+    prometheus:
+      enabled: true
 
-        alertmanager:
-          enabled: true
+    alertmanager:
+      enabled: true
 
-        nodeExporter:
-          enabled: true
+    nodeExporter:
+      enabled: true
 
-        kubeStateMetrics:
-          enabled: true
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: observability
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-
-    syncOptions:
-      - CreateNamespace=true
+    kubeStateMetrics:
+      enabled: true
