@@ -17,28 +17,29 @@ spec:
           service:
             type: NodePort
 
+          # 🔥 DATASOURCES AUTOMÁTICOS
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki-gateway.observability.svc.cluster.local
+              isDefault: false
+
         prometheus:
           service:
             type: NodePort
           prometheusSpec:
             storageSpec: {}
 
-        # 🔥 NÃO DESATIVA WEBHOOK — DEIXA PADRÃO
-        # (isso evita erro de secret e container travado)
-
-        # 🔥 REDUZ COMPLEXIDADE (LAB)
         alertmanager:
           enabled: false
 
         kubeApiServer:
           enabled: false
-
         kubeControllerManager:
           enabled: false
-
         kubeScheduler:
           enabled: false
-
         kubeEtcd:
           enabled: false
 
