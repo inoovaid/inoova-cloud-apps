@@ -20,6 +20,14 @@ spec:
         service:
           type: NodePort
 
+        # 🔥 DESATIVA ESSA BOMBA
+        monitoring:
+          enabled: false
+
+        # 🔥 GARANTE QUE NÃO USA AGENT
+        grafanaAgent:
+          enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
