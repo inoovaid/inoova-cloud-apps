@@ -10,6 +10,10 @@ grafana:
       - ReadWriteOnce
     size: 5Gi
 
+  sidecar:
+    datasources:
+      enabled: true
+
   service:
     type: ClusterIP
     port: 80
@@ -33,23 +37,3 @@ grafana:
       - hosts:
           - grafana-cloud.dnn.lat
         secretName: wildcard-dnn
-
-  additionalDataSources:
-    - name: Loki
-      type: loki
-      access: proxy
-      url: http://loki-stack.observability:3100
-      isDefault: false   # 🔥 ESSA LINHA RESOLVE TUDO
-
-prometheus:
-  prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false
-
-alertmanager:
-  enabled: true
-
-nodeExporter:
-  enabled: true
-
-kubeStateMetrics:
-  enabled: true
