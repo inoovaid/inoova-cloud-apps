@@ -5,10 +5,10 @@ promtail:
   enabled: true
 
 grafana:
-  enabled: false
+  enabled: true
 
 prometheus:
-  enabled: false
+  enabled: true
 
 # 🔥 ESSA LINHA É A SOLUÇÃO REAL
 datasource:
