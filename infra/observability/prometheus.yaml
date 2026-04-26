@@ -21,6 +21,13 @@ spec:
             type: NodePort
 
         # 💥 DESATIVA ESSA BOMBA AQUI
+
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+            patch:
+              enabled: false
+
         prometheusOperator:
           admissionWebhooks:
             enabled: false
