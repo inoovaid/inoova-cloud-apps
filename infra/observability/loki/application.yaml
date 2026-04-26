@@ -1,27 +1,48 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loki
+  name: prometheus-stack
   namespace: argocd
 
 spec:
   project: default
 
   source:
-    repoURL: https://grafana.github.io/helm-charts
-    chart: loki
-    targetRevision: 5.47.2
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 58.0.0
 
     helm:
       values: |
-        loki:
-          auth_enabled: false
+        grafana:
+          enabled: true
+          adminPassword: admin
 
-        singleBinary:
-          replicas: 1
+          persistence:
+            enabled: false
 
-        persistence:
-          enabled: false
+          service:
+            type: ClusterIP
+            port: 80
+
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - grafana-cloud.dnn.lat
+            path: /
+            pathType: Prefix
+            tls:
+              - hosts:
+                  - grafana-cloud.dnn.lat
+                secretName: wildcard-dnn
+
+          sidecar:
+            datasources:
+              enabled: true
+
+        prometheus:
+          enabled: true
 
   destination:
     server: https://kubernetes.default.svc
@@ -31,3 +52,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
