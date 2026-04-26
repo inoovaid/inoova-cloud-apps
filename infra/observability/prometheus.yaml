@@ -10,14 +10,23 @@ spec:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
     targetRevision: 58.3.1
+
     helm:
       values: |
         grafana:
           adminPassword: admin
+
           service:
             type: NodePort
 
-          # 🔥 DATASOURCES AUTOMÁTICOS
+          # 🔥 ESSENCIAL PRA FUNCIONAR DATASOURCE AUTOMÁTICO
+          sidecar:
+            datasources:
+              enabled: true
+              label: grafana_datasource
+              searchNamespace: ALL
+
+          # 🔥 LOKI AUTOMÁTICO
           additionalDataSources:
             - name: Loki
               type: loki
@@ -34,6 +43,7 @@ spec:
         alertmanager:
           enabled: false
 
+        # 🔥 DESLIGA COMPONENTES QUE QUEBRAM EM LAB
         kubeApiServer:
           enabled: false
         kubeControllerManager:
@@ -43,6 +53,13 @@ spec:
         kubeEtcd:
           enabled: false
 
+        # 🔥 EVITA BUG DE WEBHOOK (CRÍTICO)
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+            patch:
+              enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
@@ -51,6 +68,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - Replace=true
       - ServerSideApply=true
+      - CreateNamespace=true
