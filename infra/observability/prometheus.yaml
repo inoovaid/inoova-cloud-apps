@@ -20,6 +20,11 @@ spec:
           service:
             type: NodePort
 
+        # 💥 DESATIVA ESSA BOMBA AQUI
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
