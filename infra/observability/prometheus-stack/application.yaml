@@ -1,27 +1,61 @@
-grafana:
-  enabled: true
-  adminPassword: admin
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-stack
+  namespace: argocd
 
-  persistence:
-    enabled: false
+spec:
+  project: default
 
-  service:
-    type: ClusterIP
-    port: 80
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 58.0.0
 
-  ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - grafana-cloud.dnn.lat
-    path: /
-    pathType: Prefix
-    tls:
-      - hosts:
-          - grafana-cloud.dnn.lat
-        secretName: wildcard-dnn
+    helm:
+      values: |
+        grafana:
+          enabled: true
+          adminPassword: admin
 
-  sidecar:
-    datasources:
-      enabled: true
-      defaultDatasourceEnabled: false   # 🔥 ISSO AQUI RESOLVE
+          persistence:
+            enabled: false
+
+          service:
+            type: ClusterIP
+            port: 80
+
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - grafana-cloud.dnn.lat
+            path: /
+            pathType: Prefix
+            tls:
+              - hosts:
+                  - grafana-cloud.dnn.lat
+                secretName: wildcard-dnn
+
+          sidecar:
+            datasources:
+              enabled: true
+              defaultDatasourceEnabled: false
+
+        prometheus:
+          enabled: true
+
+        alertmanager:
+          enabled: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
