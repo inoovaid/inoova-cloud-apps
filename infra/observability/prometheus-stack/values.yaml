@@ -10,10 +10,6 @@ grafana:
       - ReadWriteOnce
     size: 5Gi
 
-  sidecar:
-    datasources:
-      enabled: true
-
   service:
     type: ClusterIP
     port: 80
@@ -37,3 +33,21 @@ grafana:
       - hosts:
           - grafana-cloud.dnn.lat
         secretName: wildcard-dnn
+
+  # 🔥 ESSENCIAL → ATIVA O SIDE CAR
+  sidecar:
+    datasources:
+      enabled: true
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
