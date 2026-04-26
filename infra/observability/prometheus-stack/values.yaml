@@ -40,8 +40,3 @@ grafana:
       access: proxy
       url: http://loki-stack.observability:3100
       isDefault: false
-
-# 🔥 REMOVER COMPLETAMENTE ISSO SE EXISTIR:
-# sidecar:
-#   datasources:
-#     enabled: true
