@@ -13,7 +13,7 @@ spec:
   sources:
   - repoURL:  https://github.com/inoova-id/inoova-cloud-apps
     targetRevision: main
-    ref: observability
+    path: observability
   - repoURL: https://grafana.github.io/helm-charts
     chart: grafana
     targetRevision: 6.52.2
