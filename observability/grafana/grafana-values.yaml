@@ -1,6 +1,13 @@
 service:
   type: LoadBalancer
 
+adminUser: admin
+adminPassword: admin
+
+persistence:
+  enabled: true
+  size: 5Gi
+
 datasources:
   datasources.yaml:
     apiVersion: 1
