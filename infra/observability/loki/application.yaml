@@ -23,9 +23,6 @@ spec:
         persistence:
           enabled: false
 
-        service:
-          type: ClusterIP
-
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
