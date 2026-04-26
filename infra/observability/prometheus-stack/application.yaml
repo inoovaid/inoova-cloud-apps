@@ -13,7 +13,6 @@ spec:
     targetRevision: 58.0.0
 
     helm:
-      skipCrds: true
       values: |
         grafana:
           enabled: true
@@ -29,17 +28,21 @@ spec:
           ingress:
             enabled: true
             ingressClassName: nginx
-
             hosts:
               - grafana-cloud.dnn.lat
-
             path: /
             pathType: Prefix
-
             tls:
               - hosts:
                   - grafana-cloud.dnn.lat
                 secretName: wildcard-dnn
+
+          sidecar:
+            datasources:
+              enabled: true
+
+        prometheus:
+          enabled: true
 
   destination:
     server: https://kubernetes.default.svc
