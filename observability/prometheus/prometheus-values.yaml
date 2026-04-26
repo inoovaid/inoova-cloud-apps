@@ -1,0 +1,26 @@
+server:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    hosts:
+      - prometheus-cloud.dnn.lat
+    tls:
+      - secretName: wildcard-dnn
+        hosts:
+          - prometheus-cloud.dnn.lat
+
+alertmanager:
+  enabled: true
+
+kube-state-metrics:
+  enabled: true
+
+prometheus-node-exporter:
+  enabled: true
+
+prometheus-pushgateway:
+  enabled: true
