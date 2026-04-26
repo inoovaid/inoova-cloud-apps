@@ -1,15 +1,22 @@
 loki:
-  enabled: true
+  auth_enabled: false
 
-promtail:
-  enabled: true
+singleBinary:
+  replicas: 1
 
-grafana:
-  enabled: true
+persistence:
+  enabled: false
 
-prometheus:
-  enabled: true
+monitoring:
+  enabled: false
 
-# 🔥 ESSA LINHA É A SOLUÇÃO REAL
-datasource:
+gateway:
+  enabled: false
+
+# 🔥 DESATIVA COMPLETAMENTE O AGENT
+grafanaAgent:
+  enabled: false
+
+# 🔥 REMOVE QUALQUER COISA RELACIONADA
+agent:
   enabled: false
