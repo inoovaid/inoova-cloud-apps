@@ -10,5 +10,10 @@ grafana:
 prometheus:
   enabled: false
 
-datasource:
-  enabled: false
+# 💣 DESATIVA QUALQUER DATASOURCE AUTOMÁTICO
+loki-stack:
+  grafana:
+    enabled: false
+
+# 🔥 FORÇA NÃO CRIAR DATASOURCE
+extraObjects: []
