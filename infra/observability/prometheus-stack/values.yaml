@@ -29,6 +29,22 @@ grafana:
           - grafana-cloud.dnn.lat
         secretName: wildcard-dnn
 
+  # 🔥 CORREÇÃO DEFINITIVA DO BUG
+  additionalDataSources: []   # limpa conflito
+
+  sidecar:
+    datasources:
+      enabled: true
+
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-stack-kube-prom-prometheus:9090
+          isDefault: true
 
 prometheus:
   prometheusSpec:
