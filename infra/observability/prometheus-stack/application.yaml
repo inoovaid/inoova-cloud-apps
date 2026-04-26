@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus-stack
+  name: observability
   namespace: argocd
 
 spec:
@@ -21,10 +21,6 @@ spec:
           persistence:
             enabled: false
 
-          service:
-            type: ClusterIP
-            port: 80
-
           ingress:
             enabled: true
             ingressClassName: nginx
@@ -37,10 +33,6 @@ spec:
                   - grafana-cloud.dnn.lat
                 secretName: wildcard-dnn
 
-          sidecar:
-            datasources:
-              enabled: true
-
         prometheus:
           enabled: true
 
@@ -52,6 +44,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
-    syncOptions:
-      - CreateNamespace=true
