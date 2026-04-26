@@ -1,48 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus-stack
+  name: loki
   namespace: argocd
 
 spec:
   project: default
 
   source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 58.0.0
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki
+    targetRevision: 5.47.2
 
     helm:
       values: |
-        grafana:
-          enabled: true
-          adminPassword: admin
+        loki:
+          auth_enabled: false
 
-          persistence:
-            enabled: false
+        singleBinary:
+          replicas: 1
 
-          service:
-            type: ClusterIP
-            port: 80
+        persistence:
+          enabled: false
 
-          ingress:
-            enabled: true
-            ingressClassName: nginx
-            hosts:
-              - grafana-cloud.dnn.lat
-            path: /
-            pathType: Prefix
-            tls:
-              - hosts:
-                  - grafana-cloud.dnn.lat
-                secretName: wildcard-dnn
-
-          sidecar:
-            datasources:
-              enabled: true
-
-        prometheus:
-          enabled: true
+        monitoring:
+          enabled: false   # 🔥 ESSENCIAL (corrige erro CRD)
 
   destination:
     server: https://kubernetes.default.svc
@@ -52,6 +34,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
-    syncOptions:
-      - CreateNamespace=true
