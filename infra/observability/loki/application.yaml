@@ -24,10 +24,10 @@ spec:
           enabled: false
 
         monitoring:
-          enabled: false   # 🔥 CRÍTICO (remove agent)
+          enabled: false   # 🔥 ISSO REMOVE O ERRO DO AGENT
 
         gateway:
-          enabled: false   # 🔥 simplifica
+          enabled: false   # 🔥 SIMPLIFICA
 
   destination:
     server: https://kubernetes.default.svc
