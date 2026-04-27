@@ -37,7 +37,7 @@ spec:
 
           # 🔥 SINGLE NODE (LAB)
           commonConfig:
-            replication_factor: 1
+            replication_factor: 3
 
           # 🔥 STORAGE LOCAL (CORREÇÃO DO ERRO)
           storage:
@@ -65,7 +65,7 @@ spec:
 
         # 🔥 SINGLE BINARY (SIMPLES E ESTÁVEL)
         singleBinary:
-          replicas: 1
+          replicas: 3
 
           persistence:
             enabled: false
