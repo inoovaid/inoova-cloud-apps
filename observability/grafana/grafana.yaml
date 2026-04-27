@@ -11,15 +11,18 @@ spec:
     namespace: observability
     server: https://kubernetes.default.svc
   sources:
-    - repoURL: https://github.com/inoovaid/inoova-cloud-apps
-      targetRevision: main
-      ref: values
-    - repoURL: https://grafana.github.io/helm-charts
-      chart: grafana
-      targetRevision: 6.52.2
-      helm:
-        valueFiles:
-          - $values/observability/grafana/grafana-values.yaml
+  - repoURL: https://github.com/inoovaid/inoova-cloud-apps
+    targetRevision: main
+    path: observability/grafana
+  - repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 6.52.2
+    helm:
+      valueFiles:
+        - $values/observability/grafana/grafana-values.yaml
+  - repoURL: https://github.com/inoovaid/inoova-cloud-apps
+    targetRevision: main
+    ref: values
   syncPolicy:
     automated:
       prune: true
