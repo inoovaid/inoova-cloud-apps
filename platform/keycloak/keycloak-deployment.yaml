@@ -22,18 +22,25 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0
 
-          args: ["start", "--optimized"]
+          # ✅ SEM optimized (evita bug com ENV)
+          args: ["start"]
 
           ports:
             - containerPort: 8080
 
           env:
-            # 🔥 DATABASE
+            # 🔥 DATABASE (FORMA CORRETA)
             - name: KC_DB
               value: postgres
 
-            - name: KC_DB_URL
-              value: jdbc:postgresql://postgres-ha-rw.default.svc.cluster.local:5432/keycloak
+            - name: KC_DB_URL_HOST
+              value: postgres-ha-rw.default.svc.cluster.local
+
+            - name: KC_DB_URL_DATABASE
+              value: keycloak
+
+            - name: KC_DB_URL_PORT
+              value: "5432"
 
             - name: KC_DB_USERNAME
               valueFrom:
@@ -47,7 +54,7 @@ spec:
                   name: keycloak-db-secret
                   key: password
 
-            # 🌐 ACCESS
+            # 🌐 ACESSO
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
