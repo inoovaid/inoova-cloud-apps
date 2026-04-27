@@ -18,6 +18,12 @@ spec:
 
     helm:
       values: |
+        image:
+          registry: quay.io
+          repository: minio/minio
+          tag: latest
+          pullPolicy: IfNotPresent
+
         auth:
           rootUser: admin
           rootPassword: admin
@@ -31,11 +37,19 @@ spec:
         service:
           type: ClusterIP
 
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-    
