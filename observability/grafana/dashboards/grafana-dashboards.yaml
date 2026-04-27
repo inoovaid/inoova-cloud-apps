@@ -1,0 +1,162 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: observability
+  labels:
+    grafana_dashboard: "1"
+
+data:
+  loki-sre-dashboard.json: |
+    {
+      "id": null,
+      "title": "Loki SRE Dashboard (Inoova)",
+      "schemaVersion": 38,
+      "version": 1,
+      "refresh": "10s",
+
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "type": "query",
+            "datasource": "Loki",
+            "query": "label_values(namespace)",
+            "includeAll": true,
+            "allValue": ".+",
+            "multi": true
+          },
+          {
+            "name": "pod",
+            "type": "query",
+            "datasource": "Loki",
+            "query": "label_values({namespace=~\"$namespace\"}, pod)",
+            "includeAll": true,
+            "allValue": ".+",
+            "multi": true
+          },
+          {
+            "name": "container",
+            "type": "query",
+            "datasource": "Loki",
+            "query": "label_values({namespace=~\"$namespace\", pod=~\"$pod\"}, container)",
+            "includeAll": true,
+            "allValue": ".+",
+            "multi": true
+          }
+        ]
+      },
+
+      "panels": [
+
+        {
+          "type": "logs",
+          "title": "🔍 Logs",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "{namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"}",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "📈 Logs/sec (Ingestão)",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "sum(rate({namespace=~\"$namespace\", pod=~\"$pod\"}[1m]))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 }
+        },
+
+        {
+          "type": "stat",
+          "title": "🔥 Total Logs (5m)",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "sum(count_over_time({namespace=~\"$namespace\", pod=~\"$pod\"}[5m]))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "🚨 Errors/sec",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "sum(rate({namespace=~\"$namespace\", pod=~\"$pod\"} |= \"error\" [1m]))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "⚠️ Warnings/sec",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "sum(rate({namespace=~\"$namespace\", pod=~\"$pod\"} |= \"warn\" [1m]))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 }
+        },
+
+        {
+          "type": "stat",
+          "title": "💥 Error Rate (%)",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "(sum(rate({namespace=~\"$namespace\"} |= \"error\" [5m])) / sum(rate({namespace=~\"$namespace\"}[5m]))) * 100",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent"
+            }
+          },
+          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 26 }
+        },
+
+        {
+          "type": "barchart",
+          "title": "📊 Top Pods (Logs)",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "topk(5, sum by (pod) (count_over_time({namespace=~\"$namespace\"}[5m])))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 }
+        },
+
+        {
+          "type": "heatmap",
+          "title": "🔥 Heatmap de Logs",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "sum(rate({namespace=~\"$namespace\"}[1m]))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 34 }
+        }
+
+      ]
+    }
