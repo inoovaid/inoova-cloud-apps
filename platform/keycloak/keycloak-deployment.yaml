@@ -8,6 +8,12 @@ spec:
   replicas: 2
   revisionHistoryLimit: 2
 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
   selector:
     matchLabels:
       app: keycloak
@@ -18,18 +24,25 @@ spec:
         app: keycloak
 
     spec:
+      terminationGracePeriodSeconds: 30
+
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0
 
-          # ✅ SEM optimized (evita bug com ENV)
-          args: ["start"]
+          args: ["start-dev"]
 
           ports:
             - containerPort: 8080
 
+          # 🔥 GRACEFUL SHUTDOWN
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+
           env:
-            # 🔥 DATABASE (FORMA CORRETA)
+            # 🔥 DATABASE
             - name: KC_DB
               value: postgres
 
