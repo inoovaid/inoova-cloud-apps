@@ -10,22 +10,22 @@ data:
   loki-observability-advanced.json: |
     {
       "id": null,
-      "title": "Loki Observability (Advanced - Inoova)",
+      "title": "Loki Observability (Inoova - FIXED)",
       "schemaVersion": 38,
-      "version": 3,
+      "version": 4,
       "refresh": "10s",
 
       "templating": {
         "list": [
 
           {
-            "name": "namespace",
+            "name": "container",
             "type": "query",
             "datasource": "Loki",
-            "query": "label_values(namespace)",
+            "query": "label_values(container)",
             "refresh": 2,
             "includeAll": true,
-            "allValue": ".*",
+            "allValue": ".+",
             "multi": true
           },
 
@@ -33,21 +33,10 @@ data:
             "name": "pod",
             "type": "query",
             "datasource": "Loki",
-            "query": "label_values({namespace=~\"$namespace\"}, pod)",
+            "query": "label_values({container=~\"$container\"}, pod)",
             "refresh": 2,
             "includeAll": true,
-            "allValue": ".*",
-            "multi": true
-          },
-
-          {
-            "name": "container",
-            "type": "query",
-            "datasource": "Loki",
-            "query": "label_values({namespace=~\"$namespace\", pod=~\"$pod\"}, container)",
-            "refresh": 2,
-            "includeAll": true,
-            "allValue": ".*",
+            "allValue": ".+",
             "multi": true
           }
 
@@ -62,7 +51,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "{namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"}",
+              "expr": "{container=~\"$container\", pod=~\"$pod\"} |= \"\"",
               "refId": "A"
             }
           ],
@@ -75,7 +64,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "rate({namespace=~\"$namespace\", pod=~\"$pod\"}[1m])",
+              "expr": "rate({container=~\"$container\", pod=~\"$pod\"}[1m])",
               "refId": "A"
             }
           ],
@@ -88,7 +77,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "count_over_time({namespace=~\"$namespace\", pod=~\"$pod\"}[5m])",
+              "expr": "count_over_time({container=~\"$container\", pod=~\"$pod\"}[5m])",
               "refId": "A"
             }
           ],
@@ -101,7 +90,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "rate({namespace=~\"$namespace\", pod=~\"$pod\"} |= \"error\" [1m])",
+              "expr": "rate({container=~\"$container\", pod=~\"$pod\"} |= \"error\" [1m])",
               "refId": "A"
             }
           ],
@@ -114,7 +103,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "rate({namespace=~\"$namespace\", pod=~\"$pod\"} |= \"warn\" [1m])",
+              "expr": "rate({container=~\"$container\", pod=~\"$pod\"} |= \"warn\" [1m])",
               "refId": "A"
             }
           ],
@@ -127,7 +116,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "topk(5, sum by (pod) (count_over_time({namespace=~\"$namespace\"}[5m])))",
+              "expr": "topk(5, sum by (pod) (count_over_time({container=~\"$container\"}[5m])))",
               "refId": "A"
             }
           ],
