@@ -23,6 +23,8 @@ spec:
 
           monitoring:
             enabled: true
+            dashboards:
+              enabled: false
             serviceMonitor:
               enabled: true
               interval: 30s
