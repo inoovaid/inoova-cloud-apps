@@ -12,7 +12,7 @@ data:
       "id": null,
       "title": "Loki Observability (Advanced - Inoova)",
       "schemaVersion": 38,
-      "version": 2,
+      "version": 3,
       "refresh": "10s",
 
       "templating": {
@@ -23,23 +23,32 @@ data:
             "type": "query",
             "datasource": "Loki",
             "query": "label_values(namespace)",
-            "refresh": 2
+            "refresh": 2,
+            "includeAll": true,
+            "allValue": ".*",
+            "multi": true
           },
 
           {
             "name": "pod",
             "type": "query",
             "datasource": "Loki",
-            "query": "label_values({namespace=\"$namespace\"}, pod)",
-            "refresh": 2
+            "query": "label_values({namespace=~\"$namespace\"}, pod)",
+            "refresh": 2,
+            "includeAll": true,
+            "allValue": ".*",
+            "multi": true
           },
 
           {
             "name": "container",
             "type": "query",
             "datasource": "Loki",
-            "query": "label_values({namespace=\"$namespace\", pod=\"$pod\"}, container)",
-            "refresh": 2
+            "query": "label_values({namespace=~\"$namespace\", pod=~\"$pod\"}, container)",
+            "refresh": 2,
+            "includeAll": true,
+            "allValue": ".*",
+            "multi": true
           }
 
         ]
@@ -53,7 +62,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "{namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"}",
+              "expr": "{namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"}",
               "refId": "A"
             }
           ],
@@ -66,7 +75,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "rate({namespace=\"$namespace\", pod=~\"$pod\"}[1m])",
+              "expr": "rate({namespace=~\"$namespace\", pod=~\"$pod\"}[1m])",
               "refId": "A"
             }
           ],
@@ -79,7 +88,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "count_over_time({namespace=\"$namespace\", pod=~\"$pod\"}[5m])",
+              "expr": "count_over_time({namespace=~\"$namespace\", pod=~\"$pod\"}[5m])",
               "refId": "A"
             }
           ],
@@ -92,7 +101,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "rate({namespace=\"$namespace\", pod=~\"$pod\"} |= \"error\" [1m])",
+              "expr": "rate({namespace=~\"$namespace\", pod=~\"$pod\"} |= \"error\" [1m])",
               "refId": "A"
             }
           ],
@@ -105,7 +114,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "rate({namespace=\"$namespace\", pod=~\"$pod\"} |= \"warn\" [1m])",
+              "expr": "rate({namespace=~\"$namespace\", pod=~\"$pod\"} |= \"warn\" [1m])",
               "refId": "A"
             }
           ],
@@ -118,7 +127,7 @@ data:
           "datasource": "Loki",
           "targets": [
             {
-              "expr": "topk(5, sum by (pod) (count_over_time({namespace=\"$namespace\"}[5m])))",
+              "expr": "topk(5, sum by (pod) (count_over_time({namespace=~\"$namespace\"}[5m])))",
               "refId": "A"
             }
           ],
