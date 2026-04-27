@@ -7,28 +7,94 @@ metadata:
     grafana_dashboard: "1"
 
 data:
-  loki-logs.json: |
+  loki-observability.json: |
     {
       "id": null,
-      "title": "Loki Logs (Cloud Inoova)",
+      "title": "Loki Observability (Inoova Cloud)",
       "schemaVersion": 38,
       "version": 1,
       "editable": true,
+      "refresh": "10s",
+
       "panels": [
+
         {
           "type": "logs",
-          "title": "Logs (Loki)",
-          "datasource": {
-            "type": "loki",
-            "uid": "loki"
-          },
+          "title": "🔍 Logs (Tempo Real)",
+          "datasource": "Loki",
           "targets": [
             {
               "expr": "{namespace=\"observability\"}",
               "refId": "A"
             }
           ],
-          "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 }
+          "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "📈 Taxa de Logs (Logs/sec)",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "rate({namespace=\"observability\"}[1m])",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 }
+        },
+
+        {
+          "type": "stat",
+          "title": "🔥 Total Logs (5m)",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "count_over_time({namespace=\"observability\"}[5m])",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "🚨 Logs ERROR",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "rate({namespace=\"observability\"} |= \"error\" [1m])",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "⚠️ Logs WARN",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "rate({namespace=\"observability\"} |= \"warn\" [1m])",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 }
+        },
+
+        {
+          "type": "barchart",
+          "title": "📊 Top Pods com Logs",
+          "datasource": "Loki",
+          "targets": [
+            {
+              "expr": "topk(5, sum by (pod) (count_over_time({namespace=\"observability\"}[5m])))",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 }
         }
+
       ]
     }
