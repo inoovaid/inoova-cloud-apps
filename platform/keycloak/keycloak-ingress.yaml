@@ -7,7 +7,15 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+
+    # 🔥 CRÍTICO PRO KEYCLOAK
     nginx.ingress.kubernetes.io/x-forwarded-proto: "https"
+
+    # 🔥 AJUSTES QUE RESOLVEM LOOP / LOGIN BUG
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 
 spec:
   ingressClassName: nginx
