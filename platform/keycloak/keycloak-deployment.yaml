@@ -70,24 +70,30 @@ spec:
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
-            # 🔥 PROXY / INGRESS
+            # 🔥 PROXY (ESSENCIAL)
             - name: KC_PROXY
               value: edge
 
             - name: KC_PROXY_HEADERS
               value: xforwarded
 
-            # 🔥 EVITA LOOP DE REDIRECT
-            - name: KC_HTTP_ENABLED
-              value: "true"
-
+            # 🔥 CORREÇÃO DO LOOP (CRÍTICO)
             - name: KC_HOSTNAME_STRICT
               value: "false"
 
             - name: KC_HOSTNAME_STRICT_HTTPS
               value: "false"
 
-            # 🔥 HEALTHCHECK
+            - name: KC_HOSTNAME_STRICT_BACKCHANNEL
+              value: "false"
+
+            - name: KC_HTTP_ENABLED
+              value: "true"
+
+            - name: KC_HTTP_RELATIVE_PATH
+              value: "/"
+
+            # 🔥 HEALTH
             - name: KC_HEALTH_ENABLED
               value: "true"
 
