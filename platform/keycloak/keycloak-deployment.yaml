@@ -22,7 +22,7 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0
 
-          args: ["start"]
+          args: ["start", "--optimized"]
 
           ports:
             - containerPort: 8080
