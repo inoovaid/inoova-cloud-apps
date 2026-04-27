@@ -1,26 +1,27 @@
-server:
+grafana:
+  enabled: true
+
+  adminUser: admin
+  adminPassword: admin
+
   service:
     type: ClusterIP
+
   ingress:
     enabled: true
     ingressClassName: nginx
-    annotations:
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
     hosts:
-      - prometheus-cloud.dnn.lat
+      - grafana-cloud.dnn.lat
+
     tls:
       - secretName: wildcard-dnn
         hosts:
-          - prometheus-cloud.dnn.lat
+          - grafana-cloud.dnn.lat
+
+prometheus:
+  service:
+    type: ClusterIP
 
 alertmanager:
-  enabled: true
-
-kube-state-metrics:
-  enabled: true
-
-prometheus-node-exporter:
-  enabled: true
-
-prometheus-pushgateway:
   enabled: true
