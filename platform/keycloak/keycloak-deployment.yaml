@@ -65,17 +65,11 @@ spec:
             - name: KC_DB_PASSWORD
               value: AppPass123
 
-            # 🔥 HOSTNAME CORRETO (HTTPS)
+            # 🔥 HOSTNAME CORRETO (SEM CONFLITO)
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
-            - name: KC_HOSTNAME_URL
-              value: https://login-cloud.dnn.lat
-
-            - name: KC_HOSTNAME_ADMIN_URL
-              value: https://login-cloud.dnn.lat
-
-            # 🔥 PROXY CORRETO (SEM LOOP)
+            # 🔥 PROXY (INGRESS)
             - name: KC_PROXY
               value: edge
 
