@@ -18,6 +18,12 @@ spec:
           enabled: true
           adminPassword: admin
 
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              url: http://loki.observability.svc.cluster.local:3100
+              access: proxy
+
           persistence:
             enabled: false
 
