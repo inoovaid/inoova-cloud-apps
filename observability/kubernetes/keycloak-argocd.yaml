@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/inoovaid/inoova-cloud-apps
     targetRevision: main
-    path: platform/keycloak/keycloak-deployment.yaml
+    path: platform/keycloak
   syncPolicy:
     automated:
       prune: true
