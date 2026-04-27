@@ -58,7 +58,7 @@ spec:
               - loki-headless
 
         singleBinary:
-          replicas: 2
+          replicas: 4
 
         service:
           type: ClusterIP
