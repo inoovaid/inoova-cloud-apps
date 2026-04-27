@@ -21,6 +21,12 @@ spec:
         loki:
           auth_enabled: false
 
+          monitoring:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              interval: 30s
+
           limits_config:
             ingestion_rate_mb: 400
             ingestion_burst_size_mb: 800
