@@ -40,7 +40,7 @@ spec:
           sidecar:
             datasources:
               enabled: true
-              defaultDatasourceEnabled: false
+              defaultDatasourceEnabled: true
 
         prometheus:
           enabled: true
