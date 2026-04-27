@@ -7,4 +7,23 @@ metadata:
     grafana_dashboard: "1"
 data:
   loki-logs.json: |
-{{ .Files.Get "dashboards/loki-logs.json" | indent 4 }}
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "panels": [
+        {
+          "type": "logs",
+          "title": "Logs (Loki)",
+          "targets": [
+            {
+              "expr": "{namespace=\"observability\"}",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 }
+        }
+      ],
+      "title": "Loki Logs (Cloud Inoova)",
+      "schemaVersion": 38,
+      "version": 1
+    }
