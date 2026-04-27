@@ -5,15 +5,17 @@ metadata:
   namespace: keycloak
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-
-    # 🔥 FORÇA HTTPS
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-
-    # 🔥 INFORMA PRO KEYCLOAK QUE É HTTPS
-    nginx.ingress.kubernetes.io/x-forwarded-proto: "https"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 
 spec:
   ingressClassName: nginx
+
+  # 🔥 USA O WILDCARD AQUI
+  tls:
+    - hosts:
+        - login-cloud.dnn.lat
+      secretName: wildcard-dnn
 
   rules:
     - host: login-cloud.dnn.lat
