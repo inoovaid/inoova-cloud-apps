@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/inoovaid/inoova-cloud-apps
     targetRevision: main
-    path: observability/kubernetes/keycloak  # Caminho onde seus arquivos estão no repositório
+    path: platform/keycloak/keycloak-deployment.yaml
   syncPolicy:
     automated:
       prune: true
