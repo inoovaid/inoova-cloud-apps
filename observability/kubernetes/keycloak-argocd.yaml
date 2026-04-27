@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: keycloak
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/inoovaid/inoova-cloud-apps
+    targetRevision: main
+    path: observability/kubernetes/keycloak  # Caminho onde seus arquivos estão no repositório
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
