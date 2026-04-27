@@ -41,7 +41,7 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.3
 
-          args: ["start-dev"]
+          args: ["start"]
 
           ports:
             - containerPort: 8080
@@ -65,14 +65,24 @@ spec:
             - name: KC_DB_PASSWORD
               value: AppPass123
 
+            # 🔥 CRÍTICO PRA INGRESS
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
+
+            - name: KC_PROXY
+              value: edge
+
+            - name: KC_PROXY_HEADERS
+              value: xforwarded
+
+            - name: KC_HTTP_ENABLED
+              value: "true"
 
             - name: KC_HOSTNAME_STRICT
               value: "false"
 
-            - name: KC_PROXY
-              value: edge
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "false"
 
             - name: KEYCLOAK_ADMIN
               value: admin
@@ -88,17 +98,25 @@ spec:
               cpu: "1"
               memory: "1Gi"
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: keycloak
-  namespace: keycloak
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 10
 
-spec:
-  type: ClusterIP
-  selector:
-    app: keycloak
-  ports:
-    - port: 80
-      targetPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 10
