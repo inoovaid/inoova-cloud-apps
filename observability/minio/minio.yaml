@@ -27,16 +27,24 @@ spec:
           enabled: true
           size: 5Gi
 
-        resources:
-          requests:
-            memory: 256Mi
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - minio server /data --console-address ":9001"
 
         service:
           type: ClusterIP
+
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
