@@ -1,19 +1,20 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: grafana-dashboards
-  namespace: observability
-  labels:
-    grafana_dashboard: "1"
 data:
   loki-logs.json: |
     {
-      "annotations": { "list": [] },
+      "id": null,
+      "uid": "inoova-loki",
+      "title": "Loki Logs (Cloud Inoova)",
+      "schemaVersion": 38,
+      "version": 1,
       "editable": true,
       "panels": [
         {
           "type": "logs",
           "title": "Logs (Loki)",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
           "targets": [
             {
               "expr": "{namespace=\"observability\"}",
@@ -22,8 +23,5 @@ data:
           ],
           "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 }
         }
-      ],
-      "title": "Loki Logs (Cloud Inoova)",
-      "schemaVersion": 38,
-      "version": 1
+      ]
     }
