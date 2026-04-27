@@ -47,6 +47,7 @@ spec:
             - containerPort: 8080
 
           env:
+            # 🔥 DATABASE
             - name: KC_DB
               value: postgres
 
@@ -65,22 +66,32 @@ spec:
             - name: KC_DB_PASSWORD
               value: AppPass123
 
-            # 🔥 HOSTNAME CORRETO (SEM CONFLITO)
+            # 🔥 HOSTNAME (SEM CONFLITO)
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
-            # 🔥 PROXY (INGRESS)
+            # 🔥 PROXY / INGRESS
             - name: KC_PROXY
               value: edge
 
             - name: KC_PROXY_HEADERS
               value: xforwarded
 
-            # 🔥 HEALTH
+            # 🔥 EVITA LOOP DE REDIRECT
+            - name: KC_HTTP_ENABLED
+              value: "true"
+
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "false"
+
+            # 🔥 HEALTHCHECK
             - name: KC_HEALTH_ENABLED
               value: "true"
 
-            # ADMIN
+            # 🔐 ADMIN
             - name: KEYCLOAK_ADMIN
               value: admin
 
