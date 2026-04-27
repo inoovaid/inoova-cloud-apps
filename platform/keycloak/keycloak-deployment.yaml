@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: keycloak
+spec:
+  replicas: 1  # Se preferir usar 2 réplicas para HA, mude aqui
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:24.0
+          args: ["start"]
+          env:
+            - name: KC_DB
+              value: "none"  # Nenhum banco de dados externo está sendo usado
+            - name: KC_HOSTNAME
+              value: "login-cloud.dnn.lat"
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_METRICS_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: keycloak-pvc
+              mountPath: /var/lib/keycloak  # Mapeia o PVC no diretório do Keycloak
+  volumes:
+    - name: keycloak-pvc
+      persistentVolumeClaim:
+        claimName: keycloak-pvc  # Nome do PVC configurado no arquivo anterior
