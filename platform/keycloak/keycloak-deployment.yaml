@@ -58,10 +58,10 @@ spec:
               value: keycloak
 
             - name: KC_DB_USERNAME
-              value: keycloak
+              value: postgres
 
             - name: KC_DB_PASSWORD
-              value: keycloak
+              value: StrongPass123
 
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
