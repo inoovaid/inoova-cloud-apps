@@ -3,37 +3,83 @@ kind: Deployment
 metadata:
   name: keycloak
   namespace: keycloak
+
 spec:
-  replicas: 1  # Se preferir usar 2 réplicas para HA, mude aqui
+  replicas: 1
+
   selector:
     matchLabels:
       app: keycloak
+
   template:
     metadata:
       labels:
         app: keycloak
+
     spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0
+
           args: ["start"]
+
           env:
             - name: KC_DB
-              value: "none"  # Nenhum banco de dados externo está sendo usado
+              value: postgres
+
+            - name: KC_DB_URL
+              value: jdbc:postgresql://postgres-ha-rw.default.svc.cluster.local:5432/keycloak
+
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: username
+
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: password
+
             - name: KC_HOSTNAME
-              value: "login-cloud.dnn.lat"
+              value: login-cloud.dnn.lat
+
+            - name: KC_PROXY
+              value: edge
+
             - name: KC_HTTP_ENABLED
               value: "true"
+
             - name: KC_HEALTH_ENABLED
               value: "true"
+
             - name: KC_METRICS_ENABLED
               value: "true"
+
           ports:
             - containerPort: 8080
-          volumeMounts:
-            - name: keycloak-pvc
-              mountPath: /var/lib/keycloak  # Mapeia o PVC no diretório do Keycloak
-  volumes:
-    - name: keycloak-pvc
-      persistentVolumeClaim:
-        claimName: keycloak-pvc  # Nome do PVC configurado no arquivo anterior
+
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 90
+            timeoutSeconds: 5
