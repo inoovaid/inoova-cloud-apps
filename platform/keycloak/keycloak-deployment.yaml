@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: keycloak
   namespace: keycloak
+
 spec:
   replicas: 2
 
@@ -39,6 +40,8 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.3
+
+          # 🔥 DEV MODE (estável)
           args: ["start-dev"]
 
           ports:
@@ -86,18 +89,12 @@ spec:
               cpu: "1"
               memory: "1Gi"
 
-          startupProbe:
-            httpGet:
-              path: /health/ready
-              port: 8080
-            failureThreshold: 30
-            periodSeconds: 10
-
+          # 🔥 PROBES AJUSTADAS (SEM STARTUP)
           readinessProbe:
             httpGet:
               path: /health/ready
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 10
@@ -106,7 +103,7 @@ spec:
             httpGet:
               path: /health/live
               port: 8080
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             timeoutSeconds: 5
             periodSeconds: 10
 
@@ -116,6 +113,7 @@ kind: Service
 metadata:
   name: keycloak
   namespace: keycloak
+
 spec:
   type: ClusterIP
   selector:
