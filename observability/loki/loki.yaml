@@ -1,0 +1,94 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+
+spec:
+  project: default
+
+  destination:
+    namespace: observability
+    server: https://kubernetes.default.svc
+
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki
+    targetRevision: 5.47.2
+
+    helm:
+      values: |
+        loki:
+          auth_enabled: false
+
+          # 🔥 MONITORAMENTO (OK)
+          monitoring:
+            enabled: true
+            dashboards:
+              enabled: false
+            serviceMonitor:
+              enabled: true
+              interval: 30s
+
+          # 🔥 LIMITES (REDUZIDO PRA NÃO MATAR CLUSTER)
+          limits_config:
+            ingestion_rate_mb: 4
+            ingestion_burst_size_mb: 6
+
+          # 🔥 SINGLE NODE (LAB)
+          commonConfig:
+            replication_factor: 1
+
+          # 🔥 STORAGE LOCAL (CORREÇÃO DO ERRO)
+          storage:
+            type: filesystem
+
+          storage_config:
+            filesystem:
+              directory: /var/loki
+
+          # 🔥 SCHEMA LOCAL
+          schemaConfig:
+            configs:
+              - from: 2024-01-01
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: loki_index_
+                  period: 24h
+
+          # 🔥 RING SIMPLES
+          ring:
+            kvstore:
+              store: inmemory
+
+        # 🔥 SINGLE BINARY (SIMPLES E ESTÁVEL)
+        singleBinary:
+          replicas: 1
+
+          persistence:
+            enabled: false
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 300m
+              memory: 400Mi
+
+        service:
+          type: ClusterIP
+
+        monitoring:
+          enabled: false
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
