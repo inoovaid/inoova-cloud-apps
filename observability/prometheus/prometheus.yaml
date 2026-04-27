@@ -5,21 +5,29 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
   destination:
     namespace: observability
     server: https://kubernetes.default.svc
 
-  sources:
-    - repoURL: https://github.com/inoovaid/inoova-cloud-apps
-      targetRevision: main
-      ref: values
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 58.3.1
 
-    - repoURL: https://prometheus-community.github.io/helm-charts
-      chart: kube-prometheus-stack
-      targetRevision: 58.3.1
-      helm:
-        valueFiles:
-          - $values/observability/prometheus/prometheus-values.yaml
+    helm:
+      values: |
+        grafana:
+          enabled: true
+          adminUser: admin
+          adminPassword: admin
+
+        prometheus:
+          service:
+            type: ClusterIP
+
+        alertmanager:
+          enabled: true
 
   syncPolicy:
     automated:
