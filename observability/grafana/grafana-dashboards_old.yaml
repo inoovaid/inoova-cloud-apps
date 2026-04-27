@@ -10,7 +10,7 @@ data:
   loki-observability-advanced.json: |
     {
       "id": null,
-      "title": "Loki Observability (Inoova - Final)",
+      "title": "Loki Observability (Inoova - Final old)",
       "schemaVersion": 38,
       "version": 5,
       "refresh": "10s",
