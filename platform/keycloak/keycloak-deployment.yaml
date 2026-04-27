@@ -5,7 +5,9 @@ metadata:
   namespace: keycloak
 
 spec:
-  replicas: 1
+  replicas: 2
+
+  revisionHistoryLimit: 2
 
   selector:
     matchLabels:
@@ -23,7 +25,11 @@ spec:
 
           args: ["start"]
 
+          ports:
+            - containerPort: 8080
+
           env:
+            # 🔥 DATABASE
             - name: KC_DB
               value: postgres
 
@@ -42,6 +48,7 @@ spec:
                   name: keycloak-db-secret
                   key: password
 
+            # 🌐 ACCESS
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
@@ -51,14 +58,22 @@ spec:
             - name: KC_HTTP_ENABLED
               value: "true"
 
+            # 📊 HEALTH / METRICS
             - name: KC_HEALTH_ENABLED
               value: "true"
 
             - name: KC_METRICS_ENABLED
               value: "true"
 
-          ports:
-            - containerPort: 8080
+            # 🔥 CLUSTER MODE (ESSENCIAL PRA 2 RÉPLICAS)
+            - name: KC_CACHE
+              value: ispn
+
+            - name: KC_CACHE_STACK
+              value: kubernetes
+
+            - name: KC_CLUSTER
+              value: kubernetes
 
           resources:
             requests:
@@ -83,3 +98,4 @@ spec:
               port: 8080
             initialDelaySeconds: 90
             timeoutSeconds: 5
+            periodSeconds: 10
