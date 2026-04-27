@@ -10,7 +10,6 @@ data:
   loki-logs.json: |
     {
       "id": null,
-      "uid": "inoova-loki",
       "title": "Loki Logs (Cloud Inoova)",
       "schemaVersion": 38,
       "version": 1,
