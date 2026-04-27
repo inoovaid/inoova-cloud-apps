@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+
+spec:
+  project: default
+
+  destination:
+    namespace: observability
+    server: https://kubernetes.default.svc
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: minio
+    targetRevision: 14.6.0
+
+    helm:
+      values: |
+        auth:
+          rootUser: admin
+          rootPassword: admin
+
+        defaultBuckets: loki
+
+        persistence:
+          enabled: true
+          size: 5Gi
+
+        service:
+          type: ClusterIP
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    
