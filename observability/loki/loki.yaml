@@ -22,8 +22,8 @@ spec:
           auth_enabled: false
 
           limits_config:
-            ingestion_rate_mb: 40
-            ingestion_burst_size_mb: 80
+            ingestion_rate_mb: 400
+            ingestion_burst_size_mb: 800
     
           commonConfig:
             replication_factor: 2
