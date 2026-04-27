@@ -23,7 +23,7 @@ spec:
           image: quay.io/keycloak/keycloak:24.0
 
           # ✅ SEM optimized (evita bug com ENV)
-          args: ["start-dev"]
+          args: ["start"]
 
           ports:
             - containerPort: 8080
