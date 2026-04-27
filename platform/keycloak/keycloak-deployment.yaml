@@ -26,6 +26,12 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
 
+      # 🔥 PROTEÇÃO CONTRA REDE NÃO PRONTA
+      initContainers:
+        - name: wait-network
+          image: busybox
+          command: ['sh', '-c', 'echo "waiting network..." && sleep 30']
+
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0
@@ -77,18 +83,12 @@ spec:
             - name: KC_HTTP_ENABLED
               value: "true"
 
-            # 📊 HEALTH
+            # 📊 HEALTH / METRICS
             - name: KC_HEALTH_ENABLED
               value: "true"
 
             - name: KC_METRICS_ENABLED
               value: "true"
-
-            # ❌ IMPORTANTE: SEM CLUSTER
-            # NÃO adicionar:
-            # KC_CACHE
-            # KC_CACHE_STACK
-            # KC_CLUSTER
 
           resources:
             requests:
