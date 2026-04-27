@@ -32,7 +32,7 @@ spec:
             ingestion_burst_size_mb: 800
     
           commonConfig:
-            replication_factor: 2
+            replication_factor: 3
 
           storage:
             type: s3
@@ -64,7 +64,7 @@ spec:
               - loki-headless
 
         singleBinary:
-          replicas: 4
+          replicas: 3
 
         service:
           type: ClusterIP
