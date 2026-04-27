@@ -41,7 +41,6 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.3
 
-          # 🔥 DEV MODE (estável)
           args: ["start-dev"]
 
           ports:
@@ -88,24 +87,6 @@ spec:
             limits:
               cpu: "1"
               memory: "1Gi"
-
-          # 🔥 PROBES AJUSTADAS (SEM STARTUP)
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: 8080
-            initialDelaySeconds: 60
-            timeoutSeconds: 5
-            periodSeconds: 10
-            failureThreshold: 10
-
-          livenessProbe:
-            httpGet:
-              path: /health/live
-              port: 8080
-            initialDelaySeconds: 90
-            timeoutSeconds: 5
-            periodSeconds: 10
 
 ---
 apiVersion: v1
