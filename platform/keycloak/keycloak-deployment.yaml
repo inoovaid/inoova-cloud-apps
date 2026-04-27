@@ -4,7 +4,7 @@ metadata:
   name: keycloak
   namespace: keycloak
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: keycloak
@@ -31,7 +31,7 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.3
 
-          args: ["start-dev"]
+          args: ["start"]
 
           ports:
             - containerPort: 8080
