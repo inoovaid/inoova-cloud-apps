@@ -24,7 +24,6 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
 
-      # 🔥 GARANTE QUE O BANCO ESTÁ PRONTO
       initContainers:
         - name: wait-postgres
           image: busybox
@@ -33,21 +32,19 @@ spec:
             - -c
             - |
               until nc -z postgres-ha-rw.default.svc.cluster.local 5432; do
-                echo "⏳ waiting for postgres..."
+                echo "waiting for postgres..."
                 sleep 5
               done
 
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.3
-
           args: ["start"]
 
           ports:
             - containerPort: 8080
 
           env:
-            # 🔥 DATABASE
             - name: KC_DB
               value: postgres
 
@@ -66,7 +63,6 @@ spec:
             - name: KC_DB_PASSWORD
               value: keycloak
 
-            # 🔥 PRODUÇÃO (OBRIGATÓRIO)
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
@@ -76,7 +72,6 @@ spec:
             - name: KC_PROXY
               value: edge
 
-            # 🔐 ADMIN
             - name: KEYCLOAK_ADMIN
               value: admin
 
@@ -85,13 +80,12 @@ spec:
 
           resources:
             requests:
-              memory: "512Mi"
               cpu: "500m"
+              memory: "512Mi"
             limits:
-              memory: "1Gi"
               cpu: "1"
+              memory: "1Gi"
 
-          # 🔥 STARTUP (evita CrashLoop)
           startupProbe:
             httpGet:
               path: /health/ready
@@ -115,3 +109,17 @@ spec:
             initialDelaySeconds: 60
             timeoutSeconds: 5
             periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+spec:
+  type: ClusterIP
+  selector:
+    app: keycloak
+  ports:
+    - port: 80
+      targetPort: 8080
