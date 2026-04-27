@@ -65,7 +65,7 @@ spec:
             - name: KC_DB_PASSWORD
               value: AppPass123
 
-            # 🔥 CRÍTICO PRA INGRESS
+            # 🔥 ESSENCIAL PRA INGRESS + HTTPS
             - name: KC_HOSTNAME
               value: login-cloud.dnn.lat
 
@@ -84,6 +84,11 @@ spec:
             - name: KC_HOSTNAME_STRICT_HTTPS
               value: "false"
 
+            # 🔥 HABILITA HEALTH (OBRIGATÓRIO)
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+
+            # ADMIN
             - name: KEYCLOAK_ADMIN
               value: admin
 
@@ -98,29 +103,29 @@ spec:
               cpu: "1"
               memory: "1Gi"
 
+          # 🔥 STARTUP (TEMPO MAIOR - KEYCLOAK É LENTO)
           startupProbe:
             httpGet:
-              path: /health/ready
+              path: /
               port: 8080
-            failureThreshold: 30
-            periodSeconds: 10
+            failureThreshold: 60
+            periodSeconds: 5
 
+          # 🔥 READINESS (QUANDO LIBERA PRO TRAFEGO)
           readinessProbe:
             httpGet:
-              path: /health/ready
+              path: /
               port: 8080
-            initialDelaySeconds: 30
-            timeoutSeconds: 5
+            initialDelaySeconds: 40
             periodSeconds: 10
 
+          # 🔥 LIVENESS (SE MORRER, REINICIA)
           livenessProbe:
             httpGet:
-              path: /health/live
+              path: /
               port: 8080
             initialDelaySeconds: 60
-            timeoutSeconds: 5
             periodSeconds: 10
-
 
 ---
 apiVersion: v1
@@ -133,6 +138,7 @@ spec:
   type: ClusterIP
   selector:
     app: keycloak
+
   ports:
     - port: 80
       targetPort: 8080
