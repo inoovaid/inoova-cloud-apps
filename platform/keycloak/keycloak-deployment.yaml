@@ -77,12 +77,18 @@ spec:
             - name: KC_HTTP_ENABLED
               value: "true"
 
-            # 📊 HEALTH / METRICS
+            # 📊 HEALTH
             - name: KC_HEALTH_ENABLED
               value: "true"
 
             - name: KC_METRICS_ENABLED
               value: "true"
+
+            # ❌ IMPORTANTE: SEM CLUSTER
+            # NÃO adicionar:
+            # KC_CACHE
+            # KC_CACHE_STACK
+            # KC_CLUSTER
 
           resources:
             requests:
