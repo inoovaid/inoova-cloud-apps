@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: prometheus-stack
-  namespace: argocd
+  namespace: observability
 spec:
   project: default
   destination:
