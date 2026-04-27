@@ -5,9 +5,16 @@ metadata:
   namespace: keycloak
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 
 spec:
   ingressClassName: nginx
+
+  tls:
+    - hosts:
+        - login-cloud.dnn.lat
+      secretName: wildcard-dnn
 
   rules:
     - host: login-cloud.dnn.lat
