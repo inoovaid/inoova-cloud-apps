@@ -6,7 +6,6 @@ metadata:
 
 spec:
   replicas: 2
-
   revisionHistoryLimit: 2
 
   selector:
@@ -64,16 +63,6 @@ spec:
 
             - name: KC_METRICS_ENABLED
               value: "true"
-
-            # 🔥 CLUSTER MODE (ESSENCIAL PRA 2 RÉPLICAS)
-            - name: KC_CACHE
-              value: ispn
-
-            - name: KC_CACHE_STACK
-              value: kubernetes
-
-            - name: KC_CLUSTER
-              value: kubernetes
 
           resources:
             requests:
