@@ -1,25 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus
+  name: prometheus-stack
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
+  project: default
   destination:
     namespace: observability
     server: https://kubernetes.default.svc
-  project: default
+
   sources:
-    - repoURL: https://github.com/inoova-id/inoova-cloud-apps
+    - repoURL: https://github.com/inoovaid/inoova-cloud-apps
       targetRevision: main
       ref: values
-    - repoURL: https://prometheus-community.github.io/helm-charts/
-      chart: prometheus
-      targetRevision: 19.7.2
+
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 58.3.1
       helm:
         valueFiles:
           - $values/observability/prometheus/prometheus-values.yaml
+
   syncPolicy:
     automated:
       prune: true
