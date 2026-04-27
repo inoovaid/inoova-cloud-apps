@@ -12,44 +12,32 @@ spec:
     server: https://kubernetes.default.svc
 
   source:
-    repoURL: https://charts.bitnami.com/bitnami
+    repoURL: https://charts.min.io/
     chart: minio
-    targetRevision: 14.6.0
+    targetRevision: 5.0.15
 
     helm:
       values: |
-        image:
-          registry: quay.io
-          repository: minio/minio
-          tag: latest
-          pullPolicy: IfNotPresent
+        mode: standalone
 
-        auth:
-          rootUser: admin
-          rootPassword: admin
-
-        defaultBuckets: loki
+        rootUser: admin
+        rootPassword: admin
 
         persistence:
           enabled: true
           size: 5Gi
 
-        service:
-          type: ClusterIP
-
         resources:
           requests:
-            cpu: 100m
             memory: 256Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
+
+        service:
+          type: ClusterIP
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
