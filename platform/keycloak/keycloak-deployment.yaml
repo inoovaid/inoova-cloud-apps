@@ -5,14 +5,24 @@ metadata:
   namespace: keycloak
 spec:
   replicas: 2
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
   selector:
     matchLabels:
       app: keycloak
+
   template:
     metadata:
       labels:
         app: keycloak
+
     spec:
+      terminationGracePeriodSeconds: 30
 
       # 🔥 GARANTE QUE O BANCO ESTÁ PRONTO
       initContainers:
@@ -37,10 +47,10 @@ spec:
             - containerPort: 8080
 
           env:
+            # 🔥 DATABASE
             - name: KC_DB
               value: postgres
 
-            # ✅ FORMATO CORRETO (SEM BUG)
             - name: KC_DB_URL_HOST
               value: postgres-ha-rw.default.svc.cluster.local
 
@@ -56,6 +66,17 @@ spec:
             - name: KC_DB_PASSWORD
               value: keycloak
 
+            # 🔥 PRODUÇÃO (OBRIGATÓRIO)
+            - name: KC_HOSTNAME
+              value: login-cloud.dnn.lat
+
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+
+            - name: KC_PROXY
+              value: edge
+
+            # 🔐 ADMIN
             - name: KEYCLOAK_ADMIN
               value: admin
 
@@ -70,17 +91,27 @@ spec:
               memory: "1Gi"
               cpu: "1"
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: keycloak
-  namespace: keycloak
-spec:
-  type: NodePort
-  selector:
-    app: keycloak
-  ports:
-    - port: 80
-      targetPort: 8080
-      nodePort: 30007
+          # 🔥 STARTUP (evita CrashLoop)
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 10
