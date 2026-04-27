@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: prometheus-stack
-  namespace: observability
+  namespace: argocd
 spec:
   project: default
   destination:
@@ -20,6 +20,7 @@ spec:
       helm:
         valueFiles:
           - $values/observability/prometheus/prometheus-values.yaml
+
   syncPolicy:
     automated:
       prune: true
