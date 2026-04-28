@@ -21,25 +21,15 @@ spec:
         loki:
           auth_enabled: false
 
-          # 🔥 MONITORAMENTO (OK)
-          monitoring:
-            enabled: true
-            dashboards:
-              enabled: false
-            serviceMonitor:
-              enabled: true
-              interval: 30s
-
-          # 🔥 LIMITES (REDUZIDO PRA NÃO MATAR CLUSTER)
-          limits_config:
-            ingestion_rate_mb: 4
-            ingestion_burst_size_mb: 6
-
-          # 🔥 SINGLE NODE (LAB)
+          ############################################
+          # 🔥 CONFIG BASE
+          ############################################
           commonConfig:
             replication_factor: 1
 
-          # 🔥 STORAGE LOCAL (CORREÇÃO DO ERRO)
+          ############################################
+          # 🔥 STORAGE LOCAL (PERSISTENTE)
+          ############################################
           storage:
             type: filesystem
 
@@ -47,7 +37,9 @@ spec:
             filesystem:
               directory: /var/loki
 
-          # 🔥 SCHEMA LOCAL
+          ############################################
+          # 🔥 SCHEMA
+          ############################################
           schemaConfig:
             configs:
               - from: 2024-01-01
@@ -58,18 +50,42 @@ spec:
                   prefix: loki_index_
                   period: 24h
 
-          # 🔥 RING SIMPLES
+          ############################################
+          # 🔥 LIMITES (EVITA MATAR O CLUSTER)
+          ############################################
+          limits_config:
+            ingestion_rate_mb: 4
+            ingestion_burst_size_mb: 6
+
+          ############################################
+          # 🔥 RING SIMPLES (LAB)
+          ############################################
           ring:
             kvstore:
               store: inmemory
 
-        # 🔥 SINGLE BINARY (SIMPLES E ESTÁVEL)
+          ############################################
+          # 🔥 MONITORAMENTO (PROMETHEUS)
+          ############################################
+          monitoring:
+            enabled: true
+            dashboards:
+              enabled: false
+            serviceMonitor:
+              enabled: true
+              interval: 30s
+
+        ############################################
+        # 🔥 MODO SINGLE BINARY (ESTÁVEL)
+        ############################################
         singleBinary:
           replicas: 1
 
           persistence:
             enabled: true
             size: 5Gi
+            accessModes:
+              - ReadWriteOnce
 
           resources:
             requests:
@@ -79,12 +95,42 @@ spec:
               cpu: 300m
               memory: 400Mi
 
+          ############################################
+          # 🔥 PROBES CORRIGIDOS (ESSENCIAL)
+          ############################################
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 10
+
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 10
+
+        ############################################
+        # 🔥 SERVICE
+        ############################################
         service:
           type: ClusterIP
 
+        ############################################
+        # 🔥 DESATIVA MONITORING DUPLICADO (IMPORTANTE)
+        ############################################
         monitoring:
           enabled: false
 
+  ############################################
+  # 🔥 ARGOCD AUTO SYNC
+  ############################################
   syncPolicy:
     automated:
       prune: true
