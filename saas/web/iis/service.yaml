@@ -1,1 +1,11 @@
-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-web-iis
+  namespace: saas-web-iis
+spec:
+  selector:
+    app: saas-web-iis
+  ports:
+    - port: 80
+      targetPort: 80
