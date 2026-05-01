@@ -501,7 +501,7 @@ $(function submitAnimation() {
 // ================= CONFIG =================
 const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
 const REALM = "Inoova-Plataforma";
-const CLIENT_ID = "Inoova";
+const CLIENT_ID = "frontend";
 const REDIRECT_URI = window.location.origin + "/";
 
 // ================= AUTH =================
