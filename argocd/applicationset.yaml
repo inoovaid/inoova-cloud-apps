@@ -7,7 +7,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/seu-user/inoova-cloud-apps
+        repoURL: https://github.com/inoovaid/inoova-cloud-apps
         revision: HEAD
         directories:
           - path: k8s/*
