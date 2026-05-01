@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: inoova-apps
+  namespace: argocd
+
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/seu-user/inoova-cloud-apps
+        revision: HEAD
+        directories:
+          - path: k8s/*
+
+  template:
+    metadata:
+      name: '{{path.basename}}'
+
+    spec:
+      project: default
+
+      source:
+        repoURL: https://github.com/inoovaid/inoova-cloud-apps
+        targetRevision: HEAD
+        path: '{{path}}'
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          
