@@ -10,7 +10,7 @@ document.body.appendChild(script);
 
 let header = $(`
 <nav class="navbar navbar-expand-lg fixed-top dark-theme" id="navbar">
-<a class="navbar-brand" href="index.html">Plataforma Inoova</a>
+<a class="navbar-brand" href="index.html">Cloud Inoova</a>
 <div class="hamburger_wrapper navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 
   <div id="js-hamburger" class="hamburger">
@@ -501,7 +501,7 @@ $(function submitAnimation() {
 // ================= CONFIG =================
 const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
 const REALM = "Inoova-Plataforma";
-const CLIENT_ID = "frontend";
+const CLIENT_ID = "Inoova-Plataforma";
 const REDIRECT_URI = window.location.origin + "/";
 
 // ================= AUTH =================
