@@ -5,6 +5,8 @@ metadata:
   namespace: saas-web-app
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 
 spec:
   ingressClassName: nginx
