@@ -10,7 +10,8 @@ spec:
         repoURL: https://github.com/inoovaid/inoova-cloud-apps
         revision: HEAD
         directories:
-          - path: k8s/*
+          - path: k8s/*              # 👈 mantém tudo que já existe
+          - path: k8s/saas-web-*     # 👈 novos apps automáticos
 
   template:
     metadata:
@@ -34,4 +35,3 @@ spec:
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
-          
