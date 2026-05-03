@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: financeflow
-        image: heiffigjr/saas-web-app:latest
+        image: heiffigjr/saas-financeflow:latest
         ports:
         - containerPort: 3000
