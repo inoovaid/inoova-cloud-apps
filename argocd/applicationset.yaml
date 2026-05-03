@@ -16,7 +16,7 @@ spec:
 
   template:
     metadata:
-      name: '{{path[2]}}'
+      name: '{{path.dirname | basename}}'
 
     spec:
       project: default
@@ -28,7 +28,7 @@ spec:
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path[2]}}'
+        namespace: '{{path.dirname | basename}}'
 
       syncPolicy:
         automated:
