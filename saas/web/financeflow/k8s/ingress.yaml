@@ -19,10 +19,10 @@ spec:
     - host: financeflow-cloud.dnn.lat
       http:
         paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: financeflow
-              port:
-                number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: financeflow
+                port:
+                  number: 80
