@@ -10,13 +10,11 @@ spec:
         repoURL: https://github.com/inoovaid/inoova-cloud-apps
         revision: HEAD
         directories:
-          - path: k8s/*
-          - path: k8s/saas-web-*
           - path: saas/web/*
 
   template:
     metadata:
-      name: '{{path.basename}}'   # ✅ nome correto
+      name: '{{path.basename}}'   # ✅ ÚNICA forma correta
 
     spec:
       project: default
@@ -24,11 +22,11 @@ spec:
       source:
         repoURL: https://github.com/inoovaid/inoova-cloud-apps
         targetRevision: HEAD
-        path: '{{path}}/k8s'      # ✅ aponta para os manifests
+        path: '{{path}}/k8s'      # ✅ importante
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'  # ✅ namespace correto
+        namespace: '{{path.basename}}'  # ✅
 
       syncPolicy:
         automated:
