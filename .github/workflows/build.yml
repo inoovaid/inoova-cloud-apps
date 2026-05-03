@@ -18,8 +18,9 @@ jobs:
 
       - id: set
         run: |
-          apps=$(ls saas/web | jq -R -s -c 'split("\n")[:-1]')
-          echo "apps=$apps" >> $GITHUB_OUTPUT
+          APPS=$(find saas/web -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+          JSON=$(printf '%s\n' $APPS | jq -R -s -c 'split("\n")[:-1]')
+          echo "apps=$JSON" >> $GITHUB_OUTPUT
 
   build:
     needs: detect
@@ -35,10 +36,12 @@ jobs:
       - name: Login DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
 
-      - name: Build imagem
+      - name: Build e Push (somente se tiver Dockerfile)
         run: |
-          docker build -t ${{ secrets.DOCKER_USER }}/saas-${{ matrix.app }}:latest ./saas/web/${{ matrix.app }}
-
-      - name: Push imagem
-        run: |
-          docker push ${{ secrets.DOCKER_USER }}/saas-${{ matrix.app }}:latest
+          if [ -f "./saas/web/${{ matrix.app }}/Dockerfile" ]; then
+            echo "🔨 Building ${{ matrix.app }}"
+            docker build -t ${{ secrets.DOCKER_USER }}/saas-${{ matrix.app }}:latest ./saas/web/${{ matrix.app }}
+            docker push ${{ secrets.DOCKER_USER }}/saas-${{ matrix.app }}:latest
+          else
+            echo "⏭️ Pulando ${{ matrix.app }} (sem Dockerfile)"
+          fi
