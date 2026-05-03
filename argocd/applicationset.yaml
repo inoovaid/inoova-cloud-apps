@@ -16,7 +16,7 @@ spec:
 
   template:
     metadata:
-      name: '{{path.dirname | basename}}'
+      name: 'saas-{{path.dirname | basename}}'
 
     spec:
       project: default
@@ -25,10 +25,10 @@ spec:
         repoURL: https://github.com/inoovaid/inoova-cloud-apps
         targetRevision: HEAD
         path: '{{path}}'
-
+  
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.dirname | basename}}'
+        namespace: 'saas-{{path.dirname | basename}}'
 
       syncPolicy:
         automated:
