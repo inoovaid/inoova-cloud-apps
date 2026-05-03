@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: financeflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: financeflow
+  template:
+    metadata:
+      labels:
+        app: financeflow
+    spec:
+      containers:
+      - name: financeflow
+        image: heiffigjr/financeflow:latest
+        ports:
+        - containerPort: 3000

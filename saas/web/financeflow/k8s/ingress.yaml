@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: financeflow
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+
+  tls:
+  - hosts:
+    - financeflow.dnn.lat  
+    secretName: wildcard-dnn
+
+  rules:
+  - host: financeflow.dnn.lat
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: financeflow
+            port:
+              number: 80

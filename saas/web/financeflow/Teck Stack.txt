@@ -1,0 +1,419 @@
+## FinanceFlow CRM — Arquitetura e Funcionamento Completo
+
+### 1. Visão Geral da Arquitetura
+
+O FinanceFlow é uma **aplicação monolítica full-stack** construída com **Next.js 16** (App Router), que combina frontend React, backend serverless (API Routes) e camada de dados em um único projeto. A aplicação opera em dois modos de visualização:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Navegador (Cliente)                   │
+│                                                         │
+│   ┌──────────────────┐     ┌──────────────────────────┐ │
+│   │   Landing Page    │     │      CRM Autenticado     │ │
+│   │  (sem login)      │     │  (8 páginas internas)    │ │
+│   │                   │     │                          │ │
+│   │  Hero, Sobre,     │     │  Dashboard, Financeiro,  │ │
+│   │  Serviços, Blog,  │◄───►│  Contas, Clientes, etc.  │ │
+│   │  Contato          │     │  + Sidebar + Header      │ │
+│   └──────────────────┘     └──────────────────────────┘ │
+│              │                          │               │
+│              │     LoginDialog (JWT)   │               │
+│              └────────────┬────────────┘               │
+│                    Zustand Store                         │
+│              (auth + navigation)                        │
+└──────────────────────┬──────────────────────────────────┘
+                       │ fetch()
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│              Next.js API Routes (Backend)                │
+│                                                          │
+│  /api/dashboard    /api/accounts    /api/clients         │
+│  /api/commissions  /api/notifications  /api/automations │
+│  /api/account-plans  /api/seed                          │
+└──────────────────────┬──────────────────────────────────┘
+                       │ Prisma ORM
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│                  SQLite (db/custom.db)                   │
+│                                                          │
+│  Tenant, User, Client, Account, AccountPlan,             │
+│  Commission, Notification, AutomationRule, Tag            │
+└──────────────────────────────────────────────────────────┘
+```
+
+O **roting é 100% client-side**: existe apenas a rota `/` (`src/app/page.tsx`). O componente `Home` decide se renderiza a **Landing Page** ou o **CRM** com base no estado `isAuthenticated` do store de autenticação.
+
+---
+
+### 2. Stack Tecnológica
+
+| Camada | Tecnologia | Função |
+|---|---|---|
+| **Framework** | Next.js 16 (App Router) | SSR, API Routes, bundling |
+| **Linguagem** | TypeScript 5 | Tipagem estática |
+| **UI Components** | shadcn/ui (Radix UI) | 60+ componentes prontos |
+| **Estilo** | Tailwind CSS 4 | Utility-first CSS |
+| **Gráficos** | Recharts 2.15 | Barras, áreas, pizza |
+| **Animações** | Framer Motion 12 | Transições de página |
+| **Estado (client)** | Zustand 5 | Auth + navegação |
+| **ORM** | Prisma 6 | Query builder type-safe |
+| **Banco de dados** | SQLite | Persistência local |
+| **Dark Mode** | next-themes | Alternância claro/escuro |
+| **Ícones** | Lucide React | Ícones SVG |
+| **Formulários** | React Hook Form + Zod | Validação |
+| **Fontes** | Geist Sans / Geist Mono (Google Fonts) | Tipografia |
+| **Proxy** | Caddyfile (reverse proxy) | Roteamento de portas |
+
+---
+
+### 3. Estrutura de Pastas
+
+```
+/home/z/my-project/
+├── prisma/
+│   ├── schema.prisma          # 8 modelos do banco de dados
+│   └── seed.ts                # Script de população com dados mock
+├── db/
+│   └── custom.db              # Banco SQLite (gerado pelo Prisma)
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx         # Layout raiz (ThemeProvider, Toaster, meta)
+│   │   ├── page.tsx           # Única rota "/" — orquestra Landing ↔ CRM
+│   │   ├── globals.css        # Variáveis CSS (tema emerald), scrollbars
+│   │   └── api/               # Backend — API Routes
+│   │       ├── route.ts                    # Health check
+│   │       ├── dashboard/route.ts          # GET — KPIs, dados mensais
+│   │       ├── accounts/
+│   │       │   ├── route.ts                # GET (filtros) + POST (criar)
+│   │       │   └── [id]/route.ts           # GET + PUT + DELETE por ID
+│   │       ├── clients/
+│   │       │   ├── route.ts                # GET (busca) + POST (criar)
+│   │       │   └── [id]/route.ts           # GET + PUT + DELETE por ID
+│   │       ├── commissions/route.ts        # GET — lista com relações
+│   │       ├── notifications/route.ts      # GET + PUT (marcar lidas)
+│   │       ├── automations/
+│   │       │   ├── route.ts                # GET + POST
+│   │       │   └── [id]/route.ts           # PUT (toggle) + DELETE
+│   │       ├── account-plans/route.ts      # GET — planos de conta
+│   │       └── seed/route.ts              # POST — re-popular banco
+│   ├── components/
+│   │   ├── layout/            # Componentes estruturais do CRM
+│   │   │   ├── app-sidebar.tsx             # Sidebar com 8 itens de menu
+│   │   │   ├── app-header.tsx              # Header + User Dropdown + Notificações
+│   │   │   └── theme-provider.tsx          # Provider de dark/light mode
+│   │   ├── landing/           # Landing page pública
+│   │   │   └── landing-page.tsx            # Hero + Sobre + Serviços + Blog + Contato
+│   │   ├── shared/            # Componentes reutilizáveis (dialogs)
+│   │   │   ├── login-dialog.tsx            # Modal de login (modo demo)
+│   │   │   ├── profile-dialog.tsx          # Modal de perfil do usuário
+│   │   │   ├── account-form-dialog.tsx     # Modal de criar/editar conta
+│   │   │   └── client-form-dialog.tsx      # Modal de criar/editar cliente
+│   │   ├── dashboard/         # Página Dashboard (KPIs + gráficos)
+│   │   ├── financeiro/        # Página Financeiro (filtros + tabela CRUD)
+│   │   ├── contas/            # Página Contas (4 abas: pagar/receber/parcelas/recorr.)
+│   │   ├── clientes/          # Página Clientes (cards + histórico)
+│   │   ├── comissoes/         # Página Comissões (tabela filtrável)
+│   │   ├── automacoes/        # Página Automações (regras + toggles)
+│   │   ├── relatorios/        # Página Relatórios (gráficos + tabela)
+│   │   ├── configuracoes/     # Página Configurações (users, planos, geral)
+│   │   └── ui/                # 60+ componentes shadcn/ui (prontos)
+│   ├── store/                # Estado global (Zustand)
+│   │   ├── auth.ts            # Store de autenticação JWT demo
+│   │   └── navigation.ts     # Store de navegação entre páginas
+│   ├── lib/                  # Utilitários
+│   │   ├── db.ts              # Instância singleton do PrismaClient
+│   │   ├── format.ts          # formatCurrency, formatDate, status/type helpers
+│   │   └── utils.ts           # cn() — clsx + tailwind-merge
+│   └── hooks/                # Hooks customizados
+│       ├── use-mobile.ts      # Detecção de mobile
+│       └── use-toast.ts       # Hook de toast notifications
+├── .env                       # DATABASE_URL=file:...sqlite
+├── Caddyfile                  # Reverse proxy para portas externas
+├── package.json               # Dependências e scripts
+├── tailwind.config.ts         # Configuração Tailwind CSS
+├── tsconfig.json              # Configuração TypeScript
+└── eslint.config.mjs          # Configuração ESLint
+```
+
+---
+
+### 4. Modelo de Dados (Prisma Schema)
+
+O schema define **8 modelos** com relações que formam um grafo de dados multi-tenant:
+
+```
+Tenant (1) ──┬── (N) User
+              ├── (N) Client ──── (N) Account
+              ├── (N) AccountPlan ── (N) Account
+              ├── (N) AutomationRule
+              └── (N) Tag
+
+Account (1) ──┬── (N) Commission ── (1) User
+              ├── (1) Client
+              ├── (1) AccountPlan
+              ├── (1) User (creator)
+              └── (N) Account (self-ref: parcelas)
+
+User (1) ──┬── (N) Commission
+            ├── (N) Account (creator)
+            └── (N) Notification
+```
+
+**Modelo principal — `Account`** (contas financeiras):
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `amount` | `Float` | Valor monetário |
+| `dueDate` | `DateTime` | Data de vencimento |
+| `status` | `String` | `pendente`, `paga`, `vencida`, `cancelada` |
+| `type` | `String` | `pagar` (despesa) ou `receber` (receita) |
+| `installmentNumber/totalInstallments` | `Int?` | Suporte a parcelamento |
+| `recurring/recurringCycle` | `Boolean/String?` | Recorrência automática |
+| `parentAccountId` | `String?` | Self-relation para parcelas |
+
+---
+
+### 5. Backend — API Routes
+
+Todas as APIs são **Next.js Route Handlers** (`export async function GET/POST/PUT/DELETE`) que usam o Prisma Client (`db`) diretamente:
+
+| Endpoint | Métodos | Lógica |
+|---|---|---|
+| `/api/dashboard` | GET | Agrega KPIs (receita, pagas, pendentes, vencidas), calcula dados mensais dos últimos 6 meses, retorna 5 contas recentes |
+| `/api/accounts` | GET, POST | GET: filtros dinâmicos por `status`, `type`, `startDate`, `endDate`, `accountPlanId`, `search`, `clientId`. POST: cria conta com `tenantId` do primeiro tenant |
+| `/api/accounts/[id]` | GET, PUT, DELETE | GET com `include` de cliente, plano, criador, comissões e filhos (parcelas). DELETE em cascata: comissões → filhos → conta |
+| `/api/clients` | GET, POST | GET: busca por nome, email, CPF/CNPJ, cidade. Inclui `_count` de contas |
+| `/api/clients/[id]` | GET, PUT, DELETE | CRUD completo por ID |
+| `/api/commissions` | GET | Lista com `include` de user e account |
+| `/api/notifications` | GET, PUT | GET: últimas 20 notificações. PUT: marca como lidas (por IDs ou todas) |
+| `/api/automations` | GET, POST | GET: lista regras. POST: cria nova regra |
+| `/api/automations/[id]` | PUT, DELETE | PUT: toggle `active`. DELETE: remove |
+| `/api/account-plans` | GET | Lista planos de conta (despesa/receita) |
+| `/api/seed` | POST | Re-executa o seed (limpa e repopula tudo) |
+
+**Padrão de filtros** (exemplo de `/api/accounts`):
+```typescript
+const where: Record<string, unknown> = { parentAccountId: null }
+if (status) where.status = status
+if (type) where.type = type
+if (startDate) where.dueDate = { gte: new Date(startDate) }
+if (search) where.OR = [
+  { description: { contains: search } },
+  { client: { name: { contains: search } } },
+]
+```
+
+---
+
+### 6. Frontend — Funcionamento
+
+#### 6.1 Roteamento (Single-Page Application)
+
+O arquivo `page.tsx` é o **único entry point**. Ele contém:
+
+```typescript
+// Mapa de páginas — deserializa componente pelo nome
+const pages = {
+  dashboard: DashboardPage,
+  financeiro: FinanceiroPage,
+  contas: ContasPage,
+  // ... 8 no total
+}
+
+export default function Home() {
+  const { isAuthenticated } = useAuthStore()    // vem do Zustand
+  const { currentPage } = useNavigationStore() // vem do Zustand
+
+  return (
+    <>
+      <LoginDialog />    {/* Global — sempre montado */}
+      <ProfileDialog />  {/* Global — sempre montado */}
+
+      {!isAuthenticated
+        ? <LandingPage />           // Visitante vê a landing
+        : <AnimatePresence>          // Usuário vê o CRM
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <AppHeader />
+                <main><PageComponent /></main>
+              </SidebarInset>
+            </SidebarProvider>
+          </AnimatePresence>
+      }
+    </>
+  )
+}
+```
+
+O `useNavigationStore` mantém `currentPage: string` que determina qual componente renderizar. A navegação acontece via `setCurrentPage('financeiro')` — zero reload de página.
+
+#### 6.2 Sidebar (`app-sidebar.tsx`)
+
+Usa o componente `Sidebar` do shadcn/ui com `collapsible="icon"`. Cada item de menu chama `setCurrentPage()`:
+
+```typescript
+const navItems = [
+  { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { page: 'financeiro', label: 'Financeiro', icon: DollarSign },
+  // ... 8 itens
+]
+```
+
+O item ativo recebe destaque visual emerald (`bg-emerald-100 text-emerald-900`).
+
+#### 6.3 Header (`app-header.tsx`)
+
+Contém 4 elementos interativos:
+- **SidebarTrigger** — toggle da sidebar
+- **Busca** — input de texto (decorativo)
+- **Notificações** — DropdownMenu com badge de não lidas, chama `GET /api/notifications` no `useEffect` e `PUT /api/notifications` para marcar como lidas
+- **User Account Dropdown** — Avatar com iniciais do nome, dropdown com: Meu Perfil, Configurações, Financeiro, Sair da Conta
+
+---
+
+### 7. Autenticação — Sistema JWT Demo
+
+O store `src/store/auth.ts` implementa autenticação **100% client-side** em modo demonstração:
+
+#### Fluxo de Login:
+```
+1. Usuário clica "Entrar" → setShowLoginDialog(true)
+2. LoginDialog abre → preenche email + senha
+3. handleSubmit() → validação → login(email, password)
+4. login() executa:
+   a. extractNameFromEmail("carlos.silva@empresa.com") → "Carlos Silva"
+   b. getInitials("Carlos Silva") → "CS"
+   c. generateDemoToken(email) → "eyJ...eyJ...ZX..."
+   d. Salva token + user no localStorage
+   e. Atualiza Zustand: isAuthenticated = true
+5. page.tsx re-renderiza → exibe o CRM
+```
+
+#### Geração do Token JWT:
+```typescript
+function generateDemoToken(email: string): string {
+  const header  = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+  const payload = btoa(JSON.stringify({
+    sub: email,
+    name: extractNameFromEmail(email),
+    iat: Date.now(),
+    exp: Date.now() + 24 * 60 * 60 * 1000  // 24h de expiração
+  }))
+  const signature = btoa(`demo-${email}-${Date.now()}`)
+  return `${header}.${payload}.${signature}`
+}
+```
+
+O token é **formatado como JWT real** (base64.header.base64.payload.base64.signature), mas a assinatura é simbólica — não há verificação criptográfica. Em produção, seria substituído por um JWT assinado com HMAC-SHA256 (via `jsonwebtoken` ou similar).
+
+#### Persistência e Hydratação:
+```typescript
+// Salva no login
+localStorage.setItem('ff_token', token)
+localStorage.setItem('ff_user', JSON.stringify({ email, name }))
+
+// Recupera ao carregar a página (fora do create())
+if (typeof window !== 'undefined') {
+  const token = localStorage.getItem('ff_token')
+  const userData = localStorage.getItem('ff_user')
+  if (token && userData) {
+    useAuthStore.setState({ isAuthenticated: true, user: { ... }, token })
+  }
+}
+```
+
+#### Fluxo de Logout:
+```
+1. Usuário clica "Sair da conta" (no header dropdown ou no profile dialog)
+2. logout() executa:
+   a. Remove ff_token e ff_user do localStorage
+   b. Zustand: isAuthenticated = false, user = null, token = null
+3. page.tsx re-renderiza → exibe a Landing Page novamente
+```
+
+#### User Account Dropdown:
+
+O header exibe um botão com **avatar (iniciais) + nome truncado**. O dropdown mostra:
+- Avatar grande + nome completo + e-mail
+- **Meu Perfil** → abre ProfileDialog (nome, email, função, JWT preview, botão sair)
+- **Configurações** → `setCurrentPage('configuracoes')`
+- **Financeiro** → `setCurrentPage('financeiro')`
+- **Sair da conta** → `logout()` (estilizado em vermelho)
+
+---
+
+### 8. Fluxo de Dados Completo (Exemplo: Dashboard)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  1. Usuário faz login                                    │
+│     Zustand: isAuthenticated = true                       │
+│     page.tsx renderiza: SidebarProvider > AppHeader + CRM │
+└──────────────┬───────────────────────────────────────────┘
+               │
+┌──────────────▼───────────────────────────────────────────┐
+│  2. DashboardPage monta (useEffect)                      │
+│     fetch('/api/dashboard')                              │
+│                                                          │
+│  3. API Route executa:                                   │
+│     db.account.findMany({ include: { client: true } })   │
+│     → SQL: SELECT * FROM Account JOIN Client ...          │
+│                                                          │
+│  4. Calcula no servidor:                                  │
+│     - receitaTotal = somar(receber + paga)               │
+│     - contasPagas/Pendentes/Vencidas (filtros por data)  │
+│     - monthlyData[6 meses] (agregação por mês)           │
+│     - recentAccounts (últimas 5 contas)                  │
+│                                                          │
+│  5. Retorna JSON:                                        │
+│     { receitaTotal: 69700, totalPagas: 118130,           │
+│       contasPagasCount: 14, monthlyData: [...],           │
+│       recentAccounts: [...] }                            │
+└──────────────┬───────────────────────────────────────────┘
+               │
+┌──────────────▼───────────────────────────────────────────┐
+│  6. DashboardPage recebe dados → renderiza:               │
+│     - 4 KPI Cards (valores formatados R$ X.XXX,XX)       │
+│     - BarChart (recharts) com monthlyData                │
+│     - AreaChart (recharts) com fluxo acumulado            │
+│     - Tabela de últimas 5 contas com badges de status     │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 9. Gateway e Proxy
+
+O **Caddyfile** atua como reverse proxy. Como o ambiente sandbox só expõe uma porta externamente, ele redireciona requisições baseadas no query param `XTransformPort`:
+
+```
+:81 {
+    @transform_port_query { query XTransformPort=* }
+    handle @transform_port_query {
+        reverse_proxy localhost:{query.XTransformPort}
+    }
+    handle {
+        reverse_proxy localhost:3000  # Padrão → Next.js
+    }
+}
+```
+
+Para o Next.js, todas as chamadas usam **caminhos relativos** (`/api/dashboard`, `/api/accounts`), que o Caddy encaminha para `localhost:3000`.
+
+---
+
+### 10. Preparação para Produção
+
+O projeto está estruturado para evoluir para SaaS:
+
+| Aspecto | Estado Atual | Próximo Passo |
+|---|---|---|
+| **Banco** | SQLite (desenvolvimento) | Trocar `provider` para `postgresql` no `schema.prisma` e `DATABASE_URL` |
+| **Auth** | JWT demo client-side | Implementar NextAuth.js v4 (já instalado) com Provider de credenciais |
+| **Multi-tenant** | Schema com `tenantId` | Adicionar middleware que extrai tenant do subdomínio/token |
+| **API Bancária** | Não integrada | Criar mini-service (`mini-services/`) com webhook para receber notificações bancárias |
+| **Docker** | Não configurado | Adicionar `Dockerfile` + `docker-compose.yml` com Postgres |
+| **Deploy** | Dev server | `bun run build` → standalone server + PM2 ou Vercel |
+
+O script `bun run build` já está configurado para gerar o standalone do Next.js, copiando estáticos e públicos para a pasta de produção.
