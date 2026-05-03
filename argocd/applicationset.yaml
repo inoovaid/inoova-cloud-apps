@@ -12,11 +12,11 @@ spec:
         directories:
           - path: k8s/*              # 👈 mantém tudo que já existe
           - path: k8s/saas-web-*     # 👈 novos apps automáticos
-          - path: saas/web/*
+          - path: saas/web/*  
 
   template:
     metadata:
-      name: 'saas-{{path.dirname | basename}}'
+      name: '{{path.dirname | basename}}'
 
     spec:
       project: default
@@ -28,7 +28,7 @@ spec:
   
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'saas-{{path.dirname | basename}}'
+        namespace: '{{path.dirname | basename}}'
 
       syncPolicy:
         automated:
