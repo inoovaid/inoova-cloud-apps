@@ -15,5 +15,6 @@ spec:
       containers:
       - name: financeflow
         image: heiffigjr/saas-financeflow:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
