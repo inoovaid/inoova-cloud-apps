@@ -9,11 +9,11 @@ spec:
 
   tls:
   - hosts:
-    - financeflow.dnn.lat  
+    - financeflow-cloud.dnn.lat  
     secretName: wildcard-dnn
 
   rules:
-  - host: financeflow.dnn.lat
+  - host: financeflow-cloud.dnn.lat
     http:
       paths:
       - path: /
