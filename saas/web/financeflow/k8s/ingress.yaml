@@ -12,7 +12,7 @@ spec:
 
   tls:
     - hosts:
-      - financeflow-cloud.dnn.lat  
+        - financeflow-cloud.dnn.lat  
       secretName: wildcard-dnn
 
   rules:
