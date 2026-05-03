@@ -2,19 +2,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: financeflow
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: financeflow
+
   template:
     metadata:
       labels:
         app: financeflow
+
     spec:
       containers:
       - name: financeflow
         image: heiffigjr/saas-financeflow:latest
         imagePullPolicy: Always
+
         ports:
         - containerPort: 3000
+
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://appuser:AppPass123@postgres-ha.default.svc.cluster.local:5432/postgres"
