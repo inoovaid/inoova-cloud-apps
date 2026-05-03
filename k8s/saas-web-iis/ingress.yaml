@@ -4,15 +4,20 @@ metadata:
   name: saas-web-iis
   namespace: saas-web-iis
   annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+
 spec:
   ingressClassName: nginx
+
   tls:
     - hosts:
-        - iis.dnn.lat
+        - iis-cloud.dnn.lat
       secretName: wildcard-dnn
+
   rules:
-    - host: iis.dnn.lat
+    - host: iis-cloud.dnn.lat
       http:
         paths:
           - path: /
