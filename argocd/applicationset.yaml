@@ -14,7 +14,7 @@ spec:
 
   template:
     metadata:
-      name: 'SaaS-{{path.basename}}'   # ✅ ÚNICA forma correta
+      name: '{{path.basename}}'   # ✅ ÚNICA forma correta
 
     spec:
       project: default
@@ -26,7 +26,7 @@ spec:
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'SaaS-{{path.basename}}'  # ✅
+        namespace: '{{path.basename}}'  # ✅
 
       syncPolicy:
         automated:
