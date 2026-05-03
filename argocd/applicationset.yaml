@@ -12,6 +12,7 @@ spec:
         directories:
           - path: k8s/*              # 👈 mantém tudo que já existe
           - path: k8s/saas-web-*     # 👈 novos apps automáticos
+          - path: saas/web/*/k8s
 
   template:
     metadata:
