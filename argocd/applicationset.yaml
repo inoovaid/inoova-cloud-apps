@@ -14,7 +14,7 @@ spec:
 
   template:
     metadata:
-      name: 'saas-{{path.basename}}'   # ✅ ÚNICA forma correta
+      name: saas-{{path.basename}}   # ✅ lowercase obrigatório
 
     spec:
       project: default
@@ -22,11 +22,11 @@ spec:
       source:
         repoURL: https://github.com/inoovaid/inoova-cloud-apps
         targetRevision: HEAD
-        path: '{{path}}/k8s'      # ✅ importante
+        path: "{{path}}/k8s"
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'saas-{{path.basename}}'  # ✅
+        namespace: saas-{{path.basename}}  # ✅ lowercase
 
       syncPolicy:
         automated:
