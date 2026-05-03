@@ -11,18 +11,18 @@ spec:
   ingressClassName: nginx
 
   tls:
-  - hosts:
-    - financeflow-cloud.dnn.lat  
-    secretName: wildcard-dnn
+    - hosts:
+      - financeflow-cloud.dnn.lat  
+      secretName: wildcard-dnn
 
   rules:
-  - host: financeflow-cloud.dnn.lat
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: financeflow
-            port:
-              number: 80
+    - host: financeflow-cloud.dnn.lat
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: financeflow
+              port:
+                number: 80
