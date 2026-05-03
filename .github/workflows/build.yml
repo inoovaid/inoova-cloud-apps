@@ -1,15 +1,23 @@
-name: Build e Push Docker
+name: Build e Push Docker (Multi SaaS)
 
 on:
   push:
     paths:
-      - 'saas/web/app/**'
+      - 'saas/web/**'
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        app:
+          - app
+          - financeflow   # 🔥 adiciona aqui
+          # - crm2 (futuro)
+          # - crm3 (futuro)
 
     steps:
       - name: Checkout
@@ -20,8 +28,8 @@ jobs:
 
       - name: Build imagem
         run: |
-          docker build -t ${{ secrets.DOCKER_USER }}/saas-web-app:latest ./saas/web/app
+          docker build -t ${{ secrets.DOCKER_USER }}/saas-web-${{ matrix.app }}:latest ./saas/web/${{ matrix.app }}
 
       - name: Push imagem
         run: |
-          docker push ${{ secrets.DOCKER_USER }}/saas-web-app:latest
+          docker push ${{ secrets.DOCKER_USER }}/saas-web-${{ matrix.app }}:latest
