@@ -1,4 +1,4 @@
-name: Build e Push Docker (Multi SaaS)
+name: Build e Push Docker (Auto SaaS)
 
 on:
   push:
@@ -8,28 +8,37 @@ on:
       - main
 
 jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.set.outputs.apps }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: set
+        run: |
+          apps=$(ls saas/web | jq -R -s -c 'split("\n")[:-1]')
+          echo "apps=$apps" >> $GITHUB_OUTPUT
+
   build:
+    needs: detect
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        app:
-          - app
-          - financeflow   # 🔥 adiciona aqui
-          # - crm2 (futuro)
-          # - crm3 (futuro)
+        app: ${{ fromJson(needs.detect.outputs.apps) }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Login DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
 
       - name: Build imagem
         run: |
-          docker build -t ${{ secrets.DOCKER_USER }}/saas-web-${{ matrix.app }}:latest ./saas/web/${{ matrix.app }}
+          docker build -t ${{ secrets.DOCKER_USER }}/saas-${{ matrix.app }}:latest ./saas/web/${{ matrix.app }}
 
       - name: Push imagem
         run: |
-          docker push ${{ secrets.DOCKER_USER }}/saas-web-${{ matrix.app }}:latest
+          docker push ${{ secrets.DOCKER_USER }}/saas-${{ matrix.app }}:latest
