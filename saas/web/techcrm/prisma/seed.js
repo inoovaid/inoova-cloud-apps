@@ -156,13 +156,15 @@ async function main() {
   const modules = [];
 
   // React Avançado modules
-  const m1 = await prisma.module.create({
-    data: {
+  const m1 = await prisma.module.upsert({
+    where: { id: 'clm000000000000000000001' },
+    update: {},
+    create: {
       id: 'clm000000000000000000001',
       name: 'Fundamentos de React 19',
       description: 'Novidades do React 19 e Server Components',
       order: 1,
-      courseId: course1.id,
+      course: { connect: { id: course1.id } },
       lessons: {
         create: [
           { id: 'cls000000000000000000001', name: 'O que há de novo no React 19', description: 'Overview das novidades', type: 'video', content: 'Video sobre React 19', videoUrl: 'https://example.com/react19-intro', duration: 45, order: 1 },
@@ -174,13 +176,15 @@ async function main() {
   });
   modules.push(m1);
 
-  const m2 = await prisma.module.create({
-    data: {
+  await prisma.module.upsert({
+    where: { id: 'clm000000000000000000002' },
+    update: {},
+    create: {
       id: 'clm000000000000000000002',
       name: 'Estado e Context API',
       description: 'Gerenciamento de estado global',
       order: 2,
-      courseId: course1.id,
+      course: { connect: { id: course1.id } },
       lessons: {
         create: [
           { id: 'cls000000000000000000004', name: 'Context API avançado', description: 'Padrões de Context', type: 'text', content: '<h1>Context API</h1><p>...</p>', duration: 35, order: 1 },
@@ -189,16 +193,17 @@ async function main() {
       },
     },
   });
-  modules.push(m2);
 
   // Node.js do Zero modules
-  const m3 = await prisma.module.create({
-    data: {
+  await prisma.module.upsert({
+    where: { id: 'clm000000000000000000003' },
+    update: {},
+    create: {
       id: 'clm000000000000000000003',
       name: 'Introdução ao Node.js',
       description: 'Setup e conceitos básicos',
       order: 1,
-      courseId: course2.id,
+      course: { connect: { id: course2.id } },
       lessons: {
         create: [
           { id: 'cls000000000000000000006', name: 'Instalação e configuração', description: 'Preparar o ambiente', type: 'video', content: 'Setup do ambiente', videoUrl: 'https://example.com/node-setup', duration: 25, order: 1 },
@@ -207,15 +212,16 @@ async function main() {
       },
     },
   });
-  modules.push(m3);
 
-  const m4 = await prisma.module.create({
-    data: {
+  await prisma.module.upsert({
+    where: { id: 'clm000000000000000000004' },
+    update: {},
+    create: {
       id: 'clm000000000000000000004',
       name: 'APIs RESTful',
       description: 'Criar APIs completas com Express',
       order: 2,
-      courseId: course2.id,
+      course: { connect: { id: course2.id } },
       lessons: {
         create: [
           { id: 'cls000000000000000000008', name: 'Express.js básico', description: 'Primeiro servidor', type: 'video', content: 'Express básico', videoUrl: 'https://example.com/express-basics', duration: 55, order: 1 },
@@ -225,19 +231,20 @@ async function main() {
       },
     },
   });
-  modules.push(m4);
 
-  console.log(`✅ ${modules.length} modules with lessons created`);
+  console.log(`✅ Modules with lessons created`);
 
   // ── Enrollments ──
   for (let i = 0; i < students.length; i++) {
-    await prisma.enrollment.create({
-      data: {
+    await prisma.enrollment.upsert({
+      where: { id: `cle000000000000000000${String(i + 1).padStart(2, '0')}` },
+      update: {},
+      create: {
         id: `cle000000000000000000${String(i + 1).padStart(2, '0')}`,
-        studentId: students[i].id,
-        courseId: courses[i % courses.length].id,
+        student: { connect: { id: students[i].id } },
+        course: { connect: { id: courses[i % courses.length].id } },
         progress: i === 0 ? 75.5 : i === 1 ? 30.0 : 0,
-        status: i === 0 ? 'active' : 'active',
+        status: 'active',
       },
     });
   }
@@ -245,10 +252,12 @@ async function main() {
 
   // ── Payments ──
   for (let i = 0; i < students.length; i++) {
-    await prisma.payment.create({
-      data: {
+    await prisma.payment.upsert({
+      where: { id: `clp000000000000000000${String(i + 1).padStart(2, '0')}` },
+      update: {},
+      create: {
         id: `clp000000000000000000${String(i + 1).padStart(2, '0')}`,
-        studentId: students[i].id,
+        student: { connect: { id: students[i].id } },
         amount: courses[i % courses.length].price,
         status: i === 0 ? 'paid' : 'pending',
         method: i === 0 ? 'pix' : 'credit_card',
@@ -271,34 +280,19 @@ async function main() {
   ];
 
   for (let i = 0; i < leadData.length; i++) {
-    const lead = await prisma.lead.create({
-      data: {
+    const lead = await prisma.lead.upsert({
+      where: { id: `clr${String(i + 1).padStart(17, '0')}` },
+      update: {},
+      create: {
         id: `clr${String(i + 1).padStart(17, '0')}`,
         ...leadData[i],
         notes: `Lead importado - ${leadData[i].source}`,
-        userId: i < 2 ? instructor1.id : instructor2.id,
+        user: { connect: { id: i < 2 ? instructor1.id : instructor2.id } },
       },
     });
     leads.push(lead);
   }
   console.log(`✅ ${leads.length} leads created`);
-
-  // ── Automations ──
-  const automations = [
-    { id: 'cla000000000000000000001', name: 'Boas-vindas - Novo Aluno', type: 'email', trigger: 'enrollment_created', action: 'send_welcome_email', status: 'active' },
-    { id: 'cla000000000000000000002', name: 'Cobrança - Pagamento Pendente', type: 'email', trigger: 'payment_received', action: 'send_payment_reminder', status: 'active' },
-    { id: 'cla000000000000000000003', name: 'Certificado - Curso Concluído', type: 'notification', trigger: 'course_completed', action: 'issue_certificate', status: 'active' },
-    { id: 'cla000000000000000000004', name: 'Notificar Vendedor - Lead Novo', type: 'webhook', trigger: 'lead_created', action: 'notify_sales_team', status: 'inactive' },
-  ];
-
-  for (const a of automations) {
-    await prisma.automation.upsert({
-      where: { id: a.id },
-      update: {},
-      create: a,
-    });
-  }
-  console.log(`✅ ${automations.length} automations created`);
 
   // ── Notifications ──
   const notifications = [
@@ -308,8 +302,10 @@ async function main() {
   ];
 
   for (const n of notifications) {
-    await prisma.notification.create({
-      data: {
+    await prisma.notification.upsert({
+      where: { id: `cln000000000000000000${String(notifications.indexOf(n) + 1).padStart(2, '0')}` },
+      update: {},
+      create: {
         id: `cln000000000000000000${String(notifications.indexOf(n) + 1).padStart(2, '0')}`,
         ...n,
       },
@@ -321,11 +317,10 @@ async function main() {
   console.log(`   - ${1 + 2} users (1 admin, 2 instructors)`);
   console.log(`   - ${students.length} students`);
   console.log(`   - ${courses.length} courses`);
-  console.log(`   - ${modules.length} modules with lessons`);
+  console.log(`   - 4 modules with 10 lessons`);
   console.log(`   - ${students.length} enrollments`);
   console.log(`   - ${students.length} payments`);
   console.log(`   - ${leads.length} leads`);
-  console.log(`   - ${automations.length} automations`);
   console.log(`   - ${notifications.length} notifications`);
 }
 
