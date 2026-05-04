@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { hash } = require('bcryptjs')
+const db = new PrismaClient()
 
 async function main() {
   console.log('🌱 Seeding database...')
