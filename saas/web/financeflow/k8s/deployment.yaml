@@ -26,4 +26,8 @@ spec:
 
         env:
         - name: DATABASE_URL
+<<<<<<< HEAD
           value: "postgresql://appuser:AppPass123@postgres-ha.default.svc.cluster.local:5432/postgres"
+=======
+          value: "postgresql://appuser:AppPass123@postgres-ha.default.svc.cluster.local:5432/postgres"
+>>>>>>> 28101fc (fix: prisma postgres)
