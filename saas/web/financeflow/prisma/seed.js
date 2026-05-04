@@ -173,9 +173,6 @@ async function main() {
     db.accountPlan.create({ data: { name: 'Consultoria', type: 'receita', tenantId: tenant.id } }),
     db.accountPlan.create({ data: { name: 'Marketing', type: 'despesa', tenantId: tenant.id } }),
     db.accountPlan.create({ data: { name: 'Fornecedores', type: 'despesa', tenantId: tenant.id } }),
-    db.accountPlan.create({ data: { name: 'Projetos Especiais',  type: 'receita', tenantId: tenant.id } }), // 8
-    db.accountPlan.create({ data: { name: 'Infraestrutura',      type: 'despesa', tenantId: tenant.id } }), // 9
-
   ])
 
   // ============ TAGS ============
