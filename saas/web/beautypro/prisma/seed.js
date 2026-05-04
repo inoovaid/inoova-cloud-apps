@@ -426,7 +426,7 @@ async function main() {
   let totalSales = 0;
 
   const currentDate = new Date('2025-05-01');
-  const endDate    = new Date('2026-04-30');
+  const endDate    = new Date('2026-05-31');
 
   while (currentDate <= endDate) {
     const dow = currentDate.getDay(); // 0=Dom, 6=Sáb
