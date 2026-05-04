@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techcrm
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: techcrm
+
+  template:
+    metadata:
+      labels:
+        app: techcrm
+
+    spec:
+      containers:
+      - name: techcrm
+        image: heiffigjr/saas-techcrm:latest
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 3000
+
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://appuser:AppPass123@postgres-ha-rw.default.svc.cluster.local:5432/techcrm"

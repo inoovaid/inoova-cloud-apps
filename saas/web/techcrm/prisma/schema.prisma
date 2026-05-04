@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin") // admin, instructor, student
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  leads     Lead[]
+  notifications Notification[]
+}
+
+model Student {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  phone      String?
+  avatar     String?
+  status     String   @default("active") // active, inactive, suspended
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  enrollments Enrollment[]
+  payments   Payment[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  level       String   // beginner, intermediate, advanced
+  category    String   // frontend, backend, qa, devops, data, ia
+  thumbnail   String?
+  duration    Int      @default(0) // hours
+  price       Float    @default(0)
+  status      String   @default("published") // draft, published, archived
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  modules     Module[]
+  enrollments Enrollment[]
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  order       Int      @default(0)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        String   @default("video") // video, text, pdf, quiz
+  content     String?
+  videoUrl    String?
+  duration    Int      @default(0) // minutes
+  order       Int      @default(0)
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Enrollment {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress    Float    @default(0)
+  status      String   @default("active") // active, completed, cancelled
+  enrolledAt  DateTime @default(now())
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  amount      Float
+  status      String   @default("pending") // pending, paid, overdue, cancelled
+  method      String   @default("credit_card") // credit_card, boleto, pix
+  description String?
+  dueDate     DateTime
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  source      String   @default("website") // website, referral, social, ads
+  status      String   @default("new") // new, contacted, qualified, proposal, negotiation, won, lost
+  notes       String?
+  value       Float    @default(0)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Automation {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   @default("email") // email, notification, webhook
+  trigger     String   // enrollment_created, payment_received, course_completed, lead_created
+  action      String
+  status      String   @default("active") // active, inactive
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info") // info, success, warning, error
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
