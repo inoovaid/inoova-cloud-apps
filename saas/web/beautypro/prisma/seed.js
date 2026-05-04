@@ -1,34 +1,60 @@
-// seed.js
 const { db } = require('@/lib/db')
-const bcrypt = require('bcryptjs')
+const { hash } = require('bcryptjs')
 
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // 1. Limpeza de dados
-  await Promise.all([
-    db.commission.deleteMany(),
-    db.notification.deleteMany(),
-    db.account.deleteMany(),
-    db.accountPlan.deleteMany(),
-    db.client.deleteMany(),
-    db.user.deleteMany(),
-    db.automationRule.deleteMany(),
-    db.tag.deleteMany(),
-    db.tenant.deleteMany(),
-  ])
+  // Clean up
+  await db.commission.deleteMany()
+  await db.notification.deleteMany()
+  await db.account.deleteMany()
+  await db.accountPlan.deleteMany()
+  await db.client.deleteMany()
+  await db.user.deleteMany()
+  await db.automationRule.deleteMany()
+  await db.tag.deleteMany()
+  await db.tenant.deleteMany()
 
-  // 2. TENANT (Mantido original)
+  // ============ TENANT ============
   const tenant = await db.tenant.create({
-    data: { name: 'FinanceFlow Corp', cnpj: '12.345.678/0001-90', plan: 'pro' },
+    data: {
+      name: 'FinanceFlow Corp',
+      cnpj: '12.345.678/0001-90',
+      plan: 'pro',
+    },
   })
 
-  // 3. USERS (Mantido original)
-  const passwordHash = await bcrypt.hash('123456', 10)
+  // ============ USERS ============
+  const passwordHash = await hash('123456', 10)
+
   const users = await Promise.all([
-    db.user.create({ data: { name: 'Carlos Admin', email: 'carlos@financeflow.com', password: passwordHash, role: 'admin', tenantId: tenant.id } }),
-    db.user.create({ data: { name: 'Ana Financeiro', email: 'ana@financeflow.com', password: passwordHash, role: 'financeiro', tenantId: tenant.id } }),
-    db.user.create({ data: { name: 'Pedro Vendedor', email: 'pedro@financeflow.com', password: passwordHash, role: 'vendedor', tenantId: tenant.id } }),
+    db.user.create({
+      data: {
+        name: 'Carlos Admin',
+        email: 'carlos@financeflow.com',
+        password: passwordHash,
+        role: 'admin',
+        tenantId: tenant.id,
+      },
+    }),
+    db.user.create({
+      data: {
+        name: 'Ana Financeiro',
+        email: 'ana@financeflow.com',
+        password: passwordHash,
+        role: 'financeiro',
+        tenantId: tenant.id,
+      },
+    }),
+    db.user.create({
+      data: {
+        name: 'Pedro Vendedor',
+        email: 'pedro@financeflow.com',
+        password: passwordHash,
+        role: 'vendedor',
+        tenantId: tenant.id,
+      },
+    }),
   ])
 
   // 4. CLIENTS (Mantido original)
