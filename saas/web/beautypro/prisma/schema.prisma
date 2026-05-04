@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ MULTI-TENANT ============
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  cnpj      String?
+  plan      String   @default("basic") // basic, pro, enterprise
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  clients      Client[]
+  accounts     Account[]
+  accountPlans AccountPlan[]
+  automations  AutomationRule[]
+  tags         Tag[]
+}
+
+// ============ USERS & AUTH ============
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("vendedor") // admin, financeiro, vendedor
+  active    Boolean  @default(true)
+  avatarUrl String?
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant         Tenant     @relation(fields: [tenantId], references: [id])
+  commissions    Commission[]
+  createdAccounts Account[] @relation("AccountCreator")
+  notifications  Notification[]
+
+  @@index([tenantId])
+}
+
+// ============ CLIENTS ============
+model Client {
+  id           String   @id @default(cuid())
+  name         String
+  email        String?
+  phone        String?
+  cpfCnpj      String?
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?
+  notes        String?
+  tags         String   @default("") // comma-separated
+  tenantId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  accounts Account[]
+
+  @@index([tenantId])
+}
+
+// ============ ACCOUNT PLANS ============
+model AccountPlan {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // despesa, receita
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  accounts Account[]
+
+  @@index([tenantId])
+}
+
+// ============ FINANCIAL ACCOUNTS ============
+model Account {
+  id               String   @id @default(cuid())
+  description      String
+  amount           Float
+  dueDate          DateTime
+  paymentDate      DateTime?
+  status           String   @default("pendente") // pendente, paga, vencida, cancelada
+  type             String   // pagar, receber
+  category         String?
+  tags             String   @default("") // comma-separated
+  notes            String?
+  attachmentUrl    String?
+
+  // Installment support
+  installmentNumber Int?
+  totalInstallments Int?
+  parentAccountId   String?
+
+  // Recurrence support
+  recurring        Boolean  @default(false)
+  recurringCycle   String?  // mensal, semanal, anual
+  recurringEnd     DateTime?
+
+  // Relations
+  clientId    String?
+  accountPlanId String?
+  tenantId    String
+  creatorId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  client      Client?      @relation(fields: [clientId], references: [id])
+  accountPlan AccountPlan? @relation(fields: [accountPlanId], references: [id])
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  creator     User?        @relation("AccountCreator", fields: [creatorId], references: [id])
+  commissions Commission[]
+  parent      Account?     @relation("Installments", fields: [parentAccountId], references: [id])
+  children    Account[]    @relation("Installments")
+
+  @@index([tenantId, status])
+  @@index([dueDate])
+  @@index([clientId])
+}
+
+// ============ COMMISSIONS ============
+model Commission {
+  id          String   @id @default(cuid())
+  userId      String
+  accountId   String
+  amount      Float
+  percentage  Float
+  status      String   @default("pendente") // pendente, paga, cancelada
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@index([userId])
+  @@index([accountId])
+}
+
+// ============ NOTIFICATIONS ============
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // vencimento, pagamento, sistema, alerta
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
+}
+
+// ============ AUTOMATION RULES ============
+model AutomationRule {
+  id           String   @id @default(cuid())
+  name         String
+  trigger      String   // vencimento_proximo, atraso, pagamento_recebido, status_change
+  condition    String?  // JSON conditions
+  action       String   // notificar, mudar_status, enviar_email, calcular_comissao
+  actionParams String?  // JSON action params
+  active       Boolean  @default(true)
+  tenantId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+}
+
+// ============ TAGS ============
+model Tag {
+  id       String @id @default(cuid())
+  name     String
+  color    String @default("#6366f1")
+  tenantId String
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([name, tenantId])
+  @@index([tenantId])
+}

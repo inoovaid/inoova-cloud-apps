@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beautypro
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: beautypro
+
+  template:
+    metadata:
+      labels:
+        app: beautypro
+
+    spec:
+      containers:
+      - name: beautypro
+        image: heiffigjr/saas-beautypro:latest
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 3000
+
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://appuser:AppPass123@postgres-ha-rw.default.svc.cluster.local:5432/postgres"
