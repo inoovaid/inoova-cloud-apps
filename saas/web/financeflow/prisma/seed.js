@@ -16,6 +16,16 @@ async function main() {
   await db.tenant.deleteMany()
 
   // ============ TENANT ============
+
+  const tenant = await db.tenant.upsert({
+    where: { id: "tenant-1" },
+    update: {},
+    create: {
+      id: "tenant-1",
+      name: "FinanceFlow Corp"
+    }
+  })
+
   const tenant = await db.tenant.create({
     data: {
       name: 'FinanceFlow Corp',
@@ -24,6 +34,7 @@ async function main() {
     },
   })
 
+  
   // ============ USERS ============
   const passwordHash = await hash('123456', 10)
 
