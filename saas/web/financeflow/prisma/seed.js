@@ -22,16 +22,10 @@ async function main() {
     update: {},
     create: {
       id: "tenant-1",
-      name: "FinanceFlow Corp"
+      name: "FinanceFlow Corp",
+      cnpj: "12.345.678/0001-90",
+      plan: "pro"
     }
-  })
-
-  const tenant = await db.tenant.create({
-    data: {
-      name: 'FinanceFlow Corp',
-      cnpj: '12.345.678/0001-90',
-      plan: 'pro',
-    },
   })
 
   

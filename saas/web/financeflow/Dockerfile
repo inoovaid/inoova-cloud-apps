@@ -10,11 +10,11 @@ RUN npm install
 
 COPY . .
 
-# build do Next.js
-RUN npm run build
-
 # gerar prisma client
 RUN npx prisma generate
+
+# build do Next.js
+RUN npm run build
 
 # =========================
 # RUNTIME STAGE
