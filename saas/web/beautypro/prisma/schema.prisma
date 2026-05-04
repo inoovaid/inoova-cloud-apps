@@ -1,196 +1,492 @@
+// BeautyPro CRM - Multi-Tenant SaaS Schema
+// Scalable architecture for beauty salon management
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// ============ MULTI-TENANT ============
-model Tenant {
-  id        String   @id @default(cuid())
-  name      String
-  cnpj      String?
-  plan      String   @default("basic") // basic, pro, enterprise
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ============================================================
+// MULTI-TENANT CORE
+// ============================================================
 
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique // e.g. "saobento" → saobento.beautypro.com
+  plan        String   @default("free") // free, pro, enterprise
+  logoUrl     String?
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  timezone    String   @default("America/Sao_Paulo")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  branches     Branch[]
   users        User[]
   clients      Client[]
-  accounts     Account[]
-  accountPlans AccountPlan[]
-  automations  AutomationRule[]
-  tags         Tag[]
+  services     Service[]
+  professionals Professional[]
+  products     Product[]
+  appointments Appointment[]
+  sales        Sale[]
+  automations  Automation[]
+  commissionRules CommissionRule[]
+  tags         ClientTag[]
+  blogPosts    BlogPost[]
+  testimonials Testimonial[]
+  financialRecords FinancialRecord[]
 }
 
-// ============ USERS & AUTH ============
+model Branch {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  address   String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant      Tenant @relation(fields: [tenantId], references: [id])
+  professionals Professional[]
+  appointments Appointment[]
+  sales       Sale[]
+
+  @@index([tenantId])
+}
+
+// ============================================================
+// RBAC - USERS & ROLES
+// ============================================================
+
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("vendedor") // admin, financeiro, vendedor
-  active    Boolean  @default(true)
-  avatarUrl String?
-  tenantId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  tenantId   String
+  email      String
+  name       String
+  role       String   @default("professional") // owner, manager, receptionist, professional
+  avatarUrl  String?
+  phone      String?
+  password   String?  // Demo: plain text for demo purposes
+  isActive   Boolean  @default(true)
+  lastLogin  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  tenant         Tenant     @relation(fields: [tenantId], references: [id])
-  commissions    Commission[]
-  createdAccounts Account[] @relation("AccountCreator")
-  notifications  Notification[]
+  tenant     Tenant @relation(fields: [tenantId], references: [id])
 
+  @@unique([tenantId, email])
   @@index([tenantId])
 }
 
-// ============ CLIENTS ============
-model Client {
+// ============================================================
+// PROFESSIONALS (STAFF)
+// ============================================================
+
+model Professional {
   id           String   @id @default(cuid())
+  tenantId     String
+  branchId     String?
+  userId       String?  // Link to User account if they have one
   name         String
-  email        String?
+  email        String?  // Email for login/profile linking
+  specialty    String?  // e.g. "Cabelereira", "Manicure", "Barbeiro"
   phone        String?
-  cpfCnpj      String?
-  address      String?
-  city         String?
-  state        String?
-  zipCode      String?
-  notes        String?
-  tags         String   @default("") // comma-separated
-  tenantId     String
+  color        String?  // Calendar color code
+  bio          String?
+  isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  tenant   Tenant    @relation(fields: [tenantId], references: [id])
-  accounts Account[]
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  branch       Branch?  @relation(fields: [branchId], references: [id])
+  appointments Appointment[]
+  sales        Sale[]
+  commissionRules CommissionRule[]
 
   @@index([tenantId])
+  @@index([branchId])
 }
 
-// ============ ACCOUNT PLANS ============
-model AccountPlan {
-  id        String   @id @default(cuid())
-  name      String
-  type      String   // despesa, receita
-  tenantId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ============================================================
+// SERVICES CATALOG
+// ============================================================
 
-  tenant   Tenant    @relation(fields: [tenantId], references: [id])
-  accounts Account[]
-
-  @@index([tenantId])
-}
-
-// ============ FINANCIAL ACCOUNTS ============
-model Account {
-  id               String   @id @default(cuid())
-  description      String
-  amount           Float
-  dueDate          DateTime
-  paymentDate      DateTime?
-  status           String   @default("pendente") // pendente, paga, vencida, cancelada
-  type             String   // pagar, receber
-  category         String?
-  tags             String   @default("") // comma-separated
-  notes            String?
-  attachmentUrl    String?
-
-  // Installment support
-  installmentNumber Int?
-  totalInstallments Int?
-  parentAccountId   String?
-
-  // Recurrence support
-  recurring        Boolean  @default(false)
-  recurringCycle   String?  // mensal, semanal, anual
-  recurringEnd     DateTime?
-
-  // Relations
-  clientId    String?
-  accountPlanId String?
-  tenantId    String
-  creatorId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  client      Client?      @relation(fields: [clientId], references: [id])
-  accountPlan AccountPlan? @relation(fields: [accountPlanId], references: [id])
-  tenant      Tenant       @relation(fields: [tenantId], references: [id])
-  creator     User?        @relation("AccountCreator", fields: [creatorId], references: [id])
-  commissions Commission[]
-  parent      Account?     @relation("Installments", fields: [parentAccountId], references: [id])
-  children    Account[]    @relation("Installments")
-
-  @@index([tenantId, status])
-  @@index([dueDate])
-  @@index([clientId])
-}
-
-// ============ COMMISSIONS ============
-model Commission {
+model Service {
   id          String   @id @default(cuid())
-  userId      String
-  accountId   String
-  amount      Float
-  percentage  Float
-  status      String   @default("pendente") // pendente, paga, cancelada
-  paidAt      DateTime?
+  tenantId    String
+  name        String   // e.g. "Corte Feminino", "Manicure", "Hidratação"
+  category    String?  // e.g. "Cabelo", "Unhas", "Estética"
+  duration    Int      @default(30) // minutes
+  price       Float    @default(0)
+  cost        Float    @default(0) // cost to salon
+  description String?
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id])
-  account Account @relation(fields: [accountId], references: [id])
+  tenant        Tenant              @relation(fields: [tenantId], references: [id])
+  appointments  AppointmentService[]
 
-  @@index([userId])
-  @@index([accountId])
+  @@index([tenantId])
 }
 
-// ============ NOTIFICATIONS ============
-model Notification {
+// ============================================================
+// CLIENTS (CRM CORE)
+// ============================================================
+
+model Client {
+  id              String   @id @default(cuid())
+  tenantId        String
+  name            String
+  email           String?
+  phone           String?
+  birthday        DateTime?
+  notes           String?  // General notes/preferences
+  preferredProId  String?  // Preferred professional
+  source          String?  // e.g. "Instagram", "Indicação", "Google"
+  loyaltyPoints   Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant          Tenant              @relation(fields: [tenantId], references: [id])
+  tags            ClientTagAssignment[]
+  appointments    Appointment[]
+  sales           Sale[]
+
+  // Computed fields (stored for performance)
+  totalVisits     Int      @default(0)
+  totalSpent      Float    @default(0)
+  avgTicket       Float    @default(0)
+  lastVisitAt     DateTime?
+  nextAppointment DateTime?
+
+  @@index([tenantId])
+  @@index([phone])
+}
+
+// ============================================================
+// CLIENT TAGS (SEGMENTATION)
+// ============================================================
+
+model ClientTag {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String   // e.g. "VIP", "Inativo 60d", "Alto Ticket"
+  color       String   @default("#10b981")
+  isAuto      Boolean  @default(false) // Auto-generated vs manual
+  rule        String?  // JSON rule for auto-tag: {"type": "inactive", "days": 60}
+  createdAt   DateTime @default(now())
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id])
+  clients     ClientTagAssignment[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model ClientTagAssignment {
   id        String   @id @default(cuid())
-  userId    String
-  type      String   // vencimento, pagamento, sistema, alerta
-  title     String
-  message   String
-  read      Boolean  @default(false)
-  link      String?
+  clientId  String
+  tagId     String
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tag       ClientTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-  @@index([userId, read])
+  @@unique([clientId, tagId])
+  @@index([clientId])
+  @@index([tagId])
 }
 
-// ============ AUTOMATION RULES ============
-model AutomationRule {
-  id           String   @id @default(cuid())
-  name         String
-  trigger      String   // vencimento_proximo, atraso, pagamento_recebido, status_change
-  condition    String?  // JSON conditions
-  action       String   // notificar, mudar_status, enviar_email, calcular_comissao
-  actionParams String?  // JSON action params
-  active       Boolean  @default(true)
-  tenantId     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+// ============================================================
+// APPOINTMENTS (AGENDA)
+// ============================================================
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+model Appointment {
+  id             String   @id @default(cuid())
+  tenantId       String
+  branchId       String?
+  clientId       String
+  professionalId String
+  date           DateTime
+  startTime      String   // "09:00"
+  endTime        String   // "10:30"
+  status         String   @default("scheduled") // scheduled, confirmed, in_progress, completed, cancelled, no_show
+  notes          String?
+  cancellationReason String?
+  confirmedAt    DateTime?
+  reminderSent24h Boolean @default(false)
+  reminderSent1h  Boolean @default(false)
+  reviewRequested Boolean @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant         Tenant              @relation(fields: [tenantId], references: [id])
+  branch         Branch?             @relation(fields: [branchId], references: [id])
+  client         Client              @relation(fields: [clientId], references: [id])
+  professional   Professional        @relation(fields: [professionalId], references: [id])
+  services       AppointmentService[]
+
+  @@index([tenantId])
+  @@index([professionalId, date])
+  @@index([clientId])
+  @@index([date])
+}
+
+model AppointmentService {
+  id            String   @id @default(cuid())
+  appointmentId String
+  serviceId     String
+  professionalId String?
+  price         Float    // Snapshot price at time of booking
+  duration      Int      // Snapshot duration
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  service       Service     @relation(fields: [serviceId], references: [id])
+
+  @@index([appointmentId])
+  @@index([serviceId])
+}
+
+// ============================================================
+// PRODUCTS & INVENTORY
+// ============================================================
+
+model Product {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  brand       String?
+  category    String?  // e.g. "Shampoo", "Tinta", "Tratamento"
+  sku         String?
+  price       Float    @default(0)  // Sale price
+  cost        Float    @default(0)  // Cost price
+  stock       Int      @default(0)
+  minStock    Int      @default(5)  // Alert threshold
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  saleItems   SaleItem[]
 
   @@index([tenantId])
 }
 
-// ============ TAGS ============
-model Tag {
-  id       String @id @default(cuid())
-  name     String
-  color    String @default("#6366f1")
-  tenantId String
+// ============================================================
+// SALES / PDV (POINT OF SALE)
+// ============================================================
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+model Sale {
+  id             String   @id @default(cuid())
+  tenantId       String
+  branchId       String?
+  clientId       String?
+  professionalId String?  // Professional who made the sale
+  total          Float    @default(0)
+  discount       Float    @default(0)
+  paymentMethod  String?  // cash, credit, debit, pix
+  status         String   @default("completed") // completed, refunded, partial_refund
+  notes          String?
+  createdAt      DateTime @default(now())
 
-  @@unique([name, tenantId])
+  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  branch         Branch?      @relation(fields: [branchId], references: [id])
+  client         Client?      @relation(fields: [clientId], references: [id])
+  professional   Professional? @relation(fields: [professionalId], references: [id])
+  items          SaleItem[]
+
   @@index([tenantId])
+  @@index([clientId])
+  @@index([professionalId])
+  @@index([createdAt])
+}
+
+model SaleItem {
+  id          String   @id @default(cuid())
+  saleId      String
+  productId   String?
+  type        String   // "service" or "product"
+  name        String   // Snapshot name
+  quantity    Int      @default(1)
+  unitPrice   Float
+  total       Float
+  commissionPercent Float @default(0)
+  commissionAmount  Float @default(0)
+
+  sale        Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id])
+
+  @@index([saleId])
+}
+
+// ============================================================
+// COMMISSION RULES
+// ============================================================
+
+model CommissionRule {
+  id             String   @id @default(cuid())
+  tenantId       String
+  professionalId String?
+  serviceCategory String? // Apply to specific category or all
+  type           String   // "service" or "product"
+  percent        Float    @default(0) // Commission percentage
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  professional   Professional? @relation(fields: [professionalId], references: [id])
+
+  @@index([tenantId])
+  @@index([professionalId])
+}
+
+// ============================================================
+// AUTOMATIONS (GROWTH ENGINE)
+// ============================================================
+
+model Automation {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String   // e.g. "Lembrete 24h", "Win-back Inativos"
+  type        String   // reminder_24h, reminder_1h, win_back, birthday, review_request, stock_alert
+  channel     String   @default("whatsapp") // whatsapp, sms, email
+  template    String?  // Message template with variables
+  isActive    Boolean  @default(true)
+  triggerRule String?  // JSON: {"inactiveDays": 60, "minTicket": 100}
+  schedule    String?  // Cron expression for batch automations
+  lastRunAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  logs        AutomationLog[]
+
+  @@index([tenantId])
+}
+
+model AutomationLog {
+  id            String   @id @default(cuid())
+  automationId  String
+  clientId      String?
+  status        String   // sent, failed, skipped
+  channel       String
+  message       String?
+  error         String?
+  createdAt     DateTime @default(now())
+
+  automation    Automation @relation(fields: [automationId], references: [id])
+
+  @@index([automationId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// SMART AI SUGGESTIONS
+// ============================================================
+
+model SmartSuggestion {
+  id          String   @id @default(cuid())
+  tenantId    String
+  type        String   // inactive_vip, birthday, win_back, high_value, stock_alert
+  priority    String   @default("medium") // low, medium, high, urgent
+  title       String
+  description String
+  action      String?  // Suggested action: "send_whatsapp", "apply_coupon", "call"
+  clientId    String?
+  metadata    String?  // JSON with extra context
+  isRead      Boolean  @default(false)
+  isResolved  Boolean  @default(false)
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([isRead, isResolved])
+  @@index([priority])
+}
+
+// ============================================================
+// BLOG POSTS
+// ============================================================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  tenantId    String
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  content     String   // Markdown content
+  coverImage  String?
+  category    String?  // e.g. "Dicas", "Tendências", "Cuidados"
+  author      String?
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([isPublished])
+  @@index([category])
+}
+
+// ============================================================
+// TESTIMONIALS (LANDING PAGE)
+// ============================================================
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  role      String?  // e.g. "Cliente há 2 anos"
+  content   String
+  rating    Int      @default(5)
+  avatarUrl String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+}
+
+// ============================================================
+// FINANCIAL RECORDS (FINANCEIRO)
+// ============================================================
+
+model FinancialRecord {
+  id          String   @id @default(cuid())
+  tenantId    String
+  type        String   // "receita" (income) or "despesa" (expense)
+  category    String   // e.g. "Serviços", "Produtos", "Aluguel", "Salários", "Material"
+  description String
+  amount      Float
+  dueDate     DateTime // Due date
+  paidAt      DateTime? // When it was actually paid/received
+  status      String   @default("pending") // pending, paid, overdue, cancelled
+  accountPlan String?  // e.g. "Receitas", "Despesas Fixas", "Despesas Variáveis"
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([type])
+  @@index([status])
+  @@index([dueDate])
 }
