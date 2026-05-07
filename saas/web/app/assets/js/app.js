@@ -821,7 +821,7 @@ function updateNavbar() {
 
   if (!authLink) {
 
-    setTimeout(updateNavbar, 300);
+    setTimeout(updateNavbar, 1000);
 
     return;
   }
