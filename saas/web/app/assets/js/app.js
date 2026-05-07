@@ -30,35 +30,7 @@ let header = $(`
    <li class="nav-item nav-item-hover"><a class="nav-link" href="web.html">Web</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="techstack.html">TechStack</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
-   <li class="nav-item nav-item-hover">
-   
-   
-   <li class="nav-item nav-item-hover d-flex align-items-center">
-
-  <!-- AVATAR -->
-  <img
-    id="userAvatar"
-    src=""
-    alt="Avatar"
-    style="
-      width:32px;
-      height:32px;
-      border-radius:50%;
-      object-fit:cover;
-      margin-right:10px;
-      display:none;
-    "
-  >
-
-  <!-- LOGIN -->
-  <a class="nav-link" href="#" id="authLink">
-    Login
-  </a>
-
-  </li>
-   
-   
-   </li>
+   <li class="nav-item nav-item-hover"><a class="nav-link" href="#" id="authLink">Login</a></li>
    <li class="nav-item">
 
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
@@ -549,24 +521,17 @@ function login() {
 }
 
 function logout() {
-  const idToken = localStorage.getItem("id_token");
+  const logoutUrl = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
 
-  // limpa storage primeiro
-    localStorage.setItem("access_token", tokenResponse.access_token);
-    localStorage.setItem("refresh_token", tokenResponse.refresh_token);
-    localStorage.setItem("id_token", tokenResponse.id_token);
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    post_logout_redirect_uri: REDIRECT_URI
+  });
 
-  let logoutUrl =
-    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout` +
-    `?post_logout_redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-    `&client_id=${CLIENT_ID}`;
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
 
-  // Keycloak moderno usa id_token_hint
-  if (idToken) {
-    logoutUrl += `&id_token_hint=${idToken}`;
-  }
-
-  window.location.href = logoutUrl;
+  window.location.href = `${logoutUrl}?${params.toString()}`;
 }
 
 // ================= UTF-8 FIX =================
@@ -606,20 +571,9 @@ function formatName(name) {
 // ================= USER INFO =================
 function getUserInfo() {
   const token = localStorage.getItem("access_token");
-
   if (!token) return null;
 
-  try {
-
-    const payload = JSON.parse(atob(token.split(".")[1]));
-
-    return payload;
-
-  } catch (e) {
-
-    console.error("Erro lendo token:", e);
-    return null;
-  }
+  return parseJwt(token);
 }
 
 // ================= CODE FLOW =================
@@ -650,16 +604,12 @@ async function exchangeCodeForToken(code) {
   if (data.access_token) {
     localStorage.setItem("access_token", data.access_token);
     localStorage.setItem("refresh_token", data.refresh_token);
-
-    // IMPORTANTE
-    localStorage.setItem("id_token", data.id_token);
   }
 }
 
 // ================= REFRESH TOKEN =================
 async function refreshToken() {
   const refreshToken = localStorage.getItem("refresh_token");
-
   if (!refreshToken) return;
 
   try {
@@ -683,12 +633,6 @@ async function refreshToken() {
     if (data.access_token) {
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token);
-
-      // IMPORTANTE
-      if (data.id_token) {
-        localStorage.setItem("id_token", data.id_token);
-      }
-
       console.log("🔄 Token renovado");
     } else {
       logout();
@@ -725,7 +669,6 @@ function updateNavbar() {
   const authLink = document.getElementById("authLink");
   const avatarImg = document.getElementById("userAvatar");
 
-  // navbar ainda não carregou
   if (!authLink) {
     setTimeout(updateNavbar, 300);
     return;
@@ -733,83 +676,30 @@ function updateNavbar() {
 
   const token = localStorage.getItem("access_token");
 
-  // ================= USUÁRIO LOGADO =================
   if (token) {
-
     const user = getUserInfo();
-
-    console.log("USER:", user);
 
     const rawName =
       user?.name ||
       user?.preferred_username ||
-      user?.given_name ||
       user?.email ||
-      "Usuário";
+      "User";
 
     const name = formatName(rawName);
 
-    // TEXTO
-    authLink.innerHTML = `👤 ${name} | Logout`;
+    authLink.innerText = `👤 ${name} | Logout`;
+    authLink.href = "#";
 
-    // REMOVE href antigo
-    authLink.removeAttribute("href");
-
-    // REMOVE eventos antigos
-    authLink.onclick = null;
-
-    // ================= LOGOUT =================
-    authLink.onclick = async (e) => {
-      e.preventDefault();
-
-      try {
-
-        const idToken = localStorage.getItem("id_token");
-
-        // limpa storage local
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // logout Keycloak
-        const logoutUrl =
-          `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout` +
-          `?client_id=${CLIENT_ID}` +
-          `&id_token_hint=${idToken}` +
-          `&post_logout_redirect_uri=${encodeURIComponent(window.location.origin)}`
-
-        // redireciona
-        window.location.replace(logoutUrl);
-
-      } catch (err) {
-        console.error("Erro logout:", err);
-      }
-    };
-
-    // ================= AVATAR =================
-    if (avatarImg) {
-
-      // foto do Keycloak
-      if (user?.picture) {
-
-        avatarImg.src = user.picture;
-
-      } else {
-
-        // avatar fallback
-        avatarImg.src =
-          `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6a00bb&color=fff`;
-      }
-
+    // avatar
+    if (avatarImg && user?.picture) {
+      avatarImg.src = user.picture;
       avatarImg.style.display = "block";
     }
 
   } else {
+    authLink.innerText = "Login";
+    authLink.href = "#";
 
-    // ================= NÃO LOGADO =================
-    authLink.innerHTML = "Login";
-    authLink.href = "#login";
-
-    // esconder avatar
     if (avatarImg) {
       avatarImg.style.display = "none";
     }
@@ -818,16 +708,16 @@ function updateNavbar() {
 
 // ================= CLICK GLOBAL =================
 document.addEventListener("click", function (e) {
-  const authLink = e.target.closest("#authLink");
+  if (e.target && e.target.id === "authLink") {
+    e.preventDefault();
 
-  if (!authLink) return;
+    const token = localStorage.getItem("access_token");
 
-  e.preventDefault();
-
-  if (isLoggedIn()) {
-    logout();
-  } else {
-    login();
+    if (token) {
+      logout();
+    } else {
+      login();
+    }
   }
 });
 
