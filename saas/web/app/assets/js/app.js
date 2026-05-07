@@ -843,7 +843,7 @@ function updateNavbar() {
     const name = formatName(rawName);
 
     authLink.innerHTML =
-      `👤 ${name}<br><small>Logout</small>`;
+      `👤 ${name}<small>Logout</small>`;
 
     authLink.href = "#";
 
