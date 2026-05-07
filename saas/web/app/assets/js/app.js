@@ -510,11 +510,12 @@ function isLoggedIn() {
 }
 
 function login() {
+  const redirectUri = encodeURIComponent(window.location.origin + "/");
   const url = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth` +
     `?client_id=${CLIENT_ID}` +
     `&response_type=code` +
     `&scope=openid` +
-    `&redirect_uri=${REDIRECT_URI}`;
+    `&redirect_uri=${redirectUri}`;
 
   window.location.href = url;
 }
