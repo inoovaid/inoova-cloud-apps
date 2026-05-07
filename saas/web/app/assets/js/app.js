@@ -504,85 +504,117 @@ const REALM = "Inoova-Plataforma";
 const CLIENT_ID = "Inoova-Plataforma";
 const REDIRECT_URI = window.location.origin + "/";
 
+// controla refresh interval
+let refreshInterval = null;
+
 // ================= AUTH =================
 function isLoggedIn() {
-  return localStorage.getItem("access_token") !== null;
+  return !!localStorage.getItem("access_token");
 }
 
+// ================= LOGIN =================
 function login() {
-  const redirectUri = encodeURIComponent(window.location.origin + "/");
-  const url = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth` +
+
+  const redirectUri = encodeURIComponent(REDIRECT_URI);
+
+  const url =
+    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth` +
     `?client_id=${CLIENT_ID}` +
     `&response_type=code` +
-    `&scope=openid` +
+    `&scope=openid profile email` +
     `&redirect_uri=${redirectUri}`;
 
   window.location.href = url;
 }
 
+// ================= LOGOUT =================
 function logout() {
-  const logoutUrl = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
 
-  // limpa sessão local
+  // PARA refresh automático
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+
+  // limpa storage COMPLETO
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  localStorage.removeItem("kc_token");
+  localStorage.removeItem("kc_user");
   localStorage.removeItem("user");
   localStorage.removeItem("userName");
   localStorage.removeItem("userAvatar");
 
   sessionStorage.clear();
 
+  // limpa URL
+  window.history.replaceState(
+    {},
+    document.title,
+    window.location.pathname
+  );
+
   // atualiza navbar imediatamente
-  const authLink = document.getElementById("authLink");
-  const avatarImg = document.getElementById("userAvatar");
+  updateNavbar();
 
-  if (authLink) {
-    authLink.innerHTML = "Login";
-    authLink.href = "#";
-  }
+  // logout keycloak
+  const logoutUrl =
+    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
 
-  if (avatarImg) {
-    avatarImg.src = "";
-    avatarImg.style.display = "none";
-  }
-
-  // parâmetros logout keycloak
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     post_logout_redirect_uri: REDIRECT_URI
   });
 
-  // redireciona para logout
-  window.location.href = `${logoutUrl}?${params.toString()}`;
+  // redireciona
+  window.location.href =
+    `${logoutUrl}?${params.toString()}`;
 }
 
-// ================= UTF-8 FIX =================
+// ================= JWT =================
 function parseJwt(token) {
+
   try {
+
     const base64 = token.split('.')[1];
+
     const decoded = decodeURIComponent(
       atob(base64)
         .split('')
-        .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+        .map(c =>
+          '%' + c.charCodeAt(0).toString(16).padStart(2, '0')
+        )
         .join('')
     );
+
     return JSON.parse(decoded);
+
   } catch {
+
     return null;
+
   }
 }
 
-// ================= FORMAT NAME =================
+// ================= USER =================
+function getUserInfo() {
+
+  const token = localStorage.getItem("access_token");
+
+  if (!token) return null;
+
+  return parseJwt(token);
+}
+
+// ================= FORMAT =================
 function formatName(name) {
+
   if (!name) return "User";
 
-  // remove espaços extras
   name = name.trim();
 
-  // pega só primeiro nome (melhor UX)
   const firstName = name.split(" ")[0];
 
-  // limita a 12 caracteres
   if (firstName.length > 12) {
     return firstName.substring(0, 12) + "...";
   }
@@ -590,62 +622,36 @@ function formatName(name) {
   return firstName;
 }
 
-// ================= USER INFO =================
-function getUserInfo() {
-  const token = localStorage.getItem("access_token");
-  if (!token) return null;
-
-  return parseJwt(token);
-}
-
 // ================= CODE FLOW =================
 function getCodeFromUrl() {
-  const params = new URLSearchParams(window.location.search);
+
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
   return params.get("code");
 }
 
+// ================= TOKEN EXCHANGE =================
 async function exchangeCodeForToken(code) {
-  const response = await fetch(
-    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        client_id: CLIENT_ID,
-        code: code,
-        redirect_uri: REDIRECT_URI
-      })
-    }
-  );
-
-  const data = await response.json();
-
-  if (data.access_token) {
-    localStorage.setItem("access_token", data.access_token);
-    localStorage.setItem("refresh_token", data.refresh_token);
-  }
-}
-
-// ================= REFRESH TOKEN =================
-async function refreshToken() {
-  const refreshToken = localStorage.getItem("refresh_token");
-  if (!refreshToken) return;
 
   try {
+
     const response = await fetch(
       `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
       {
         method: "POST",
+
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type":
+            "application/x-www-form-urlencoded"
         },
+
         body: new URLSearchParams({
-          grant_type: "refresh_token",
+          grant_type: "authorization_code",
           client_id: CLIENT_ID,
-          refresh_token: refreshToken
+          code: code,
+          redirect_uri: REDIRECT_URI
         })
       }
     );
@@ -653,25 +659,140 @@ async function refreshToken() {
     const data = await response.json();
 
     if (data.access_token) {
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("refresh_token", data.refresh_token);
-      console.log("🔄 Token renovado");
-    } else {
-      logout();
+
+      localStorage.setItem(
+        "access_token",
+        data.access_token
+      );
+
+      localStorage.setItem(
+        "refresh_token",
+        data.refresh_token
+      );
+
+      // remove code da URL
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+
+      // inicia refresh
+      startRefreshTimer();
+
+      // atualiza navbar
+      updateNavbar();
     }
+
   } catch (err) {
-    console.error("Erro ao renovar token", err);
+
+    console.error(
+      "Erro ao trocar code por token",
+      err
+    );
+
   }
 }
 
-setInterval(refreshToken, 60000);
+// ================= REFRESH =================
+async function refreshToken() {
 
-// ================= API HELPER =================
+  const refreshTokenValue =
+    localStorage.getItem("refresh_token");
+
+  // NÃO tenta renovar sem token
+  if (!refreshTokenValue) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          client_id: CLIENT_ID,
+          refresh_token: refreshTokenValue
+        })
+      }
+    );
+
+    // token inválido
+    if (!response.ok) {
+
+      console.warn("Refresh expirado");
+
+      logout();
+
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.access_token) {
+
+      localStorage.setItem(
+        "access_token",
+        data.access_token
+      );
+
+      localStorage.setItem(
+        "refresh_token",
+        data.refresh_token
+      );
+
+      console.log("🔄 Token renovado");
+
+    } else {
+
+      logout();
+
+    }
+
+  } catch (err) {
+
+    console.error(
+      "Erro ao renovar token",
+      err
+    );
+
+  }
+}
+
+// ================= START REFRESH =================
+function startRefreshTimer() {
+
+  // evita múltiplos intervals
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+  }
+
+  refreshInterval = setInterval(() => {
+
+    if (isLoggedIn()) {
+      refreshToken();
+    }
+
+  }, 60000);
+}
+
+// ================= API =================
 async function apiFetch(url, options = {}) {
-  const token = localStorage.getItem("access_token");
+
+  const token =
+    localStorage.getItem("access_token");
 
   return fetch(url, {
     ...options,
+
     headers: {
       ...options.headers,
       Authorization: `Bearer ${token}`
@@ -679,43 +800,38 @@ async function apiFetch(url, options = {}) {
   });
 }
 
-// ================= PROTECT PAGE =================
+// ================= PROTECT =================
 function protectPage() {
+
   if (!isLoggedIn()) {
+
     window.location.href = "/";
+
   }
 }
 
-// ================= UI =================
+// ================= NAVBAR =================
 function updateNavbar() {
-  const authLink = document.getElementById("authLink");
-  const avatarImg = document.getElementById("userAvatar");
 
-  // navbar ainda não carregou
+  const authLink =
+    document.getElementById("authLink");
+
+  const avatarImg =
+    document.getElementById("userAvatar");
+
   if (!authLink) {
+
     setTimeout(updateNavbar, 300);
+
     return;
   }
 
-  // compatibilidade com versões antigas
   const token =
-    localStorage.getItem("kc_token") ||
     localStorage.getItem("access_token");
 
-  let user = null;
+  const user = getUserInfo();
 
-  try {
-
-    user =
-      JSON.parse(localStorage.getItem("kc_user")) ||
-      getUserInfo();
-
-  } catch (e) {
-
-    user = getUserInfo();
-
-  }
-
+  // ================= LOGADO =================
   if (token && user) {
 
     const rawName =
@@ -726,17 +842,18 @@ function updateNavbar() {
 
     const name = formatName(rawName);
 
-    // MANTÉM PADRÃO ORIGINAL
-    authLink.innerText = `👤 ${name} | Logout`;
+    authLink.innerHTML =
+      `👤 ${name}<br><small>Logout</small>`;
 
     authLink.href = "#";
 
     authLink.onclick = function (e) {
+
       e.preventDefault();
+
       logout();
     };
 
-    // avatar
     if (avatarImg) {
 
       avatarImg.style.display = "block";
@@ -744,49 +861,56 @@ function updateNavbar() {
       avatarImg.src =
         user.picture ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7c4dff&color=fff`;
-
     }
 
-  } else {
+  }
 
-    authLink.innerText = "Login";
+  // ================= DESLOGADO =================
+  else {
+
+    authLink.innerHTML = "Login";
 
     authLink.href = "#";
 
     authLink.onclick = function (e) {
+
       e.preventDefault();
+
       login();
     };
 
     if (avatarImg) {
+
       avatarImg.style.display = "none";
+
+      avatarImg.src = "";
     }
   }
 }
 
-// ================= CLICK GLOBAL =================
-document.addEventListener("click", function (e) {
-  if (e.target && e.target.id === "authLink") {
-    e.preventDefault();
-
-    const token = localStorage.getItem("access_token");
-
-    if (token) {
-      logout();
-    } else {
-      login();
-    }
-  }
-});
-
 // ================= INIT =================
-document.addEventListener("DOMContentLoaded", async () => {
-  const code = getCodeFromUrl();
+document.addEventListener(
+  "DOMContentLoaded",
+  async function () {
 
-  if (code) {
-    await exchangeCodeForToken(code);
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // troca code por token
+    const code = getCodeFromUrl();
+
+    if (
+      code &&
+      !localStorage.getItem("access_token")
+    ) {
+
+      await exchangeCodeForToken(code);
+    }
+
+    // inicia refresh SOMENTE logado
+    if (isLoggedIn()) {
+
+      startRefreshTimer();
+    }
+
+    // render navbar
+    updateNavbar();
   }
-
-  updateNavbar();
-});
+);
