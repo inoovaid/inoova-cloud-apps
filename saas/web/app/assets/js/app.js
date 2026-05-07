@@ -552,9 +552,9 @@ function logout() {
   const idToken = localStorage.getItem("id_token");
 
   // limpa storage primeiro
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-  localStorage.removeItem("id_token");
+    localStorage.setItem("access_token", tokenResponse.access_token);
+    localStorage.setItem("refresh_token", tokenResponse.refresh_token);
+    localStorage.setItem("id_token", tokenResponse.id_token);
 
   let logoutUrl =
     `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout` +
@@ -764,20 +764,21 @@ function updateNavbar() {
 
       try {
 
-        // limpa sessão local
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("id_token");
+        const idToken = localStorage.getItem("id_token");
 
+        // limpa storage local
+        localStorage.clear();
         sessionStorage.clear();
 
-        // URL logout Keycloak
+        // logout Keycloak
         const logoutUrl =
           `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout` +
-          `?post_logout_redirect_uri=${encodeURIComponent(window.location.origin)}`;
+          `?client_id=${CLIENT_ID}` +
+          `&id_token_hint=${idToken}` +
+          `&post_logout_redirect_uri=${encodeURIComponent(window.location.origin)}`
 
-        // redireciona logout
-        window.location.href = logoutUrl;
+        // redireciona
+        window.location.replace(logoutUrl);
 
       } catch (err) {
         console.error("Erro logout:", err);
