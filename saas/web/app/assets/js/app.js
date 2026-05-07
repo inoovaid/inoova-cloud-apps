@@ -669,36 +669,72 @@ function updateNavbar() {
   const authLink = document.getElementById("authLink");
   const avatarImg = document.getElementById("userAvatar");
 
+  // navbar ainda não carregou
   if (!authLink) {
     setTimeout(updateNavbar, 300);
     return;
   }
 
-  const token = localStorage.getItem("access_token");
+  // compatibilidade com versões antigas
+  const token =
+    localStorage.getItem("kc_token") ||
+    localStorage.getItem("access_token");
 
-  if (token) {
-    const user = getUserInfo();
+  let user = null;
+
+  try {
+
+    user =
+      JSON.parse(localStorage.getItem("kc_user")) ||
+      getUserInfo();
+
+  } catch (e) {
+
+    user = getUserInfo();
+
+  }
+
+  if (token && user) {
 
     const rawName =
-      user?.name ||
-      user?.preferred_username ||
-      user?.email ||
+      user.name ||
+      user.preferred_username ||
+      user.email ||
       "User";
 
     const name = formatName(rawName);
 
+    // MANTÉM PADRÃO ORIGINAL
     authLink.innerText = `👤 ${name} | Logout`;
+
     authLink.href = "#";
 
+    authLink.onclick = function (e) {
+      e.preventDefault();
+      logout();
+    };
+
     // avatar
-    if (avatarImg && user?.picture) {
-      avatarImg.src = user.picture;
+    if (avatarImg) {
+
       avatarImg.style.display = "block";
+
+      avatarImg.src =
+        user.picture ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7c4dff&color=fff`;
+
     }
 
   } else {
+
     authLink.innerText = "Login";
+
     authLink.href = "#";
+
+    authLink.onclick = function (e) {
+      e.preventDefault();
+      login();
+    };
 
     if (avatarImg) {
       avatarImg.style.display = "none";
