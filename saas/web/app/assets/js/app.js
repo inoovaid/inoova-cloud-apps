@@ -523,14 +523,36 @@ function login() {
 function logout() {
   const logoutUrl = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
 
+  // limpa sessão local
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("userAvatar");
+
+  sessionStorage.clear();
+
+  // atualiza navbar imediatamente
+  const authLink = document.getElementById("authLink");
+  const avatarImg = document.getElementById("userAvatar");
+
+  if (authLink) {
+    authLink.innerHTML = "Login";
+    authLink.href = "#";
+  }
+
+  if (avatarImg) {
+    avatarImg.src = "";
+    avatarImg.style.display = "none";
+  }
+
+  // parâmetros logout keycloak
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     post_logout_redirect_uri: REDIRECT_URI
   });
 
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-
+  // redireciona para logout
   window.location.href = `${logoutUrl}?${params.toString()}`;
 }
 
