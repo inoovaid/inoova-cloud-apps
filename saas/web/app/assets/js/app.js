@@ -606,9 +606,20 @@ function formatName(name) {
 // ================= USER INFO =================
 function getUserInfo() {
   const token = localStorage.getItem("access_token");
+
   if (!token) return null;
 
-  return parseJwt(token);
+  try {
+
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    return payload;
+
+  } catch (e) {
+
+    console.error("Erro lendo token:", e);
+    return null;
+  }
 }
 
 // ================= CODE FLOW =================
@@ -722,7 +733,9 @@ function updateNavbar() {
 
   const token = localStorage.getItem("access_token");
 
+  // ================= USUÁRIO LOGADO =================
   if (token) {
+
     const user = getUserInfo();
 
     console.log("USER:", user);
@@ -736,15 +749,49 @@ function updateNavbar() {
 
     const name = formatName(rawName);
 
+    // TEXTO
     authLink.innerHTML = `👤 ${name} | Logout`;
-    authLink.href = "#logout";
+
+    // REMOVE href antigo
+    authLink.removeAttribute("href");
+
+    // REMOVE eventos antigos
+    authLink.onclick = null;
+
+    // ================= LOGOUT =================
+    authLink.onclick = async (e) => {
+      e.preventDefault();
+
+      try {
+
+        // limpa sessão local
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("id_token");
+
+        sessionStorage.clear();
+
+        // URL logout Keycloak
+        const logoutUrl =
+          `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout` +
+          `?post_logout_redirect_uri=${encodeURIComponent(window.location.origin)}`;
+
+        // redireciona logout
+        window.location.href = logoutUrl;
+
+      } catch (err) {
+        console.error("Erro logout:", err);
+      }
+    };
 
     // ================= AVATAR =================
     if (avatarImg) {
 
       // foto do Keycloak
       if (user?.picture) {
+
         avatarImg.src = user.picture;
+
       } else {
 
         // avatar fallback
@@ -757,6 +804,7 @@ function updateNavbar() {
 
   } else {
 
+    // ================= NÃO LOGADO =================
     authLink.innerHTML = "Login";
     authLink.href = "#login";
 
