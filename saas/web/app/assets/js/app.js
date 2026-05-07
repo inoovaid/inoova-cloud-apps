@@ -557,15 +557,18 @@ function formatName(name) {
   // remove espaços extras
   name = name.trim();
 
-  // pega só primeiro nome (melhor UX)
-  const firstName = name.split(" ")[0];
-
   // limita a 12 caracteres
-  if (firstName.length > 12) {
-    return firstName.substring(0, 12) + "...";
+  if (name.length > 12) {
+    // corta no espaço mais próximo antes do limite (não corta no meio da palavra)
+    const truncated = name.substring(0, 12).trimEnd();
+    const spaceIndex = truncated.lastIndexOf(" ");
+    if (spaceIndex > 0) {
+      return truncated.substring(0, spaceIndex);
+    }
+    return truncated;
   }
 
-  return firstName;
+  return name;
 }
 
 // ================= USER INFO =================
@@ -687,7 +690,7 @@ function updateNavbar() {
 
     const name = formatName(rawName);
 
-    authLink.innerText = `👤 ${name} | Logout`;
+    authLink.innerText = `${name} - Logout`;
     authLink.href = "#";
 
     // avatar
