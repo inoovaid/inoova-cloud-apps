@@ -30,7 +30,35 @@ let header = $(`
    <li class="nav-item nav-item-hover"><a class="nav-link" href="web.html">Web</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="techstack.html">TechStack</a></li>
    <li class="nav-item nav-item-hover"><a class="nav-link" href="https://tec.dnn.lat/" target="_blank">Blogs</a></li>
-   <li class="nav-item nav-item-hover"><a class="nav-link" href="#" id="authLink">Login</a></li>
+   <li class="nav-item nav-item-hover">
+   
+   
+   <li class="nav-item nav-item-hover d-flex align-items-center">
+
+  <!-- AVATAR -->
+  <img
+    id="userAvatar"
+    src=""
+    alt="Avatar"
+    style="
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      object-fit:cover;
+      margin-right:10px;
+      display:none;
+    "
+  >
+
+  <!-- LOGIN -->
+  <a class="nav-link" href="#" id="authLink">
+    Login
+  </a>
+
+  </li>
+   
+   
+   </li>
    <li class="nav-item">
 
    <input type="checkbox" id="dark_toggler" class="dark_toggler" aria-label="Toggle Light Mode" onclick="toggle_light_mode()" checked>
@@ -521,17 +549,24 @@ function login() {
 }
 
 function logout() {
-  const logoutUrl = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
+  const idToken = localStorage.getItem("id_token");
 
-  const params = new URLSearchParams({
-    client_id: CLIENT_ID,
-    post_logout_redirect_uri: REDIRECT_URI
-  });
-
+  // limpa storage primeiro
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  localStorage.removeItem("id_token");
 
-  window.location.href = `${logoutUrl}?${params.toString()}`;
+  let logoutUrl =
+    `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout` +
+    `?post_logout_redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+    `&client_id=${CLIENT_ID}`;
+
+  // Keycloak moderno usa id_token_hint
+  if (idToken) {
+    logoutUrl += `&id_token_hint=${idToken}`;
+  }
+
+  window.location.href = logoutUrl;
 }
 
 // ================= UTF-8 FIX =================
@@ -557,18 +592,15 @@ function formatName(name) {
   // remove espaços extras
   name = name.trim();
 
+  // pega só primeiro nome (melhor UX)
+  const firstName = name.split(" ")[0];
+
   // limita a 12 caracteres
-  if (name.length > 12) {
-    // corta no espaço mais próximo antes do limite (não corta no meio da palavra)
-    const truncated = name.substring(0, 12).trimEnd();
-    const spaceIndex = truncated.lastIndexOf(" ");
-    if (spaceIndex > 0) {
-      return truncated.substring(0, spaceIndex);
-    }
-    return truncated;
+  if (firstName.length > 12) {
+    return firstName.substring(0, 12) + "...";
   }
 
-  return name;
+  return firstName;
 }
 
 // ================= USER INFO =================
@@ -607,12 +639,16 @@ async function exchangeCodeForToken(code) {
   if (data.access_token) {
     localStorage.setItem("access_token", data.access_token);
     localStorage.setItem("refresh_token", data.refresh_token);
+
+    // IMPORTANTE
+    localStorage.setItem("id_token", data.id_token);
   }
 }
 
 // ================= REFRESH TOKEN =================
 async function refreshToken() {
   const refreshToken = localStorage.getItem("refresh_token");
+
   if (!refreshToken) return;
 
   try {
@@ -636,6 +672,12 @@ async function refreshToken() {
     if (data.access_token) {
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token);
+
+      // IMPORTANTE
+      if (data.id_token) {
+        localStorage.setItem("id_token", data.id_token);
+      }
+
       console.log("🔄 Token renovado");
     } else {
       logout();
@@ -672,6 +714,7 @@ function updateNavbar() {
   const authLink = document.getElementById("authLink");
   const avatarImg = document.getElementById("userAvatar");
 
+  // navbar ainda não carregou
   if (!authLink) {
     setTimeout(updateNavbar, 300);
     return;
@@ -682,27 +725,42 @@ function updateNavbar() {
   if (token) {
     const user = getUserInfo();
 
+    console.log("USER:", user);
+
     const rawName =
       user?.name ||
       user?.preferred_username ||
+      user?.given_name ||
       user?.email ||
-      "User";
+      "Usuário";
 
     const name = formatName(rawName);
 
-    authLink.innerText = `${name} - Logout`;
-    authLink.href = "#";
+    authLink.innerHTML = `👤 ${name} | Logout`;
+    authLink.href = "#logout";
 
-    // avatar
-    if (avatarImg && user?.picture) {
-      avatarImg.src = user.picture;
+    // ================= AVATAR =================
+    if (avatarImg) {
+
+      // foto do Keycloak
+      if (user?.picture) {
+        avatarImg.src = user.picture;
+      } else {
+
+        // avatar fallback
+        avatarImg.src =
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6a00bb&color=fff`;
+      }
+
       avatarImg.style.display = "block";
     }
 
   } else {
-    authLink.innerText = "Login";
-    authLink.href = "#";
 
+    authLink.innerHTML = "Login";
+    authLink.href = "#login";
+
+    // esconder avatar
     if (avatarImg) {
       avatarImg.style.display = "none";
     }
@@ -711,16 +769,16 @@ function updateNavbar() {
 
 // ================= CLICK GLOBAL =================
 document.addEventListener("click", function (e) {
-  if (e.target && e.target.id === "authLink") {
-    e.preventDefault();
+  const authLink = e.target.closest("#authLink");
 
-    const token = localStorage.getItem("access_token");
+  if (!authLink) return;
 
-    if (token) {
-      logout();
-    } else {
-      login();
-    }
+  e.preventDefault();
+
+  if (isLoggedIn()) {
+    logout();
+  } else {
+    login();
   }
 });
 
