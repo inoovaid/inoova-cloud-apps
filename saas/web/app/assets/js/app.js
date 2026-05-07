@@ -502,7 +502,7 @@ $(function submitAnimation() {
 const KEYCLOAK_URL = "https://login-cloud.dnn.lat";
 const REALM = "Inoova-Plataforma";
 const CLIENT_ID = "Inoova-Plataforma";
-const REDIRECT_URI = window.location.origin + "/";
+const REDIRECT_URI = window.location.origin;
 
 // controla refresh interval
 let refreshInterval = null;
@@ -843,7 +843,7 @@ function updateNavbar() {
     const name = formatName(rawName);
 
     authLink.innerHTML =
-      `👤 ${name}<small>Logout</small>`;
+      `👤 ${name} | <small>Logout</small>`;
 
     authLink.href = "#";
 
