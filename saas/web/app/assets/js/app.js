@@ -125,7 +125,7 @@ let footer = $(`
 
       <div class="cv-buttons">
 
-        <a href="assets/docs/CV-JRM.pdf" download class="download-cv">
+        <a href="assets/docs/Thaisa-DEV.pdf" download class="download-cv">
         📄 Download CV
         </a>
 
