@@ -31,7 +31,7 @@ const techStack = [
     langDesc: "<li>Python é uma linguagem de programação interpretada de alto nível e propósito geral.</li>",
   },
   {
-    langImage: "assets/images/techstack-page/cpp.png",
+    langImage: "assets/images/techstack-page/csharp.png",
     langName: "C++",
     langDesc: "<li>C++ é uma linguagem de programação de propósito geral criada por Bjarne Stroustrup como uma extensão da linguagem de programação C, ou C com Classes.</li>",
   },
