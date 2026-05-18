@@ -546,6 +546,7 @@ function logout() {
   localStorage.removeItem("userAvatar");
 
   sessionStorage.clear();
+  sessionStorage.removeItem("kc_code_used");
 
   // limpa URL
   window.history.replaceState(
@@ -647,6 +648,8 @@ async function exchangeCodeForToken(code) {
             "application/x-www-form-urlencoded"
         },
 
+        credentials: "include",
+
         body: new URLSearchParams({
           grant_type: "authorization_code",
           client_id: CLIENT_ID,
@@ -655,6 +658,24 @@ async function exchangeCodeForToken(code) {
         })
       }
     );
+
+    // resposta inválida
+    if (!response.ok) {
+
+      const errorData =
+        await response.json();
+
+      console.error(
+        "Erro token:",
+        errorData
+      );
+
+      sessionStorage.removeItem(
+        "kc_code_used"
+      );
+
+      return;
+    }
 
     const data = await response.json();
 
@@ -670,7 +691,7 @@ async function exchangeCodeForToken(code) {
         data.refresh_token
       );
 
-      // remove code da URL
+      // remove code URL
       window.history.replaceState(
         {},
         document.title,
@@ -680,8 +701,18 @@ async function exchangeCodeForToken(code) {
       // inicia refresh
       startRefreshTimer();
 
-      // atualiza navbar
+      // navbar
       updateNavbar();
+
+      console.log(
+        "✅ Login realizado"
+      );
+
+    } else {
+
+      sessionStorage.removeItem(
+        "kc_code_used"
+      );
     }
 
   } catch (err) {
@@ -691,9 +722,11 @@ async function exchangeCodeForToken(code) {
       err
     );
 
+    sessionStorage.removeItem(
+      "kc_code_used"
+    );
   }
 }
-
 // ================= REFRESH =================
 async function refreshToken() {
 
@@ -893,24 +926,59 @@ document.addEventListener(
   "DOMContentLoaded",
   async function () {
 
-    // troca code por token
     const code = getCodeFromUrl();
 
+    // evita reutilizar o mesmo code
+    const codeAlreadyUsed =
+      sessionStorage.getItem("kc_code_used");
+
+    // ================= LOGIN FLOW =================
     if (
       code &&
-      !localStorage.getItem("access_token")
+      !codeAlreadyUsed
     ) {
 
-      await exchangeCodeForToken(code);
+      // marca code como usado IMEDIATAMENTE
+      sessionStorage.setItem(
+        "kc_code_used",
+        "true"
+      );
+
+      try {
+
+        await exchangeCodeForToken(code);
+
+      } catch (err) {
+
+        console.error(
+          "Erro login Keycloak",
+          err
+        );
+
+        sessionStorage.removeItem(
+          "kc_code_used"
+        );
+      }
+
     }
 
-    // inicia refresh SOMENTE logado
+    // ================= REMOVE CODE URL =================
+    if (window.location.search.includes("code=")) {
+
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+    }
+
+    // ================= REFRESH =================
     if (isLoggedIn()) {
 
       startRefreshTimer();
     }
 
-    // render navbar
+    // ================= NAVBAR =================
     updateNavbar();
   }
 );
