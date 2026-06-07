@@ -49,6 +49,8 @@ spec:
           value: "False"
         - name: VLLM_TARGET_DEVICE
           value: "cuda"
+        - name: VLLM_DISABLE_TORCH_COMPILE
+          value: "1"
         - name: VLLM_AWQ_BACKEND
           value: "triton"
         - name: VLLM_SKIP_DEVICE_CHECK
