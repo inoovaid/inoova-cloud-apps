@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ai-interfaces
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/inoovaid/inoova-cloud-apps
+    targetRevision: main
+    path: AIOps/gitops/apps/ai-interfaces
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai-interfaces
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true

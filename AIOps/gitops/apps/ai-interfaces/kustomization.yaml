@@ -1,0 +1,3 @@
+resources:
+  - openwebui/openwebui.yaml
+  - ingress/openwebui-ingress.yaml

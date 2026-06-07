@@ -1,0 +1,3 @@
+resources:
+  - n8n/n8n.yaml
+  - n8n/ingress.yaml
