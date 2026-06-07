@@ -33,6 +33,7 @@ spec:
         - "--max-model-len=32768"
         - "--gpu-memory-utilization=0.88"
         - "--served-model-name=qwen2.5-coder"
+        - "--device=cuda:0"
         - "--host=0.0.0.0"
         - "--port=8000"
         - "--trust-remote-code"
@@ -43,6 +44,10 @@ spec:
           value: "PCI_BUS_ID"
         - name: CUDA_VISIBLE_DEVICES
           value: "1" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
+        - name: VLLM_USE_MODELSCOPE
+          value: "False"
+        - name: VLLM_TARGET_DEVICE
+          value: "cuda"
         - name: HF_HOME
           value: /cache/huggingface
         - name: NCCL_P2P_DISABLE
