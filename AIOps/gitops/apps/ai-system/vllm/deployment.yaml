@@ -18,7 +18,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-worker-ai
-      # Se o nó tiver taint de GPU 
+      # Se o nó tiver taint de GPU XXXXXXXXXXX 
       tolerations:
       - key: nvidia.com/gpu
         operator: Exists
@@ -44,7 +44,7 @@ spec:
         - name: VLLM_USE_MARLIN
           value: "False"
         - name: CUDA_VISIBLE_DEVICES
-          value: "0" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
+          value: "1" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
         - name: VLLM_USE_MODELSCOPE
           value: "False"
         - name: VLLM_TARGET_DEVICE
