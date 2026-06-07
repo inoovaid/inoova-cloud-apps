@@ -1,0 +1,32 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ai-ai-automation
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.io
+  labels:
+    app.kubernetes.io/part-of: ai-platform
+spec:
+  project: ai-platform
+  source:
+    repoURL: https://github.com/inoovaid/inoova-cloud-apps.git
+    targetRevision: main
+    path: AIOps/apps/ai-automation
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai-automation
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

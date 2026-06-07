@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-system
+  labels:
+    app.kubernetes.io/part-of: ai-platform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-interfaces
+  labels:
+    app.kubernetes.io/part-of: ai-platform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-automation
+  labels:
+    app.kubernetes.io/part-of: ai-platform
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ai-system-quota
+  namespace: ai-system
+spec:
+  hard:
+    requests.cpu: "18"
+    requests.memory: "55Gi"
+    limits.cpu: "20"
+    limits.memory: "60Gi"
+    requests.nvidia.com/gpu: "2"
+    limits.nvidia.com/gpu: "2"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ai-system-limits
+  namespace: ai-system
+spec:
+  limits:
+  - type: Container
+    default:
+      cpu: "500m"
+      memory: "512Mi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ai-interfaces-quota
+  namespace: ai-interfaces
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: "12Gi"
+    limits.cpu: "8"
+    limits.memory: "16Gi"
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ai-automation-quota
+  namespace: ai-automation
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: "4Gi"
+    limits.cpu: "4"
+    limits.memory: "8Gi"

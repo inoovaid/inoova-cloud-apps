@@ -1,0 +1,58 @@
+---
+# Secret criado manualmente via bootstrap.sh (não commitar token no Git)
+# kubectl create secret generic argocd-mcp-token --namespace ai-system \
+#   --from-literal=token="$(kubectl create token mcp-agent -n argocd --duration=8760h)"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-argocd
+  namespace: ai-system
+  labels:
+    app: mcp-argocd
+    app.kubernetes.io/part-of: ai-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-argocd
+  template:
+    metadata:
+      labels:
+        app: mcp-argocd
+    spec:
+      containers:
+      - name: mcp-argocd
+        image: ghcr.io/akuity/mcp-argocd:latest
+        env:
+        - name: ARGOCD_BASE_URL
+          value: "https://argocd-server.argocd.svc.cluster.local"
+        - name: ARGOCD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: argocd-mcp-token
+              key: token
+        - name: ARGOCD_INSECURE
+          value: "true"
+        - name: PORT
+          value: "3001"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+        ports:
+        - containerPort: 3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-argocd
+  namespace: ai-system
+spec:
+  selector:
+    app: mcp-argocd
+  ports:
+  - port: 3001
+    targetPort: 3001

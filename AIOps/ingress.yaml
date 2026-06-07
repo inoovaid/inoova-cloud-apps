@@ -1,0 +1,95 @@
+---
+# ai.dnn.lat → OpenWebUI
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openwebui-ingress
+  namespace: ai-interfaces
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    # SSE para MCP tools
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - ai.dnn.lat
+    secretName: openwebui-tls
+  rules:
+  - host: ai.dnn.lat
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: openwebui
+            port:
+              number: 80
+---
+# dify.dnn.lat → Dify Web
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dify-ingress
+  namespace: ai-interfaces
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - dify.dnn.lat
+    secretName: dify-tls
+  rules:
+  - host: dify.dnn.lat
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dify-web
+            port:
+              number: 80
+---
+# n8n.dnn.lat → n8n (no namespace ai-automation)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n-ingress
+  namespace: ai-automation
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    # WebSocket para n8n editor
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - n8n.dnn.lat
+    secretName: n8n-tls
+  rules:
+  - host: n8n-agent.dnn.lat
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: n8n
+            port:
+              number: 80

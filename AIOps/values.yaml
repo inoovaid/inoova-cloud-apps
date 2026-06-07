@@ -1,0 +1,106 @@
+# Dify Helm Values — inoova-cloud-apps/AIOps
+# helm repo add dify https://charts.dify.ai && helm repo update
+# helm upgrade --install dify dify/dify -n ai-interfaces -f values.yaml
+
+global:
+  edition: SELF_HOSTED
+
+api:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+  envs:
+  - name: SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dify-secrets
+        key: secret-key
+  - name: DB_USERNAME
+    value: postgres
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: dify-secrets
+        key: db-password
+  - name: DB_HOST
+    value: postgres-ha-rw.default.svc.cluster.local
+  - name: DB_PORT
+    value: "5432"
+  - name: DB_DATABASE
+    value: dify
+  - name: REDIS_HOST
+    value: redis.ai-system.svc.cluster.local
+  - name: REDIS_PORT
+    value: "6379"
+  - name: REDIS_DB
+    value: "1"
+  # Usar MinIO existente no namespace observability
+  - name: STORAGE_TYPE
+    value: s3
+  - name: S3_ENDPOINT
+    value: "http://minio.observability.svc.cluster.local:9000"
+  - name: S3_BUCKET_NAME
+    value: dify
+  - name: S3_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dify-secrets
+        key: minio-access-key
+  - name: S3_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dify-secrets
+        key: minio-secret-key
+  - name: S3_USE_AWS_MANAGED_IAM
+    value: "false"
+  # Ollama como LLM provider
+  - name: OLLAMA_API_BASE
+    value: "http://ollama.ai-system.svc.cluster.local:11434"
+
+worker:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+
+web:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+sandbox:
+  enabled: true
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+# Componentes externos já existentes — desabilitar
+postgresql:
+  enabled: false
+
+redis:
+  enabled: false
+
+minio:
+  enabled: false
+
+nginx:
+  enabled: false   # Usamos ingress-nginx do cluster
