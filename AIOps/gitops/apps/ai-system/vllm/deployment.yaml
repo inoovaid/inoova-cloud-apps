@@ -30,7 +30,7 @@ spec:
         args:
         - "--model=Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
         - "--tensor-parallel-size=1"        # usa RTX 5070 + RTX 3060
-        - "--max-model-len=16384"
+        - "--max-model-len=8192"
         - "--gpu-memory-utilization=0.88"
         - "--served-model-name=qwen2.5-coder"
         - "--host=0.0.0.0"
