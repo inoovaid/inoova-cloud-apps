@@ -54,7 +54,7 @@ spec:
         - name: VLLM_SKIP_DEVICE_CHECK
           value: "1"
         - name: VLLM_ATTENTION_BACKEND
-          value: "FLASHATTENTION" # Tente mudar de Triton para FlashAttention
+          value: "FLASH_ATTN" # Tente mudar de Triton para FlashAttention
         # Adicione estas para isolar o ambiente de execução:
         - name: NVIDIA_VISIBLE_DEVICES
           value: "all"
