@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n
+
+  namespace: ai-automation
+
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+spec:
+
+  ingressClassName: nginx
+
+  tls:
+  - hosts:
+    - n8n-agent.dnn.lat
+
+    secretName: n8n-agent-tls
+
+  rules:
+  - host: n8n-agent.dnn.lat
+
+    http:
+      paths:
+      - path: /
+
+        pathType: Prefix
+
+        backend:
+          service:
+            name: n8n
+
+            port:
+              number: 80

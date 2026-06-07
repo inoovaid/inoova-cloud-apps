@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openwebui
+
+  namespace: ai-interfaces
+
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+spec:
+
+  ingressClassName: nginx
+
+  tls:
+  - hosts:
+    - ai.dnn.lat
+    secretName: ai-dnn-lat
+
+  rules:
+  - host: ai.dnn.lat
+
+    http:
+      paths:
+      - path: /
+
+        pathType: Prefix
+
+        backend:
+          service:
+            name: openwebui
+
+            port:
+              number: 80
