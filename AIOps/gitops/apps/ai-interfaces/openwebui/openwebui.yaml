@@ -1,10 +1,86 @@
-env:
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-interfaces
 
-- name: OLLAMA_BASE_URL
-  value: http://ollama.ai-system.svc.cluster.local:11434
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openwebui-data
+  namespace: ai-interfaces
 
-- name: WEBUI_AUTH
-  value: "true"
+spec:
+  accessModes:
+    - ReadWriteOnce
 
-- name: ENABLE_OLLAMA_API
-  value: "true"
+  storageClassName: local-path
+
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openwebui
+  namespace: ai-interfaces
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: openwebui
+
+  template:
+    metadata:
+      labels:
+        app: openwebui
+
+    spec:
+      containers:
+
+      - name: openwebui
+
+        image: ghcr.io/open-webui/open-webui:main
+
+        ports:
+        - containerPort: 8080
+
+        env:
+
+        - name: OLLAMA_BASE_URL
+          value: http://ollama.ai-system.svc.cluster.local:11434
+
+        - name: WEBUI_AUTH
+          value: "true"
+
+        - name: ENABLE_OLLAMA_API
+          value: "true"
+
+        volumeMounts:
+        - mountPath: /app/backend/data
+          name: openwebui-data
+
+      volumes:
+      - name: openwebui-data
+
+        persistentVolumeClaim:
+          claimName: openwebui-data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openwebui
+  namespace: ai-interfaces
+
+spec:
+  selector:
+    app: openwebui
+
+  ports:
+  - port: 80
+    targetPort: 8080
