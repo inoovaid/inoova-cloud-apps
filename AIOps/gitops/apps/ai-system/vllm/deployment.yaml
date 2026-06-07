@@ -41,6 +41,8 @@ spec:
         env:
         - name: CUDA_DEVICE_ORDER
           value: "PCI_BUS_ID"
+        - name: VLLM_USE_MARLIN
+          value: "False"
         - name: CUDA_VISIBLE_DEVICES
           value: "0" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
         - name: VLLM_USE_MODELSCOPE
