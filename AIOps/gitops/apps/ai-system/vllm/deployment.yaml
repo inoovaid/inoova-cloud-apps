@@ -60,12 +60,12 @@ spec:
         resources:
           requests:
             nvidia.com/gpu: "1"
-            memory: "32Gi"
-            cpu: "8"
+            memory: "16Gi"
+            cpu: "4"
           limits:
             nvidia.com/gpu: "1"
-            memory: "55Gi"
-            cpu: "18"
+            memory: "30Gi"
+            cpu: "10"
         ports:
         - name: http
           containerPort: 8000
