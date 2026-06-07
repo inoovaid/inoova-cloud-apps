@@ -28,7 +28,7 @@ spec:
       - name: vllm
         image: vllm/vllm-openai:v0.6.6
         args:
-        - "--model=Qwen/Qwen2.5-Coder-32B-Instruct-AWQ"
+        - "--model=Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
         - "--tensor-parallel-size=2"        # usa RTX 5070 + RTX 3060
         - "--max-model-len=32768"
         - "--gpu-memory-utilization=0.88"
