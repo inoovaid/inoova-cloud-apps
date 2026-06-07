@@ -1,2 +1,7 @@
 resources:
   - ollama/ollama.yaml
+  - ollama
+  - ollama-agents.yaml
+  - ollama-agents-pvc.yaml
+  - redis
+  - mcp-servers
