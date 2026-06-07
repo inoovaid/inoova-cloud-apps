@@ -42,7 +42,7 @@ spec:
         - name: CUDA_DEVICE_ORDER
           value: "PCI_BUS_ID"
         - name: CUDA_VISIBLE_DEVICES
-          value: "1" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
+          value: "0" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
         - name: VLLM_USE_MODELSCOPE
           value: "False"
         - name: VLLM_TARGET_DEVICE
@@ -51,6 +51,13 @@ spec:
           value: "triton"
         - name: VLLM_SKIP_DEVICE_CHECK
           value: "1"
+        - name: VLLM_ATTENTION_BACKEND
+          value: "FLASHATTENTION" # Tente mudar de Triton para FlashAttention
+        # Adicione estas para isolar o ambiente de execução:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "compute,utility"
         - name: HF_HOME
           value: /cache/huggingface
         - name: NCCL_P2P_DISABLE
