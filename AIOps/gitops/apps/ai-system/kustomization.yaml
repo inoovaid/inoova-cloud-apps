@@ -1,4 +1,3 @@
 resources:
   - ollama/ollama.yaml
-  - ollama-agents.yaml
-  - ollama-agents-pvc.yaml
+  - ollama-agents/ollama-agents.yaml
