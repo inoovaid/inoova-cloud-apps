@@ -16,7 +16,7 @@ spec:
   - hosts:
     - ai.dnn.lat
 
-    secretName: ai-tls
+    secretName: wildcard-dnn
 
   rules:
   - host: ai.dnn.lat

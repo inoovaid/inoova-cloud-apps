@@ -16,7 +16,7 @@ spec:
   - hosts:
     - n8n-agent.dnn.lat
 
-    secretName: n8n-agent-tls
+    secretName: wildcard-dnn
 
   rules:
   - host: n8n-agent.dnn.lat
