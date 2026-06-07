@@ -10,6 +10,7 @@ spec:
   storageClassName: ollama-models
   hostPath:
     path: /data/ollama
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,21 +24,26 @@ spec:
   resources:
     requests:
       storage: 300Gi
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ollama
   namespace: ai-system
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: ollama
+
   template:
     metadata:
       labels:
         app: ollama
+
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-worker-ai
@@ -46,6 +52,13 @@ spec:
       - name: ollama
 
         image: ollama/ollama:0.30.6
+
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "GPU-32dff6e1-6e72-8faf-4628-236a9cb3e658"
+
+        ports:
+        - containerPort: 11434
 
         resources:
           requests:
@@ -58,9 +71,6 @@ spec:
             memory: "48Gi"
             nvidia.com/gpu: 1
 
-        ports:
-        - containerPort: 11434
-
         volumeMounts:
         - mountPath: /root/.ollama
           name: ollama-data
@@ -69,12 +79,14 @@ spec:
       - name: ollama-data
         persistentVolumeClaim:
           claimName: ollama-models-pvc
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: ollama
   namespace: ai-system
+
 spec:
   selector:
     app: ollama

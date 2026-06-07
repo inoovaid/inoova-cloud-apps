@@ -60,6 +60,10 @@ spec:
 
         image: ollama/ollama:0.30.6
 
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "GPU-77b2eae9-db51-2d9b-d193-aba441d086bf"
+
         resources:
           requests:
             cpu: "4"
