@@ -15,7 +15,8 @@ spec:
   tls:
   - hosts:
     - ai.dnn.lat
-    secretName: ai-dnn-lat
+
+    secretName: ai-tls
 
   rules:
   - host: ai.dnn.lat
