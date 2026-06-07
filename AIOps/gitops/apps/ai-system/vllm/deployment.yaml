@@ -33,7 +33,6 @@ spec:
         - "--max-model-len=32768"
         - "--gpu-memory-utilization=0.88"
         - "--served-model-name=qwen2.5-coder"
-        - "--device=cuda:0"
         - "--host=0.0.0.0"
         - "--port=8000"
         - "--trust-remote-code"
