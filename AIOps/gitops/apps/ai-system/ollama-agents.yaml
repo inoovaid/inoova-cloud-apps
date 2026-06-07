@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-agents
+  namespace: ai-system
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: ollama-agents
+
+  template:
+    metadata:
+      labels:
+        app: ollama-agents
+
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-worker-ai
+
+      containers:
+      - name: ollama
+
+        image: ollama/ollama:0.30.6
+
+        ports:
+        - containerPort: 11434
+
+        resources:
+          requests:
+            cpu: "4"
+            memory: "12Gi"
+            nvidia.com/gpu: 1
+
+          limits:
+            cpu: "8"
+            memory: "24Gi"
+            nvidia.com/gpu: 1
+
+        volumeMounts:
+        - mountPath: /root/.ollama
+          name: ollama-data
+
+      volumes:
+      - name: ollama-data
+        persistentVolumeClaim:
+          claimName: ollama-agents-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-agents
+  namespace: ai-system
+
+spec:
+  selector:
+    app: ollama-agents
+
+  ports:
+  - port: 11434
+    targetPort: 11434
