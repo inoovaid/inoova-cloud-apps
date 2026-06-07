@@ -18,7 +18,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-worker-ai
-      # Se o nó tiver taint de GPU
+      # Se o nó tiver taint de GPU XXXXXXXXXXXX
       tolerations:
       - key: nvidia.com/gpu
         operator: Exists
