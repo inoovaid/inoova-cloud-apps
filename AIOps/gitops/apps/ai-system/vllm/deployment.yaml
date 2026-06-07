@@ -1,0 +1,109 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-system
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-worker-ai
+      # Se o nó tiver taint de GPU
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:v0.6.6
+        args:
+        - "--model=Qwen/Qwen2.5-Coder-32B-Instruct-AWQ"
+        - "--tensor-parallel-size=2"        # usa RTX 5070 + RTX 3060
+        - "--max-model-len=32768"
+        - "--gpu-memory-utilization=0.88"
+        - "--served-model-name=qwen2.5-coder"
+        - "--host=0.0.0.0"
+        - "--port=8000"
+        - "--trust-remote-code"
+        - "--enable-chunked-prefill"
+        - "--max-num-seqs=16"
+        env:
+        - name: HF_HOME
+          value: /cache/huggingface
+        - name: NCCL_P2P_DISABLE
+          value: "0"
+        # Opcional: HuggingFace token para modelos privados
+        # - name: HUGGING_FACE_HUB_TOKEN
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: hf-token
+        #       key: token
+        resources:
+          requests:
+            nvidia.com/gpu: "2"
+            memory: "32Gi"
+            cpu: "8"
+          limits:
+            nvidia.com/gpu: "2"
+            memory: "55Gi"
+            cpu: "18"
+        ports:
+        - name: http
+          containerPort: 8000
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          failureThreshold: 90     # até 15 min para download do modelo (1ª vez)
+          periodSeconds: 10
+          initialDelaySeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          periodSeconds: 30
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          periodSeconds: 10
+          failureThreshold: 3
+        volumeMounts:
+        - name: model-cache
+          mountPath: /cache
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: vllm-models-pvc
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 16Gi          # shared memory para multi-GPU NCCL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm
+  namespace: ai-system
+  labels:
+    app: vllm
+spec:
+  selector:
+    app: vllm
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
