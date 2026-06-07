@@ -45,7 +45,7 @@ spec:
       containers:
       - name: ollama
 
-        image: ollama/ollama:latest
+        image: ollama/ollama:0.30.6
 
         resources:
           requests:
