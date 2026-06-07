@@ -44,7 +44,8 @@ spec:
 
       - name: openwebui
 
-        image: ghcr.io/open-webui/open-webui:stable
+        image: ghcr.io/open-webui/open-webui:v0.9.6
+        imagePullPolicy: Always
 
         ports:
         - containerPort: 8080
