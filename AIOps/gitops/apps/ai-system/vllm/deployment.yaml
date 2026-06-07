@@ -29,7 +29,7 @@ spec:
         image: vllm/vllm-openai:v0.6.6
         args:
         - "--model=Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
-        - "--tensor-parallel-size=2"        # usa RTX 5070 + RTX 3060
+        - "--tensor-parallel-size=1"        # usa RTX 5070 + RTX 3060
         - "--max-model-len=32768"
         - "--gpu-memory-utilization=0.88"
         - "--served-model-name=qwen2.5-coder"
@@ -39,6 +39,8 @@ spec:
         - "--enable-chunked-prefill"
         - "--max-num-seqs=16"
         env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "1" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
         - name: HF_HOME
           value: /cache/huggingface
         - name: NCCL_P2P_DISABLE
@@ -51,11 +53,11 @@ spec:
         #       key: token
         resources:
           requests:
-            nvidia.com/gpu: "2"
+            nvidia.com/gpu: "1"
             memory: "32Gi"
             cpu: "8"
           limits:
-            nvidia.com/gpu: "2"
+            nvidia.com/gpu: "1"
             memory: "55Gi"
             cpu: "18"
         ports:
