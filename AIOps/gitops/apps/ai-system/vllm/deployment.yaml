@@ -39,6 +39,8 @@ spec:
         - "--enable-chunked-prefill"
         - "--max-num-seqs=16"
         env:
+        - name: CUDA_DEVICE_ORDER
+          value: "PCI_BUS_ID"
         - name: CUDA_VISIBLE_DEVICES
           value: "1" # (Supondo que a 3060 seja a GPU 1. Se for a 0, troque para "0")
         - name: HF_HOME
