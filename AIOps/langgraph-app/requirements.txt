@@ -1,7 +1,7 @@
-langgraph
-langchain
-langchain-ollama
-langchain-core
 fastapi
 uvicorn
-requests
+httpx
+langchain
+langchain-ollama
+langgraph
+pydantic
