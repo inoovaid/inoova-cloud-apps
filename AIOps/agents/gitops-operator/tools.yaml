@@ -1,0 +1,7 @@
+tools:
+
+  github:
+    endpoint: https://api.github.com
+
+  argocd:
+    endpoint: https://argocd.dnn.lat
