@@ -3,21 +3,18 @@ kind: Ingress
 
 metadata:
   name: langgraph
-
   namespace: ai-system
 
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
 spec:
-
   ingressClassName: nginx
 
   tls:
   - hosts:
-      - langgraph.dnn.lat
-
-    secretName: langgraph-tls
+    - langgraph.dnn.lat
+    secretName: wildcard-dnn
 
   rules:
   - host: langgraph.dnn.lat
@@ -30,6 +27,5 @@ spec:
         backend:
           service:
             name: langgraph
-
             port:
               number: 80
