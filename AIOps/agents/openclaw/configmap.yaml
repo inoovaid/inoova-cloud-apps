@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-config
+  namespace: openclaw
+data:
+  openclaw.json: |
+    {
+      "gateway": {
+        "bind": "0.0.0.0",
+        "port": 18789,
+        "auth": {
+          "mode": "token",
+          "token": "${OPENCLAW_GATEWAY_TOKEN}"
+        }
+      },
+      "models": {
+        "providers": {
+          "ollama": {
+            "api": "ollama",
+            "baseUrl": "http://ollama.ai-system:11434",
+            "models": {
+              "default": {
+                "model": "qwen3.5:27b",
+                "contextWindow": 128000,
+                "contextTokens": 100000,
+                "maxTokens": 32000
+              }
+            }
+          }
+        },
+        "defaults": {
+          "provider": "ollama"
+        }
+      },
+      "agents": {
+        "defaults": {
+          "memorySearch": {
+            "provider": "ollama"
+          }
+        }
+      }
+    }
+  
+  AGENTS.md: |
+    # OpenClaw Agents
+    
+    ## Default Agent
+    - id: default
+      name: OpenClaw Assistant
+      description: Your personal AI assistant powered by Ollama
+      provider: ollama
+      model: qwen3.5:27b
