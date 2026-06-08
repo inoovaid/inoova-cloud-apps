@@ -18,22 +18,25 @@ spec:
         app: langgraph
 
     spec:
+
       containers:
+
       - name: langgraph
 
         image: heiffigjr/langgraph:latest
 
         imagePullPolicy: Always
 
-        ports:
-        - containerPort: 8000
-
         env:
+
         - name: OLLAMA_HOST
           value: "http://ollama-agents.ai-system.svc.cluster.local:11434"
 
-        - name: DATABASE_URI
-          value: "postgresql://appuser:AppPass123@postgres-ha-rw.default.svc.cluster.local:5432/langgraph"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
 
-        - name: REDIS_URI
-          value: "redis://redis-langgraph.ai-system.svc.cluster.local:6379"
+          limits:
+            cpu: "1"
+            memory: 1Gi

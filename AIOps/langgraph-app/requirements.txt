@@ -1,7 +1,5 @@
-fastapi
-uvicorn
 langgraph
 langchain
 langchain-ollama
-psycopg[binary]
-redis
+langchain-core
+requests
