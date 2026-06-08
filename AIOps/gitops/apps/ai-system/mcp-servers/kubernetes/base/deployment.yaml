@@ -16,5 +16,5 @@ spec:
       serviceAccountName: ai-agent
       containers:
       - name: mcp-kubernetes
-        image: ghcr.io/manusa/kubernetes-mcp-server:latest
+        image: mcp/kubectl-mcp-server:latest
         imagePullPolicy: Always
