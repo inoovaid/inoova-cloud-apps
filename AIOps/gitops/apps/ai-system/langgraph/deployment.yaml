@@ -21,7 +21,7 @@ spec:
       containers:
       - name: langgraph
 
-        image: langchain/langgraph-api:latest
+        image: langchain/langgraph-server:latest
 
         imagePullPolicy: Always
 
