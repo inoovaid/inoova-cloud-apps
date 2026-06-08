@@ -29,12 +29,14 @@ spec:
         - containerPort: 8000
 
         env:
-
         - name: OLLAMA_HOST
           value: "http://ollama-agents.ai-system.svc.cluster.local:11434"
 
         - name: MODEL
           value: "gemma3:4b"
+
+        - name: DATABASE_URI
+          value: "postgresql://appuser:AppPass123@postgres-ha-rw.default.svc.cluster.local:5432/langgraph"
 
         resources:
           requests:
