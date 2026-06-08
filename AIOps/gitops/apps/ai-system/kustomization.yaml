@@ -1,4 +1,8 @@
 resources:
+  - serviceaccount.yaml
+  - clusterrole.yaml
+  - clusterrolebinding.yaml
   - ollama/ollama.yaml
   - ollama-agents/ollama-agents.yaml
+  - kubernetes/base
   - mcp-servers/mcp-hub/overlays/prod

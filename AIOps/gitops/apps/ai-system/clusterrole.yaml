@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ai-agent-readonly
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+    - services
+    - namespaces
+    - nodes
+    - events
+  verbs:
+    - get
+    - list
+    - watch
+
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - statefulsets
+  verbs:
+    - get
+    - list
+    - watch

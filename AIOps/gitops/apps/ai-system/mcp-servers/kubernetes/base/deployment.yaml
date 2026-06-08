@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-kubernetes
+  namespace: ai-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-kubernetes
+  template:
+    metadata:
+      labels:
+        app: mcp-kubernetes
+    spec:
+      serviceAccountName: ai-agent
+      containers:
+      - name: mcp-kubernetes
+        image: ghcr.io/manusa/kubernetes-mcp-server:latest
+        imagePullPolicy: Always
