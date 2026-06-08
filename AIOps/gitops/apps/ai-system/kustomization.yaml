@@ -7,3 +7,4 @@ resources:
   - mcp-servers/kubernetes/base
   - mcp-servers/mcp-hub/overlays/prod
   - kagent
+  - langgraph
