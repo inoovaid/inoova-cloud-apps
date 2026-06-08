@@ -1,0 +1,19 @@
+agents:
+
+  cluster-operator:
+    description: Kubernetes Operations
+    tools:
+      - kubernetes-mcp
+
+  gitops-operator:
+    description: GitOps Operations
+    tools:
+      - github
+      - argocd
+
+  noc-operator:
+    description: Monitoring Operations
+    tools:
+      - prometheus
+      - loki
+      - kubernetes-mcp
