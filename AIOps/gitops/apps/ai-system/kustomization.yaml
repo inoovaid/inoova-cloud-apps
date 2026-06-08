@@ -6,4 +6,4 @@ resources:
   - ollama-agents/ollama-agents.yaml
   - mcp-servers/kubernetes/base
   - mcp-servers/mcp-hub/overlays/prod
-
+  - kagent
