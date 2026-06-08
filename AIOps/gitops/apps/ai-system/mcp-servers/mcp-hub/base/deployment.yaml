@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: supergateway
-        image: supercorp/supergateway:latest
+        image: supercorp/supergateway:3.4.3
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
