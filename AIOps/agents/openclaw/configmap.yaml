@@ -21,10 +21,10 @@ data:
             "baseUrl": "http://ollama.ai-system:11434",
             "models": {
               "default": {
-                "model": "qwen3.5:27b",
-                "contextWindow": 128000,
-                "contextTokens": 100000,
-                "maxTokens": 32000
+                "model": "qwen2.5-coder:7b",
+                "contextWindow": 32000,
+                "contextTokens": 25000,
+                "maxTokens": 8000
               }
             }
           }
@@ -50,4 +50,4 @@ data:
       name: OpenClaw Assistant
       description: Your personal AI assistant powered by Ollama
       provider: ollama
-      model: qwen3.5:27b
+      model: qwen2.5-coder:7b
