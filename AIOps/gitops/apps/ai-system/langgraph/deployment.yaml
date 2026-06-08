@@ -21,7 +21,7 @@ spec:
       containers:
       - name: langgraph
 
-        image: ghcr.io/inoovaid/langgraph:latest
+        image: heiffigjr/langgraph:latest
 
         imagePullPolicy: Always
 
