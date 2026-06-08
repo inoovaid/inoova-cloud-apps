@@ -5,4 +5,4 @@ resources:
   - ollama/ollama.yaml
   - ollama-agents/ollama-agents.yaml
 #  - mcp-servers/kubernetes/base
-  - mcp-servers/mcp-hub/overlays/prod
+#  - mcp-servers/mcp-hub/overlays/prod
