@@ -4,5 +4,5 @@ resources:
   - clusterrolebinding.yaml
   - ollama/ollama.yaml
   - ollama-agents/ollama-agents.yaml
-  - mcp-servers/kubernetes/base
+#  - mcp-servers/kubernetes/base
   - mcp-servers/mcp-hub/overlays/prod
