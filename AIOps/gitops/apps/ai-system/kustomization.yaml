@@ -1,3 +1,4 @@
 resources:
   - ollama/ollama.yaml
   - ollama-agents/ollama-agents.yaml
+  - mcp-servers/mcp-hub/overlays/prod
