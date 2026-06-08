@@ -18,3 +18,10 @@ spec:
       - name: mcp-kubernetes
         image: mcp/kubectl-mcp-server:latest
         imagePullPolicy: Always
+        args:
+          - --transport
+          - http
+          - --host
+          - 0.0.0.0
+          - --port
+          - "8000"

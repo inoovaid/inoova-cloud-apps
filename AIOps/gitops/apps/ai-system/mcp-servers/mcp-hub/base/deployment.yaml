@@ -17,8 +17,8 @@ spec:
       - name: supergateway
         image: supercorp/supergateway:3.4.3
         imagePullPolicy: Always
+        args:
+          - --streamableHttp
+          - http://mcp-kubernetes:8000/mcp
         ports:
         - containerPort: 8000
-        env:
-        - name: PORT
-          value: "8000"
