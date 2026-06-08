@@ -1,43 +1,16 @@
-from typing import TypedDict
-
-from langgraph.graph import StateGraph, END
+from fastapi import FastAPI
 from langchain_ollama import ChatOllama
+
+app = FastAPI()
 
 llm = ChatOllama(
     model="gemma3:4b",
     base_url="http://ollama-agents.ai-system.svc.cluster.local:11434"
 )
 
-class AgentState(TypedDict):
-    question: str
-    answer: str
-
-def chat_node(state):
-
-    response = llm.invoke(state["question"])
-
+@app.get("/")
+def health():
     return {
-        "answer": response.content
+        "status": "ok",
+        "model": "gemma3:4b"
     }
-
-graph = StateGraph(AgentState)
-
-graph.add_node("chat", chat_node)
-
-graph.set_entry_point("chat")
-
-graph.add_edge("chat", END)
-
-agent = graph.compile()
-
-while True:
-
-    question = input("Pergunta: ")
-
-    result = agent.invoke(
-        {
-            "question": question
-        }
-    )
-
-    print(result["answer"])
