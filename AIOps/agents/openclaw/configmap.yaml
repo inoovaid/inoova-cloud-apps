@@ -8,73 +8,10 @@ metadata:
 data:
   openclaw.json: |
     {
-      "agents": {
-        "defaults": {
-          "workspace": "/home/node/.openclaw/workspace"
-        }
-      },
-
       "gateway": {
-        "mode": "local",
-        "auth": {
-          "mode": "token",
-          "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864"
-        },
-        "port": 18789,
-        "bind": "lan"
-      },
-
-      "models": {
-        "providers": {
-
-          "ollama-primary": {
-            "api": "ollama",
-            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434"
-          },
-
-          "ollama-secondary": {
-            "api": "ollama",
-            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434"
-          }
-        },
-
-        "defaults": {
-          "provider": "ollama-primary"
-        }
+        "mode": "local"
       }
     }
 
   AGENTS.md: |
     # OpenClaw Agents
-
-    ## Default Agent
-
-    - id: default
-      name: OpenClaw Assistant
-      description: OpenClaw integrado ao ambiente Kubernetes, ArgoCD, GitOps e Ollama
-      provider: ollama-primary
-      model: qwen2.5-coder:7b
-
-    ## Cluster Operator
-
-    - id: cluster-operator
-      name: Cluster Operator
-      description: Operador Kubernetes
-      provider: ollama-primary
-      model: qwen2.5-coder:7b
-
-    ## GitOps Operator
-
-    - id: gitops-operator
-      name: GitOps Operator
-      description: Operador ArgoCD e GitOps
-      provider: ollama-primary
-      model: qwen2.5-coder:7b
-
-    ## NOC Operator
-
-    - id: noc-operator
-      name: NOC Operator
-      description: Operador de monitoramento
-      provider: ollama-secondary
-      model: qwen2.5-coder:7b
