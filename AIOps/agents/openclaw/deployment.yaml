@@ -1,45 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
-  name: openclaw
-  namespace: openclaw
+name: openclaw
+namespace: openclaw
+
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: openclaw
-  template:
-    metadata:
-      labels:
-        app: openclaw
-    spec:
-      containers:
-      - name: openclaw
-        image: ghcr.io/openclaw/openclaw:latest
+replicas: 1
 
-        ports:
-        - containerPort: 18789
-          name: gateway
+selector:
+matchLabels:
+app: openclaw
 
-        env:
-        - name: OPENCLAW_GATEWAY_TOKEN
-          value: ""
+template:
+metadata:
+labels:
+app: openclaw
 
-        - name: OLLAMA_BASE_URL
-          value: "http://ollama.ai-system:11434"
+spec:
+  containers:
+  - name: openclaw
+    image: ghcr.io/openclaw/openclaw:latest
 
-        volumeMounts:
-        - name: openclaw-config
-          mountPath: /etc/openclaw
+    command:
+    - sleep
 
-        - name: openclaw-state
-          mountPath: /data
+    args:
+    - infinity
 
-      volumes:
-      - name: openclaw-config
-        configMap:
-          name: openclaw-config
+    ports:
+    - containerPort: 18789
+      name: openclaw
 
-      - name: openclaw-state
-        persistentVolumeClaim:
-          claimName: openclaw-pvc
+    volumeMounts:
+    - name: openclaw-config
+      mountPath: /etc/openclaw
+
+    - name: openclaw-state
+      mountPath: /data
+
+  volumes:
+  - name: openclaw-config
+    configMap:
+      name: openclaw-config
+
+  - name: openclaw-state
+    persistentVolumeClaim:
+      claimName: openclaw-pvc
+
