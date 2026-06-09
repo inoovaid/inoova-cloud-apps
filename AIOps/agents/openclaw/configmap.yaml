@@ -29,24 +29,12 @@ data:
 
           "ollama-primary": {
             "api": "ollama",
-            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434",
-            "models": [
-              {
-                "id": "qwen2.5-coder:7b",
-                "name": "qwen2.5-coder:7b"
-              }
-            ]
+            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434"
           },
 
           "ollama-secondary": {
             "api": "ollama",
-            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434",
-            "models": [
-              {
-                "id": "qwen2.5-coder:7b",
-                "name": "qwen2.5-coder:7b"
-              }
-            ]
+            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434"
           }
         },
 
