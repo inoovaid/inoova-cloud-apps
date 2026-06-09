@@ -21,7 +21,7 @@ data:
           "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864"
         },
         "port": 18789,
-        "bind": "0.0.0.0"
+        "bind": "lan"
       },
 
       "models": {
