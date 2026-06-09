@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: openclaw-config
   namespace: openclaw
+
 data:
   openclaw.json: |
     {
@@ -14,11 +15,28 @@ data:
           "token": "${OPENCLAW_GATEWAY_TOKEN}"
         }
       },
+
       "models": {
         "providers": {
-          "ollama": {
+
+          "ollama-primary": {
             "api": "ollama",
-            "baseUrl": "http://ollama.ai-system:11434",
+            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434",
+
+            "models": {
+              "default": {
+                "model": "qwen2.5-coder:7b",
+                "contextWindow": 32000,
+                "contextTokens": 25000,
+                "maxTokens": 8000
+              }
+            }
+          },
+
+          "ollama-secondary": {
+            "api": "ollama",
+            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434",
+
             "models": {
               "default": {
                 "model": "qwen2.5-coder:7b",
@@ -28,26 +46,54 @@ data:
               }
             }
           }
+
         },
+
         "defaults": {
-          "provider": "ollama"
+          "provider": "ollama-primary"
         }
       },
+
       "agents": {
         "defaults": {
           "memorySearch": {
-            "provider": "ollama"
+            "provider": "ollama-primary"
           }
         }
       }
     }
-  
+
   AGENTS.md: |
     # OpenClaw Agents
-    
+
     ## Default Agent
+
     - id: default
       name: OpenClaw Assistant
-      description: Your personal AI assistant powered by Ollama
-      provider: ollama
+      description: OpenClaw integrado ao ambiente Kubernetes, ArgoCD, GitOps e Ollama
+      provider: ollama-primary
+      model: qwen2.5-coder:7b
+
+    ## Cluster Operator
+
+    - id: cluster-operator
+      name: Cluster Operator
+      description: Operador Kubernetes
+      provider: ollama-primary
+      model: qwen2.5-coder:7b
+
+    ## GitOps Operator
+
+    - id: gitops-operator
+      name: GitOps Operator
+      description: Operador ArgoCD e GitOps
+      provider: ollama-primary
+      model: qwen2.5-coder:7b
+
+    ## NOC Operator
+
+    - id: noc-operator
+      name: NOC Operator
+      description: Operador de monitoramento
+      provider: ollama-secondary
       model: qwen2.5-coder:7b

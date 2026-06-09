@@ -3,14 +3,13 @@ kind: Service
 metadata:
   name: openclaw
   namespace: openclaw
-  annotations:
-    # Para clusters AWS
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 spec:
   selector:
     app: openclaw
+
   ports:
-  - port: 18789
+  - name: gateway
+    port: 18789
     targetPort: 18789
-    name: gateway
-  type: LoadBalancer
+
+  type: ClusterIP
