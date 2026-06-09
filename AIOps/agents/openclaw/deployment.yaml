@@ -23,10 +23,7 @@ spec:
 
         env:
         - name: OPENCLAW_GATEWAY_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: openclaw-secrets
-              key: OPENCLAW_GATEWAY_TOKEN
+          value: ""
 
         - name: OLLAMA_BASE_URL
           value: "http://ollama.ai-system:11434"
