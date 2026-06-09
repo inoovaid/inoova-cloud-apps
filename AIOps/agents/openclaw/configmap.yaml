@@ -8,6 +8,7 @@ data:
   openclaw.json: |
     {
       "gateway": {
+        "mode": "local",
         "bind": "0.0.0.0",
         "port": 18789,
         "auth": {
