@@ -2,49 +2,48 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-name: openclaw
-namespace: openclaw
+  name: openclaw
+  namespace: openclaw
 
 spec:
-replicas: 1
+  replicas: 1
 
-selector:
-matchLabels:
-app: openclaw
+  selector:
+    matchLabels:
+      app: openclaw
 
-template:
-metadata:
-labels:
-app: openclaw
+  template:
+    metadata:
+      labels:
+        app: openclaw
 
-spec:
-  containers:
-  - name: openclaw
-    image: ghcr.io/openclaw/openclaw:latest
+    spec:
+      containers:
+        - name: openclaw
+          image: ghcr.io/openclaw/openclaw:latest
 
-    command:
-    - sleep
+          command:
+            - sleep
 
-    args:
-    - infinity
+          args:
+            - infinity
 
-    ports:
-    - containerPort: 18789
-      name: openclaw
+          ports:
+            - containerPort: 18789
+              name: openclaw
 
-    volumeMounts:
-    - name: openclaw-config
-      mountPath: /etc/openclaw
+          volumeMounts:
+            - name: openclaw-config
+              mountPath: /etc/openclaw
 
-    - name: openclaw-state
-      mountPath: /data
+            - name: openclaw-state
+              mountPath: /data
 
-  volumes:
-  - name: openclaw-config
-    configMap:
-      name: openclaw-config
+      volumes:
+        - name: openclaw-config
+          configMap:
+            name: openclaw-config
 
-  - name: openclaw-state
-    persistentVolumeClaim:
-      claimName: openclaw-pvc
-
+        - name: openclaw-state
+          persistentVolumeClaim:
+            claimName: openclaw-pvc
