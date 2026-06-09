@@ -19,31 +19,38 @@ spec:
 
     spec:
       containers:
-        - name: openclaw
-          image: ghcr.io/openclaw/openclaw:latest
+      - name: openclaw
 
-          command:
-            - sleep
+        image: ghcr.io/openclaw/openclaw:latest
 
-          args:
-            - infinity
+        command:
+        - sh
 
-          ports:
-            - containerPort: 18789
-              name: openclaw
+        - -c
 
-          volumeMounts:
-            - name: openclaw-config
-              mountPath: /etc/openclaw
+        args:
+        - |
+          cp /config/openclaw.json /home/node/.openclaw/openclaw.json
+          exec openclaw gateway run
 
-            - name: openclaw-state
-              mountPath: /data
+        ports:
+        - containerPort: 18789
+          name: http
+
+        volumeMounts:
+
+        - name: config
+          mountPath: /config
+
+        - name: data
+          mountPath: /home/node/.openclaw
 
       volumes:
-        - name: openclaw-config
-          configMap:
-            name: openclaw-config
 
-        - name: openclaw-state
-          persistentVolumeClaim:
-            claimName: openclaw-pvc
+      - name: config
+        configMap:
+          name: openclaw-config
+
+      - name: data
+        persistentVolumeClaim:
+          claimName: openclaw-pvc
