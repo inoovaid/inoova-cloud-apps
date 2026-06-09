@@ -1,28 +1,35 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
+
 metadata:
   name: openclaw
+
   namespace: openclaw
 
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 
 spec:
   ingressClassName: nginx
 
   tls:
-  - hosts:
-      - openclaw.dnn.lat
-    secretName: openclaw-tls
+    - hosts:
+        - openclaw.dnn.lat
+      secretName: wildcard-dnn
 
   rules:
-  - host: openclaw.dnn.lat
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: openclaw
-            port:
-              number: 18789
+    - host: openclaw.dnn.lat
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: openclaw
+                port:
+                  number: 18789

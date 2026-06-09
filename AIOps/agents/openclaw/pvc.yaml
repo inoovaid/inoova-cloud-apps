@@ -3,10 +3,13 @@ kind: PersistentVolumeClaim
 metadata:
   name: openclaw-pvc
   namespace: openclaw
+
 spec:
   accessModes:
     - ReadWriteOnce
+
   resources:
     requests:
-      storage: 10Gi
-  storageClassName: ollama-models
+      storage: 5Gi
+
+  storageClassName: local-path
