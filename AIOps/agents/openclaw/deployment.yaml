@@ -23,22 +23,28 @@ spec:
 
         image: ghcr.io/openclaw/openclaw:latest
 
+        env:
+        - name: OPENCLAW_GATEWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: openclaw-secrets
+              key: OPENCLAW_GATEWAY_TOKEN
+
         command:
         - sh
-
         - -c
 
         args:
         - |
+          mkdir -p /home/node/.openclaw
           cp /config/openclaw.json /home/node/.openclaw/openclaw.json
           exec openclaw gateway run --bind lan
 
         ports:
         - containerPort: 18789
-          name: http
+          name: gateway
 
         volumeMounts:
-
         - name: config
           mountPath: /config
 
@@ -46,7 +52,6 @@ spec:
           mountPath: /home/node/.openclaw
 
       volumes:
-
       - name: config
         configMap:
           name: openclaw-config
