@@ -1,0 +1,513 @@
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"cert-manager.io/cluster-issuer":"letsencrypt-prod"},"labels":{"app.kubernetes.io/instance":"ai-automation"},"name":"n8n","namespace":"ai-automation"},"spec":{"ingressClassName":"nginx","rules":[{"host":"n8n-agent.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"n8n","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["n8n-agent.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+    creationTimestamp: "2026-06-07T16:12:55Z"
+    generation: 6
+    labels:
+      app.kubernetes.io/instance: ai-automation
+    name: n8n
+    namespace: ai-automation
+    resourceVersion: "25934401"
+    uid: 7391b137-7131-4055-b050-dd8f9c097886
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: n8n-agent.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: n8n
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - n8n-agent.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"cert-manager.io/cluster-issuer":"letsencrypt-prod"},"labels":{"app.kubernetes.io/instance":"ai-interfaces"},"name":"openwebui","namespace":"ai-interfaces"},"spec":{"ingressClassName":"nginx","rules":[{"host":"ai.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"openwebui","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["ai.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+    creationTimestamp: "2026-06-07T16:25:49Z"
+    generation: 7
+    labels:
+      app.kubernetes.io/instance: ai-interfaces
+    name: openwebui
+    namespace: ai-interfaces
+    resourceVersion: "25934442"
+    uid: 914f90d6-d87c-4cfd-9baf-46fc16dbf25b
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: ai.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: openwebui
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - ai.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"cert-manager.io/cluster-issuer":"letsencrypt-prod"},"labels":{"app.kubernetes.io/instance":"ai-system"},"name":"langgraph","namespace":"ai-system"},"spec":{"ingressClassName":"nginx","rules":[{"host":"langgraph.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"langgraph","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["langgraph.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+    creationTimestamp: "2026-06-08T04:31:32Z"
+    generation: 2
+    labels:
+      app.kubernetes.io/instance: ai-system
+    name: langgraph
+    namespace: ai-system
+    resourceVersion: "26270206"
+    uid: 456deda1-26fd-410e-84c3-26e8ec1466be
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: langgraph.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: langgraph
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - langgraph.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"true","nginx.ingress.kubernetes.io/ssl-redirect":"true"},"name":"argocd-server","namespace":"argocd"},"spec":{"ingressClassName":"nginx","rules":[{"host":"argocd-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"argocd-server","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["argocd-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    creationTimestamp: "2026-05-01T04:47:50Z"
+    generation: 3
+    name: argocd-server
+    namespace: argocd
+    resourceVersion: "25934435"
+    uid: 8563955b-0728-4cfc-9eb5-9ff5e02ad07d
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: argocd-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - argocd-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/ssl-redirect":"true"},"name":"platform-ingress","namespace":"default"},"spec":{"ingressClassName":"nginx","rules":[{"host":"api-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"balanceamento","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}},{"host":"k8s-dash-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"kubernetes-dashboard","port":{"number":443}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["api-cloud.dnn.lat","frontend-cloud.dnn.lat","login-cloud.dnn.lat","dash-cloud.dnn.lat","k8s-dash-cloud.dnn.lat","cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    creationTimestamp: "2026-06-07T19:32:48Z"
+    generation: 1
+    name: platform-ingress
+    namespace: default
+    resourceVersion: "25934387"
+    uid: d760656f-b97c-41b2-b439-f3b303867c83
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: api-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: balanceamento
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    - host: k8s-dash-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: kubernetes-dashboard
+              port:
+                number: 443
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - api-cloud.dnn.lat
+      - frontend-cloud.dnn.lat
+      - login-cloud.dnn.lat
+      - dash-cloud.dnn.lat
+      - k8s-dash-cloud.dnn.lat
+      - cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/affinity":"cookie","nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"true","nginx.ingress.kubernetes.io/proxy-body-size":"10m","nginx.ingress.kubernetes.io/proxy-buffer-size":"128k","nginx.ingress.kubernetes.io/proxy-buffers-number":"4","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600","nginx.ingress.kubernetes.io/session-cookie-hash":"sha1","nginx.ingress.kubernetes.io/session-cookie-name":"route","nginx.ingress.kubernetes.io/x-forwarded-proto":"https"},"labels":{"app.kubernetes.io/instance":"keycloak"},"name":"keycloak","namespace":"keycloak"},"spec":{"ingressClassName":"nginx","rules":[{"host":"login-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"keycloak","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["login-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/affinity: cookie
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
+      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+      nginx.ingress.kubernetes.io/session-cookie-name: route
+      nginx.ingress.kubernetes.io/x-forwarded-proto: https
+    creationTimestamp: "2026-04-27T23:53:31Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: keycloak
+    name: keycloak
+    namespace: keycloak
+    resourceVersion: "25934422"
+    uid: 89b5814d-ebf0-4614-831b-269f9288e5a4
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: login-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: keycloak
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - login-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    creationTimestamp: "2026-04-27T13:14:28Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: prometheus-stack
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: grafana
+      app.kubernetes.io/version: 10.4.0
+      helm.sh/chart: grafana-7.3.7
+    name: prometheus-stack-grafana
+    namespace: observability
+    resourceVersion: "25934448"
+    uid: eb6cd77a-427d-407a-a747-dcd4a1d516c4
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: grafana-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: prometheus-stack-grafana
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - grafana-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"false","nginx.ingress.kubernetes.io/rewrite-target":"/","nginx.ingress.kubernetes.io/ssl-redirect":"false"},"name":"openclaw","namespace":"openclaw"},"spec":{"ingressClassName":"nginx","rules":[{"host":"openclaw.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"openclaw","port":{"number":18789}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["openclaw.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    creationTimestamp: "2026-06-09T01:57:25Z"
+    generation: 2
+    name: openclaw
+    namespace: openclaw
+    resourceVersion: "27686714"
+    uid: 8e33ef90-e5dd-4a68-b9ad-1ffd20bc36e3
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: openclaw.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: openclaw
+              port:
+                number: 18789
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - openclaw.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"false","nginx.ingress.kubernetes.io/rewrite-target":"/","nginx.ingress.kubernetes.io/ssl-redirect":"false"},"labels":{"app.kubernetes.io/instance":"saas-app"},"name":"saas-web-app","namespace":"saas-app"},"spec":{"ingressClassName":"nginx","rules":[{"host":"app-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"saas-web-app","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["app-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    creationTimestamp: "2026-05-03T08:16:31Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: saas-app
+    name: saas-web-app
+    namespace: saas-app
+    resourceVersion: "25934445"
+    uid: 91e7268c-c17c-445c-9c8c-a5469e722bd9
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: app-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: saas-web-app
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - app-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"false","nginx.ingress.kubernetes.io/rewrite-target":"/","nginx.ingress.kubernetes.io/ssl-redirect":"false"},"labels":{"app.kubernetes.io/instance":"saas-beautypro"},"name":"beautypro","namespace":"saas-beautypro"},"spec":{"ingressClassName":"nginx","rules":[{"host":"beautypro-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"beautypro","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["beautypro-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    creationTimestamp: "2026-05-04T06:37:34Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: saas-beautypro
+    name: beautypro
+    namespace: saas-beautypro
+    resourceVersion: "25934380"
+    uid: 85dd394d-5604-4376-91d5-ea9aa5efd37c
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: beautypro-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: beautypro
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - beautypro-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"false","nginx.ingress.kubernetes.io/rewrite-target":"/","nginx.ingress.kubernetes.io/ssl-redirect":"false"},"labels":{"app.kubernetes.io/instance":"saas-financeflow"},"name":"financeflow","namespace":"saas-financeflow"},"spec":{"ingressClassName":"nginx","rules":[{"host":"financeflow-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"financeflow","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["financeflow-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    creationTimestamp: "2026-05-04T00:25:44Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: saas-financeflow
+    name: financeflow
+    namespace: saas-financeflow
+    resourceVersion: "25934466"
+    uid: bec5c6c1-50b1-4115-8428-29ea2c693482
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: financeflow-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: financeflow
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - financeflow-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"false","nginx.ingress.kubernetes.io/rewrite-target":"/","nginx.ingress.kubernetes.io/ssl-redirect":"false"},"labels":{"app.kubernetes.io/instance":"saas-iis"},"name":"saas-web-iis","namespace":"saas-iis"},"spec":{"ingressClassName":"nginx","rules":[{"host":"iis-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"saas-web-iis","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["iis-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    creationTimestamp: "2026-05-03T08:19:31Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: saas-iis
+    name: saas-web-iis
+    namespace: saas-iis
+    resourceVersion: "25934453"
+    uid: a1f3f497-a7b4-4e69-9b92-4a3e87eb8672
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: iis-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: saas-web-iis
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - iis-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTP","nginx.ingress.kubernetes.io/force-ssl-redirect":"false","nginx.ingress.kubernetes.io/rewrite-target":"/","nginx.ingress.kubernetes.io/ssl-redirect":"false"},"labels":{"app.kubernetes.io/instance":"saas-techcrm"},"name":"techcrm","namespace":"saas-techcrm"},"spec":{"ingressClassName":"nginx","rules":[{"host":"techcrm-cloud.dnn.lat","http":{"paths":[{"backend":{"service":{"name":"techcrm","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["techcrm-cloud.dnn.lat"],"secretName":"wildcard-dnn"}]}}
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    creationTimestamp: "2026-05-04T09:55:36Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: saas-techcrm
+    name: techcrm
+    namespace: saas-techcrm
+    resourceVersion: "25934457"
+    uid: 55029137-6ae8-4d26-a635-768c34148585
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: techcrm-cloud.dnn.lat
+      http:
+        paths:
+        - backend:
+            service:
+              name: techcrm
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - techcrm-cloud.dnn.lat
+      secretName: wildcard-dnn
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 10.10.30.200
+kind: List
+metadata:
+  resourceVersion: ""

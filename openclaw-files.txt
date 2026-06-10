@@ -1,0 +1,4 @@
+/home/devops/inoova-cloud-apps/openclaw-files.txt
+/home/devops/inoova-cloud-apps/AIOps/gitops/apps/openclaw-trigger.yaml
+/home/devops/inoova-cloud-apps/AIOps/agents/openclaw
+/home/devops/inoova-cloud-apps/AIOps/agents/openclaw/openclaw.yaml

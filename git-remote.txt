@@ -1,0 +1,2 @@
+origin	https://github.com/inoovaid/inoova-cloud-apps.git (fetch)
+origin	https://github.com/inoovaid/inoova-cloud-apps.git (push)

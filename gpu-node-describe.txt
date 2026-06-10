@@ -1,0 +1,84 @@
+Name:               k8s-worker-ai
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=k8s-worker-ai
+                    kubernetes.io/os=linux
+Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Sat, 06 Jun 2026 20:50:04 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  k8s-worker-ai
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 09 Jun 2026 04:36:42 +0000
+Conditions:
+  Type                 Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----                 ------  -----------------                 ------------------                ------                       -------
+  NetworkUnavailable   False   Sat, 06 Jun 2026 20:50:58 +0000   Sat, 06 Jun 2026 20:50:58 +0000   CiliumIsUp                   Cilium is running on this node
+  MemoryPressure       False   Tue, 09 Jun 2026 04:36:03 +0000   Sat, 06 Jun 2026 22:49:11 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   Tue, 09 Jun 2026 04:36:03 +0000   Sun, 07 Jun 2026 22:36:11 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure          False   Tue, 09 Jun 2026 04:36:03 +0000   Sat, 06 Jun 2026 22:49:11 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    Tue, 09 Jun 2026 04:36:03 +0000   Sun, 07 Jun 2026 18:25:25 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  10.10.30.14
+  Hostname:    k8s-worker-ai
+Capacity:
+  cpu:                20
+  ephemeral-storage:  513396624Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             51392152Ki
+  nvidia.com/gpu:     2
+  pods:               110
+Allocatable:
+  cpu:                20
+  ephemeral-storage:  473146327896
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             51289752Ki
+  nvidia.com/gpu:     2
+  pods:               110
+System Info:
+  Machine ID:                 66ad6d44ed9c41248b6f29d241c8c20e
+  System UUID:                66ad6d44-ed9c-4124-8b6f-29d241c8c20e
+  Boot ID:                    7471f714-9d18-4ec0-97c2-cc08881e441e
+  Kernel Version:             6.8.0-124-generic
+  OS Image:                   Ubuntu 24.04.3 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://2.2.4
+  Kubelet Version:            v1.30.14
+  Kube-Proxy Version:         v1.30.14
+PodCIDR:                      10.244.4.0/24
+PodCIDRs:                     10.244.4.0/24
+Non-terminated Pods:          (13 in total)
+  Namespace                   Name                                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                               ------------  ----------  ---------------  -------------  ---
+  ai-interfaces               openwebui-6995565d9f-pclg2                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         30h
+  ai-system                   ollama-57b948f8bb-qtnhq                            8 (40%)       18 (90%)    24Gi (49%)       48Gi (98%)     29h
+  ai-system                   ollama-agents-85bd5ccddf-jbvsz                     4 (20%)       8 (40%)     12Gi (24%)       24Gi (49%)     29h
+  ai-system                   redis-5d5cf4f7fd-7jk95                             100m (0%)     500m (2%)   128Mi (0%)       512Mi (1%)     23h
+  ingress-nginx               ingress-nginx-controller-67bcf56cc6-v8pf6          100m (0%)     0 (0%)      90Mi (0%)        0 (0%)         32h
+  kube-system                 cilium-rtt5g                                       100m (0%)     0 (0%)      10Mi (0%)        0 (0%)         2d7h
+  kube-system                 nvidia-device-plugin-daemonset-qjcv9               0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d5h
+  metallb-system              speaker-5khtz                                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         34h
+  observability               loki-canary-g9glb                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         34h
+  observability               loki-logs-hgnmf                                    0 (0%)        0 (0%)      0 (0%)           0 (0%)         34h
+  observability               prometheus-stack-prometheus-node-exporter-znxvd    0 (0%)        0 (0%)      0 (0%)           0 (0%)         34h
+  observability               promtail-t4vgb                                     0 (0%)        0 (0%)      0 (0%)           0 (0%)         34h
+  openclaw                    openclaw-b5d9d4cb8-65dqj                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         19m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests       Limits
+  --------           --------       ------
+  cpu                12300m (61%)   26500m (132%)
+  memory             37092Mi (74%)  74240Mi (148%)
+  ephemeral-storage  0 (0%)         0 (0%)
+  hugepages-1Gi      0 (0%)         0 (0%)
+  hugepages-2Mi      0 (0%)         0 (0%)
+  nvidia.com/gpu     2              2
+Events:              <none>

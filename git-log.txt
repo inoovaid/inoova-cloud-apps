@@ -1,0 +1,20 @@
+6a1db58 fix openclaw gateway bind
+e5eb89d fix openclaw home config1
+df7f5d5 fix openclaw home config
+d1b6510 debug openclaw sleep
+593a252 debug openclaw sleep
+130ea3d disable openclaw gateway token
+f1bc603 fix openclaw gateway mode1
+362a2ec fix openclaw gateway mode
+838c7ee fix openclaw pvc ingress service
+6b7e4a3 fix openclaw deployment
+733ea50 Add openclaw-trigger.yaml for ArgoCD application
+3f5d558 Add openclaw.yaml for ArgoCD application configuration
+bdafe1d Add ingress and network policy to kustomization
+e616b30 Add NetworkPolicy for openclaw application
+4ecd472 Update model version in configmap.yaml
+fa6a6ca Add Ingress resource for openclaw service
+4ac1e36 Update service.yaml
+8534077 Update model configuration in configmap.yaml
+a97904e Create kustomization.yaml
+61c0786 Add secret.yaml for OpenClaw configuration
