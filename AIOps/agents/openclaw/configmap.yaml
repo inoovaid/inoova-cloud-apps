@@ -4,68 +4,32 @@ metadata:
   name: openclaw-config
   namespace: openclaw
 data:
-  AGENTS.md: |
-    # OpenClaw Agents
-
-    ## Default Agent
-
-    - id: default
-      name: OpenClaw Assistant
-      description: OpenClaw integrado ao ambiente Kubernetes, ArgoCD, GitOps e Ollama
-      provider: ollama-primary
-      model: qwen2.5-coder:7b
   openclaw.json: |
     {
       "gateway": {
         "mode": "local",
-        "auth": {
-          "mode": "token",
-          "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864"
-        },
+        "auth": { "mode": "token", "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864" },
         "port": 18789,
         "bind": "lan",
-        "controlUi": {
-          "allowedOrigins": [
-            "https://openclaw.dnn.lat",
-            "http://localhost:18789",
-            "http://127.0.0.1:18789"
-          ]
-        }
+        "trustedProxies": ["10.0.0.0/8","192.168.0.0/16","172.16.0.0/12"],
+        "controlUi": { "allowedOrigins": ["https://openclaw.dnn.lat"] }
       },
-
       "agents": {
         "defaults": {
-          "workspace": "/home/node/.openclaw/workspace"
+          "workspace": "/home/node/.openclaw/workspace",
+          "model": { "primary": "ollama/qwen2.5-coder:7b" },
+          "memorySearch": { "enabled": false }
         }
       },
-
       "models": {
+        "mode": "merge",
         "providers": {
-          "ollama-primary": {
-            "api": "ollama",
-            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434",
-            "models": {
-              "qwen2.5-coder:7b": {
-                "contextWindow": 32000,
-                "maxTokens": 8000
-              }
-            }
-          },
-          "ollama-secondary": {
-            "api": "ollama",
-            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434",
-            "models": {
-              "qwen2.5-coder:7b": {
-                "contextWindow": 32000,
-                "maxTokens": 8000
-              }
-            }
+          "ollama": {
+            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
+            "models": [
+              { "id": "qwen2.5-coder:7b", "name": "Qwen2.5 Coder 7B", "api": "openai-completions", "contextWindow": 32768, "maxTokens": 8000 }
+            ]
           }
-        },
-        "defaults": {
-          "provider": "ollama-primary",
-          "model": "qwen2.5-coder:7b"
         }
       }
     }
-
