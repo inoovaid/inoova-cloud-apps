@@ -1,35 +1,50 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: openclaw-config
-  namespace: openclaw
-data:
-  openclaw.json: |
-    {
-      "gateway": {
-        "mode": "local",
-        "auth": { "mode": "token", "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864" },
-        "port": 18789,
-        "bind": "lan",
-        "trustedProxies": ["10.0.0.0/8","192.168.0.0/16","172.16.0.0/12"],
-        "controlUi": { "allowedOrigins": ["https://openclaw.dnn.lat"] }
+{
+  "gateway": {
+    "mode": "local",
+    "auth": { "mode": "token", "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864" },
+    "port": 18789,
+    "bind": "lan",
+    "trustedProxies": ["10.0.0.0/8","192.168.0.0/16","172.16.0.0/12"],
+    "controlUi": {
+      "allowedOrigins": [
+        "https://openclaw.dnn.lat",
+        "http://openclaw.dnn.lat"
+      ]
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/node/.openclaw/workspace",
+      "model": {
+        "primary": "ollama/qwen2.5-coder:7b",
+        "fallbacks": ["ollama/qwen2.5:32b-instruct"]
       },
-      "agents": {
-        "defaults": {
-          "workspace": "/home/node/.openclaw/workspace",
-          "model": { "primary": "ollama/qwen2.5-coder:7b" },
-          "memorySearch": { "enabled": false }
-        }
-      },
-      "models": {
-        "mode": "merge",
-        "providers": {
-          "ollama": {
-            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
-            "models": [
-              { "id": "qwen2.5-coder:7b", "name": "Qwen2.5 Coder 7B", "api": "openai-completions", "contextWindow": 32768, "maxTokens": 8000 }
-            ]
+      "memorySearch": { "enabled": false }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
+        "models": [
+          {
+            "id": "qwen2.5-coder:7b",
+            "name": "Qwen2.5 Coder 7B",
+            "api": "openai-completions",
+            "contextWindow": 32768,
+            "maxTokens": 32768
+          },
+          {
+            "id": "qwen2.5:32b-instruct",
+            "name": "Qwen2.5 32B Instruct",
+            "api": "openai-completions",
+            "contextWindow": 32768,
+            "maxTokens": 32768
           }
-        }
+        ]
       }
     }
+  }
+}
+
