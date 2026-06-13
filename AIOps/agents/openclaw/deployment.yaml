@@ -13,6 +13,23 @@ spec:
       labels:
         app: openclaw
     spec:
+      serviceAccountName: openclaw-agent
+
+      # InitContainer para instalar kubectl no volume compartilhado
+      initContainers:
+      - name: install-kubectl
+        image: bitnami/kubectl:latest
+        command:
+        - sh
+        - -c
+        - |
+          cp /opt/bitnami/kubectl/bin/kubectl /tools/kubectl
+          chmod +x /tools/kubectl
+          echo "✅ kubectl copiado para /tools"
+        volumeMounts:
+        - name: tools
+          mountPath: /tools
+
       containers:
       - name: openclaw
         image: ghcr.io/openclaw/openclaw:latest
@@ -31,6 +48,8 @@ spec:
           value: "ollama-local"
         - name: OLLAMA_SECONDARY_API_KEY
           value: "ollama-local"
+        - name: PATH
+          value: "/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
         command:
         - sh
@@ -50,6 +69,8 @@ spec:
           mountPath: /config
         - name: data
           mountPath: /home/node/.openclaw
+        - name: tools
+          mountPath: /tools
 
       volumes:
       - name: config
@@ -58,3 +79,5 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: openclaw-pvc
+      - name: tools
+        emptyDir: {}
