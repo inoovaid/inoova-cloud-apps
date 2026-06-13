@@ -1,26 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
   name: openclaw
   namespace: openclaw
-
 spec:
   replicas: 1
-
   selector:
     matchLabels:
       app: openclaw
-
   template:
     metadata:
       labels:
         app: openclaw
-
     spec:
       containers:
       - name: openclaw
-
         image: ghcr.io/openclaw/openclaw:latest
 
         env:
@@ -29,11 +23,18 @@ spec:
             secretKeyRef:
               name: openclaw-secrets
               key: OPENCLAW_GATEWAY_TOKEN
+        - name: OPENAI_API_KEY
+          value: "ollama-local"
+        - name: OLLAMA_API_KEY
+          value: "ollama-local"
+        - name: OLLAMA_PRIMARY_API_KEY
+          value: "ollama-local"
+        - name: OLLAMA_SECONDARY_API_KEY
+          value: "ollama-local"
 
         command:
         - sh
         - -c
-
         args:
         - |
           mkdir -p /home/node/.openclaw
@@ -47,7 +48,6 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-
         - name: data
           mountPath: /home/node/.openclaw
 
@@ -55,7 +55,6 @@ spec:
       - name: config
         configMap:
           name: openclaw-config
-
       - name: data
         persistentVolumeClaim:
           claimName: openclaw-pvc
