@@ -29,17 +29,26 @@ jobs:
           wget -qO- https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
           sudo mv kubeconform /usr/local/bin/
 
-      - name: Validate YAML syntax (dry-run sem cluster)
+      - name: Validate YAML syntax
         run: |
-          echo "📋 Validando YAMLs do OpenClaw..."
+          echo "📋 Validando sintaxe YAML..."
           for f in AIOps/agents/openclaw/*.yaml; do
-            echo "  ✔ Validando: $f"
-            kubectl apply --dry-run=client --validate=false -f "$f" 2>&1 || {
-              echo "  ❌ FALHA na sintaxe: $f"
-              exit 1
-            }
+            python3 -c "
+          import yaml, sys
+          try:
+              with open('$f') as fh:
+                  docs = list(yaml.safe_load_all(fh))
+              for doc in docs:
+                  if doc is None:
+                      continue
+                  assert 'apiVersion' in doc or 'kind' in doc or 'resources' in doc, f'Documento sem apiVersion/kind em $f'
+              print(f'  ✔ Sintaxe OK: $f')
+          except Exception as e:
+              print(f'  ❌ FALHA: $f — {e}')
+              sys.exit(1)
+          "
           done
-          echo "✅ Sintaxe YAML OK!"
+          echo "✅ Sintaxe YAML válida!"
 
       - name: Validate schemas with kubeconform
         run: |
@@ -52,6 +61,15 @@ jobs:
             -ignore-missing-schemas \
             AIOps/agents/openclaw/*.yaml
           echo "✅ Schema validation OK!"
+
+      - name: Validate Kustomize build
+        run: |
+          echo "📋 Testando kustomize build..."
+          kubectl kustomize AIOps/agents/openclaw/ > /dev/null
+          echo "✅ Kustomize build OK!"
+          echo ""
+          echo "📋 Recursos gerados:"
+          kubectl kustomize AIOps/agents/openclaw/ | grep -E "^kind:" | sort | uniq -c
 
       - name: Validate JSON config inside ConfigMap
         run: |
@@ -79,12 +97,6 @@ jobs:
           print(f'   Ollama URL: {providers[\"ollama\"][\"baseUrl\"]}')
           print(f'   Models: {len(providers[\"ollama\"][\"models\"])}')
           "
-
-      - name: Validate Kustomize build
-        run: |
-          echo "📋 Testando kustomize build..."
-          kubectl kustomize AIOps/agents/openclaw/
-          echo "✅ Kustomize build OK!"
 
   notify-argocd:
     name: "🚀 Trigger ArgoCD Sync"
