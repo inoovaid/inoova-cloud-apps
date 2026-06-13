@@ -15,17 +15,24 @@ spec:
     spec:
       serviceAccountName: openclaw-agent
 
-      # InitContainer para instalar kubectl no volume compartilhado
       initContainers:
       - name: install-kubectl
-        image: bitnami/kubectl:latest
+        image: ghcr.io/openclaw/openclaw:latest
         command:
         - sh
         - -c
         - |
-          cp /opt/bitnami/kubectl/bin/kubectl /tools/kubectl
+          echo "📦 Baixando kubectl..."
+          if command -v wget > /dev/null 2>&1; then
+            wget -q "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -O /tools/kubectl
+          elif command -v curl > /dev/null 2>&1; then
+            curl -sL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /tools/kubectl
+          else
+            echo "❌ Nem wget nem curl disponíveis"
+            exit 1
+          fi
           chmod +x /tools/kubectl
-          echo "✅ kubectl copiado para /tools"
+          /tools/kubectl version --client 2>/dev/null && echo "✅ kubectl instalado com sucesso"
         volumeMounts:
         - name: tools
           mountPath: /tools

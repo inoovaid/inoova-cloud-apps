@@ -1,0 +1,60 @@
+{
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864"
+    },
+    "port": 18789,
+    "bind": "lan",
+    "controlUi": {
+      "allowedOrigins": [
+        "https://openclaw.dnn.lat",
+        "http://localhost:18789",
+        "http://127.0.0.1:18789"
+      ]
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/node/.openclaw/workspace",
+      "model": {
+        "primary": "ollama-primary/qwen2.5-coder:7b"
+      },
+      "memorySearch": {
+        "enabled": false
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama-primary": {
+        "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434",
+        "apiKey": "ollama-local",
+        "models": [
+          {
+            "id": "qwen2.5-coder:7b",
+            "name": "Qwen2.5 Coder 7B",
+            "api": "ollama",
+            "contextWindow": 32000,
+            "maxTokens": 8000
+          }
+        ]
+      },
+      "ollama-secondary": {
+        "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434",
+        "apiKey": "ollama-local",
+        "models": [
+          {
+            "id": "qwen2.5-coder:7b",
+            "name": "Qwen2.5 Coder 7B",
+            "api": "ollama",
+            "contextWindow": 32000,
+            "maxTokens": 8000
+          }
+        ]
+      }
+    }
+  }
+}
