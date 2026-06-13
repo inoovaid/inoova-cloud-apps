@@ -1,0 +1,110 @@
+name: "OpenClaw — Validate & Sync"
+
+on:
+  push:
+    paths:
+      - "AIOps/agents/openclaw/**"
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "AIOps/agents/openclaw/**"
+    branches:
+      - main
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Job 1: Validação dos manifests
+  # ──────────────────────────────────────────────
+  validate:
+    name: "🔍 Validate Manifests"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Validate YAML syntax
+        run: |
+          echo "📋 Validando YAMLs do OpenClaw..."
+          for f in AIOps/agents/openclaw/*.yaml; do
+            echo "  ✔ Validando: $f"
+            kubectl apply --dry-run=client -f "$f" 2>&1 || {
+              echo "  ❌ FALHA: $f"
+              exit 1
+            }
+          done
+          echo "✅ Todos os manifests válidos!"
+
+      - name: Validate JSON config inside ConfigMap
+        run: |
+          echo "📋 Validando JSON embutido no ConfigMap..."
+          python3 -c "
+          import yaml, json, sys
+          with open('AIOps/agents/openclaw/configmap.yaml') as f:
+              cm = yaml.safe_load(f)
+          config = json.loads(cm['data']['openclaw.json'])
+          
+          # Validações de negócio
+          assert 'gateway' in config, 'Faltando seção gateway'
+          assert 'agents' in config, 'Faltando seção agents'
+          assert 'models' in config, 'Faltando seção models'
+          assert config['gateway']['port'] == 18789, 'Porta incorreta'
+          
+          primary = config['agents']['defaults']['model']['primary']
+          assert primary.startswith('ollama/'), f'Primary model inválido: {primary}'
+          
+          providers = config['models']['providers']
+          assert 'ollama' in providers, 'Provider ollama não encontrado'
+          assert 'baseUrl' in providers['ollama'], 'baseUrl do ollama faltando'
+          
+          print(f'✅ Config válida!')
+          print(f'   Primary model: {primary}')
+          print(f'   Ollama URL: {providers[\"ollama\"][\"baseUrl\"]}')
+          print(f'   Models: {len(providers[\"ollama\"][\"models\"])}')
+          "
+
+      - name: Validate Kustomize build
+        run: |
+          echo "📋 Testando kustomize build..."
+          kubectl kustomize AIOps/agents/openclaw/
+          echo "✅ Kustomize build OK!"
+
+  # ──────────────────────────────────────────────
+  # Job 2: Notificar ArgoCD para sync (só em push no main)
+  # ──────────────────────────────────────────────
+  notify-argocd:
+    name: "🚀 Trigger ArgoCD Sync"
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Trigger ArgoCD sync via webhook
+        run: |
+          echo "📡 ArgoCD com autoSync habilitado."
+          echo "O push para main automaticamente dispara o sync."
+          echo ""
+          echo "📋 Resumo do deploy:"
+          echo "  App:    openclaw"
+          echo "  Branch: main"
+          echo "  Commit: ${{ github.sha }}"
+          echo "  Author: ${{ github.actor }}"
+          echo ""
+          echo "✅ ArgoCD detectará as mudanças em ~3 minutos (polling)"
+          echo "   ou imediatamente se webhook estiver configurado."
+
+      - name: Post deployment summary
+        run: |
+          echo "## 🚀 OpenClaw Deploy Triggered" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Valor |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | main |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Author** | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ArgoCD App** | openclaw |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Sync Mode** | Automated (selfHeal) |" >> $GITHUB_STEP_SUMMARY
