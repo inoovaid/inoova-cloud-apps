@@ -84,8 +84,8 @@ data:
             "apiKey": "ollama-local",
             "models": [
               {
-                "id": "qwen2.5:7b",
-                "name": "qwen2.5:7b (inst.2 - fallback tools)",
+                "id": "qwen2.5:7b-instruct",
+                "name": "qwen2.5:7b-instruct (inst.2 - fallback tools)",
                 "api": "ollama",
                 "contextWindow": 32768,
                 "maxTokens": 4096,
