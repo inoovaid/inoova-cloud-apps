@@ -25,8 +25,11 @@ data:
         "defaults": {
           "workspace": "/home/node/.openclaw/workspace",
           "model": {
-            "primary": "ollama/qwen2.5-7b-64k",
-            "fallbacks": ["ollama/qwen2.5-coder:7b"]
+            "primary": "ollama-coder/qwen2.5-coder:7b",
+            "fallbacks": ["ollama-general/deepseek-r1:8b"]
+          },
+          "compaction": {
+            "reserveTokensFloor": 4096
           },
           "memorySearch": { "enabled": false }
         }
@@ -46,25 +49,31 @@ data:
       "models": {
         "mode": "merge",
         "providers": {
-          "ollama": {
+          "ollama-coder": {
             "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
             "models": [
               {
-                "id": "qwen2.5-7b-64k",
-                "name": "Qwen2.5 32B Instruct",
-                "api": "openai-completions",
-                "contextWindow": 65536,
-                "maxTokens": 4096
-              },
-              {
                 "id": "qwen2.5-coder:7b",
-                "name": "Qwen2.5 Coder 7B",
+                "name": "Qwen2.5 Coder 7B (inst.1 - coding)",
                 "api": "openai-completions",
                 "contextWindow": 65536,
-                "maxTokens": 4096
+                "maxTokens": 8192
+              }
+            ]
+          },
+          "ollama-general": {
+            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434/v1",
+            "models": [
+              {
+                "id": "deepseek-r1:8b",
+                "name": "DeepSeek R1 8B (inst.2 - geral)",
+                "api": "openai-completions",
+                "contextWindow": 65536,
+                "maxTokens": 8192
               }
             ]
           }
         }
       }
     }
+
