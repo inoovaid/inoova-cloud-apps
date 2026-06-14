@@ -53,14 +53,14 @@ data:
                 "id": "qwen2.5-7b-64k",
                 "name": "Qwen2.5 32B Instruct",
                 "api": "openai-completions",
-                "contextWindow": 32768,
+                "contextWindow": 65536,
                 "maxTokens": 4096
               },
               {
                 "id": "qwen2.5-coder:7b",
                 "name": "Qwen2.5 Coder 7B",
                 "api": "openai-completions",
-                "contextWindow": 32768,
+                "contextWindow": 65536,
                 "maxTokens": 4096
               }
             ]
