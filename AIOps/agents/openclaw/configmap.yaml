@@ -9,6 +9,16 @@ metadata:
 data:
   openclaw.json: |
     {
+      "plugins": {
+        "entries": {
+          "ollama": {
+            "enabled": true,
+            "config": {
+              "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434"
+            }
+          }
+        }
+      },
       "gateway": {
         "mode": "local",
         "auth": {
@@ -68,7 +78,7 @@ data:
               {
                 "id": "qwen2.5:14b-instruct-q4_K_M",
                 "name": "Qwen2.5 14B Instruct (inst.1 - tools)",
-                "api": "ollama",
+                "api": "openai",
                 "contextWindow": 32768,
                 "maxTokens": 8192
               }
@@ -81,7 +91,7 @@ data:
               {
                 "id": "llama3.1:8b-instruct-q5_K_M",
                 "name": "Llama 3.1 8B Instruct (inst.2 - fallback tools)",
-                "api": "ollama",
+                "api": "openai",
                 "contextWindow": 32768,
                 "maxTokens": 8192
               }
