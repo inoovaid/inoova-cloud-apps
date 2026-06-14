@@ -16,9 +16,34 @@ spec:
       containers:
       - name: supergateway
         image: supercorp/supergateway:3.4.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         args:
           - --streamableHttp
-          - http://mcp-kubernetes:8000/mcp
+          - "http://mcp-kubernetes:8000/mcp"
+          - --outputTransport
+          - sse
+          - --port
+          - "8000"
         ports:
         - containerPort: 8000
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /sse
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /sse
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "250m"
+            memory: "128Mi"
+
