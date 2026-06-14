@@ -3,8 +3,12 @@ kind: Deployment
 metadata:
   name: openclaw
   namespace: openclaw
+  labels:
+    app: openclaw
+    app.kubernetes.io/instance: openclaw
 spec:
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: openclaw
@@ -14,77 +18,80 @@ spec:
         app: openclaw
     spec:
       serviceAccountName: openclaw-agent
-
       initContainers:
-      - name: install-kubectl
-        image: ghcr.io/openclaw/openclaw:latest
-        command:
-        - sh
-        - -c
-        - |
-          echo "📦 Baixando kubectl..."
-          if command -v wget > /dev/null 2>&1; then
-            wget -q "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -O /tools/kubectl
-          elif command -v curl > /dev/null 2>&1; then
-            curl -sL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /tools/kubectl
-          else
-            echo "❌ Nem wget nem curl disponíveis"
-            exit 1
-          fi
-          chmod +x /tools/kubectl
-          /tools/kubectl version --client 2>/dev/null && echo "✅ kubectl instalado com sucesso"
-        volumeMounts:
-        - name: tools
-          mountPath: /tools
-
+        - name: install-kubectl
+          image: ghcr.io/openclaw/openclaw:latest
+          command:
+            - sh
+            - -c
+            - |
+              echo "📦 Baixando kubectl..."
+              if command -v wget > /dev/null 2>&1; then
+                wget -q "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -O /tools/kubectl
+              elif command -v curl > /dev/null 2>&1; then
+                curl -sL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /tools/kubectl
+              else
+                echo "❌ Nem wget nem curl disponíveis"
+                exit 1
+              fi
+              chmod +x /tools/kubectl
+              /tools/kubectl version --client 2>/dev/null && echo "✅ kubectl instalado com sucesso"
+          volumeMounts:
+            - name: tools
+              mountPath: /tools
       containers:
-      - name: openclaw
-        image: ghcr.io/openclaw/openclaw:latest
-
-        env:
-        - name: OPENCLAW_GATEWAY_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: openclaw-secrets
-              key: OPENCLAW_GATEWAY_TOKEN
-        - name: OPENAI_API_KEY
-          value: "ollama-local"
-        - name: OLLAMA_API_KEY
-          value: "ollama-local"
-        - name: OLLAMA_PRIMARY_API_KEY
-          value: "ollama-local"
-        - name: OLLAMA_SECONDARY_API_KEY
-          value: "ollama-local"
-        - name: PATH
-          value: "/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-        command:
-        - sh
-        - -c
-        args:
-        - |
-          mkdir -p /home/node/.openclaw
-          cp /config/openclaw.json /home/node/.openclaw/openclaw.json
-          exec openclaw gateway run --bind lan
-
-        ports:
-        - containerPort: 18789
-          name: gateway
-
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        - name: data
-          mountPath: /home/node/.openclaw
-        - name: tools
-          mountPath: /tools
-
+        - name: openclaw
+          image: ghcr.io/openclaw/openclaw:latest
+          command:
+            - sh
+            - -c
+            - |
+              openclaw gateway run --bind lan
+          ports:
+            - name: gateway
+              containerPort: 18789
+          env:
+            - name: OPENCLAW_GATEWAY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw-secrets
+                  key: OPENCLAW_GATEWAY_TOKEN
+            - name: OPENAI_API_KEY
+              value: "ollama-local"
+            - name: OLLAMA_API_KEY
+              value: "ollama-local"
+            - name: OLLAMA_PRIMARY_API_KEY
+              value: "ollama-local"
+            - name: OLLAMA_SECONDARY_API_KEY
+              value: "ollama-local"
+            - name: PATH
+              value: "/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          volumeMounts:
+            # 1) PVC para workspace/dados — montado PRIMEIRO (diretório base)
+            - name: data
+              mountPath: /home/node/.openclaw
+            # 2) ConfigMap sobreposto APENAS no arquivo de config (subPath)
+            #    Garante que o gateway SEMPRE leia o config do ConfigMap
+            - name: config
+              mountPath: /home/node/.openclaw/openclaw.json
+              subPath: openclaw.json
+            # 3) ConfigMap também disponível em /config (compatibilidade)
+            - name: config
+              mountPath: /config
+            - name: tools
+              mountPath: /tools
       volumes:
-      - name: config
-        configMap:
-          name: openclaw-config
-      - name: data
-        persistentVolumeClaim:
-          claimName: openclaw-pvc
-      - name: tools
-        emptyDir: {}
+        - name: config
+          configMap:
+            name: openclaw-config
+            defaultMode: 420
+        - name: data
+          persistentVolumeClaim:
+            claimName: openclaw-pvc
+        - name: tools
+          emptyDir: {}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+
