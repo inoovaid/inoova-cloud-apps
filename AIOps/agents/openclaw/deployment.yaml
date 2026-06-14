@@ -12,86 +12,127 @@ spec:
   selector:
     matchLabels:
       app: openclaw
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
   template:
     metadata:
       labels:
         app: openclaw
     spec:
       serviceAccountName: openclaw-agent
-      initContainers:
-        - name: install-kubectl
-          image: ghcr.io/openclaw/openclaw:latest
-          command:
-            - sh
-            - -c
-            - |
-              echo "📦 Baixando kubectl..."
-              if command -v wget > /dev/null 2>&1; then
-                wget -q "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -O /tools/kubectl
-              elif command -v curl > /dev/null 2>&1; then
-                curl -sL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /tools/kubectl
-              else
-                echo "❌ Nem wget nem curl disponíveis"
-                exit 1
-              fi
-              chmod +x /tools/kubectl
-              /tools/kubectl version --client 2>/dev/null && echo "✅ kubectl instalado com sucesso"
-          volumeMounts:
-            - name: tools
-              mountPath: /tools
-      containers:
-        - name: openclaw
-          image: ghcr.io/openclaw/openclaw:latest
-          command:
-            - sh
-            - -c
-            - |
-              openclaw gateway run --bind lan
-          ports:
-            - name: gateway
-              containerPort: 18789
-          env:
-            - name: OPENCLAW_GATEWAY_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: openclaw-secrets
-                  key: OPENCLAW_GATEWAY_TOKEN
-            - name: OPENAI_API_KEY
-              value: "ollama-local"
-            - name: OLLAMA_API_KEY
-              value: "ollama-local"
-            - name: OLLAMA_PRIMARY_API_KEY
-              value: "ollama-local"
-            - name: OLLAMA_SECONDARY_API_KEY
-              value: "ollama-local"
-            - name: PATH
-              value: "/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-          volumeMounts:
-            # 1) PVC para workspace/dados — montado PRIMEIRO (diretório base)
-            - name: data
-              mountPath: /home/node/.openclaw
-            # 2) ConfigMap sobreposto APENAS no arquivo de config (subPath)
-            #    Garante que o gateway SEMPRE leia o config do ConfigMap
-            - name: config
-              mountPath: /home/node/.openclaw/openclaw.json
-              subPath: openclaw.json
-            # 3) ConfigMap também disponível em /config (compatibilidade)
-            - name: config
-              mountPath: /config
-            - name: tools
-              mountPath: /tools
-      volumes:
-        - name: config
-          configMap:
-            name: openclaw-config
-            defaultMode: 420
-        - name: data
-          persistentVolumeClaim:
-            claimName: openclaw-pvc
-        - name: tools
-          emptyDir: {}
-      dnsPolicy: ClusterFirst
       restartPolicy: Always
-      schedulerName: default-scheduler
+      dnsPolicy: ClusterFirst
       terminationGracePeriodSeconds: 30
-
+      initContainers:
+      - name: install-kubectl
+        image: ghcr.io/openclaw/openclaw:latest
+        imagePullPolicy: Always
+        command:
+        - sh
+        - -c
+        - |
+          echo "📦 Baixando kubectl..."
+          if command -v wget > /dev/null 2>&1; then
+            wget -q "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -O /tools/kubectl
+          elif command -v curl > /dev/null 2>&1; then
+            curl -sL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /tools/kubectl
+          else
+            echo "❌ Nem wget nem curl disponíveis"
+            exit 1
+          fi
+          chmod +x /tools/kubectl
+          /tools/kubectl version --client 2>/dev/null && echo "✅ kubectl instalado com sucesso"
+        env:
+        - name: OPENCLAW_GATEWAY_AUTO_APPROVE_DEVICES
+          value: "true"
+        - name: OPENCLAW_GATEWAY_REQUIRE_DEVICE_PAIRING
+          value: "false"
+        - name: OPENCLAW_AUTO_APPROVE
+          value: "true"
+        - name: OPENCLAW_SKIP_PAIRING
+          value: "true"
+        - name: OLLAMA_BASE_URL
+          value: http://ollama.ai-system.svc.cluster.local:11434
+        - name: OPENAI_API_BASE
+          value: http://ollama.ai-system.svc.cluster.local:11434/v1
+        - name: OLLAMA_MODEL
+          value: qwen2.5:32b-instruct
+        - name: MCP_KUBERNETES_URL
+          value: http://mcp-kubernetes.ai-system.svc.cluster.local:8000/mcp
+        - name: MCP_HUB_URL
+          value: http://mcp-hub.ai-system.svc.cluster.local:8000/mcp
+        - name: OLLAMA_API_KEY
+          value: ollama-local
+        volumeMounts:
+        - mountPath: /tools
+          name: tools
+      containers:
+      - name: openclaw
+        image: ghcr.io/openclaw/openclaw:latest
+        imagePullPolicy: Always
+        command:
+        - sh
+        - -c
+        - |
+          openclaw gateway run --bind lan
+        env:
+        - name: OPENCLAW_CONFIG_PATH          # ← ADICIONADO (doc oficial: aponta o config real fora do state dir)
+          value: /config/openclaw.json
+        - name: OPENCLAW_GATEWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: OPENCLAW_GATEWAY_TOKEN
+              name: openclaw-secrets
+        - name: OPENAI_API_KEY
+          value: ollama-local
+        - name: OLLAMA_API_KEY
+          value: ollama-local
+        - name: OLLAMA_PRIMARY_API_KEY
+          value: ollama-local
+        - name: OLLAMA_SECONDARY_API_KEY
+          value: ollama-local
+        - name: PATH
+          value: /tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: OPENCLAW_GATEWAY_AUTO_APPROVE_DEVICES
+          value: "true"
+        - name: OPENCLAW_GATEWAY_REQUIRE_DEVICE_PAIRING
+          value: "false"
+        - name: OPENCLAW_AUTO_APPROVE
+          value: "true"
+        - name: OPENCLAW_SKIP_PAIRING
+          value: "true"
+        - name: OLLAMA_BASE_URL
+          value: http://ollama.ai-system.svc.cluster.local:11434
+        - name: OPENAI_API_BASE
+          value: http://ollama.ai-system.svc.cluster.local:11434/v1
+        - name: OLLAMA_MODEL
+          value: qwen2.5:32b-instruct
+        - name: MCP_KUBERNETES_URL
+          value: http://mcp-kubernetes.ai-system.svc.cluster.local:8000/mcp
+        - name: MCP_HUB_URL
+          value: http://mcp-hub.ai-system.svc.cluster.local:8000/mcp
+        ports:
+        - containerPort: 18789
+          name: gateway
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /home/node/.openclaw
+          name: data
+        # REMOVIDO: o mount subPath de openclaw.json (subPath NÃO recebe updates do ConfigMap)
+        - mountPath: /config
+          name: config
+        - mountPath: /tools
+          name: tools
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 420
+          name: openclaw-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: openclaw-pvc
+      - name: tools
+        emptyDir: {}
