@@ -70,10 +70,10 @@ data:
                 "id": "qwen2.5:14b-instruct-q4_K_M",
                 "name": "Qwen2.5 14B Instruct (inst.1 - tools)",
                 "api": "ollama",
-                "contextWindow": 32768,
+                "contextWindow": 65536,
                 "maxTokens": 4096,
                 "params": {
-                  "num_ctx": 32768
+                  "num_ctx": 65536
                 }
               }
             ]
@@ -87,10 +87,10 @@ data:
                 "id": "llama3.1:8b-instruct-q5_K_M",
                 "name": "Llama 3.1 8B Instruct (inst.2 - fallback tools)",
                 "api": "ollama",
-                "contextWindow": 32768,
+                "contextWindow": 65536,
                 "maxTokens": 4096,
                 "params": {
-                  "num_ctx": 32768
+                  "num_ctx": 65536
                 }
               }
             ]

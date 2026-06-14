@@ -1,0 +1,243 @@
+===== VERSION =====
+Client Version: v1.30.14
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Server Version: v1.30.14
+===== NODES =====
+NAME            STATUS   ROLES           AGE     VERSION    INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+k8s-control     Ready    control-plane   82d     v1.30.14   10.10.30.10   <none>        Ubuntu 24.04.4 LTS   6.8.0-124-generic   containerd://2.2.4
+k8s-worker-ai   Ready    <none>          7d23h   v1.30.14   10.10.30.14   <none>        Ubuntu 24.04.3 LTS   6.8.0-124-generic   containerd://2.2.4
+k8s-worker1     Ready    <none>          82d     v1.30.14   10.10.30.11   <none>        Ubuntu 24.04.4 LTS   6.8.0-124-generic   containerd://2.2.4
+k8s-worker2     Ready    <none>          82d     v1.30.14   10.10.30.12   <none>        Ubuntu 24.04.4 LTS   6.8.0-124-generic   containerd://2.2.4
+k8s-worker3     Ready    <none>          82d     v1.30.14   10.10.30.13   <none>        Ubuntu 24.04.4 LTS   6.8.0-124-generic   containerd://2.2.4
+===== NAMESPACES =====
+NAME                   STATUS   AGE
+ai-automation          Active   7d17h
+ai-interfaces          Active   7d17h
+ai-system              Active   7d17h
+argocd                 Active   81d
+cert-manager           Active   82d
+cnpg-system            Active   82d
+default                Active   82d
+financeflow            Active   42d
+ingress-nginx          Active   82d
+k8s                    Active   42d
+kagent                 Active   6d16h
+keycloak               Active   48d
+kube-node-lease        Active   82d
+kube-public            Active   82d
+kube-system            Active   82d
+kubernetes-dashboard   Active   82d
+kyverno                Active   6d17h
+local-path-storage     Active   82d
+metallb-system         Active   82d
+observability          Active   48d
+openclaw               Active   5d18h
+saas-app               Active   42d
+saas-beautypro         Active   41d
+saas-financeflow       Active   42d
+saas-iis               Active   42d
+saas-techcrm           Active   41d
+saas-web-app           Active   44d
+saas-web-iis           Active   44d
+===== OPENCLAW PODS =====
+openclaw               openclaw-89d8655cd-lfwqp                                 1/1     Running   0                13m     10.0.4.32     k8s-worker-ai   <none>           <none>
+===== SERVICEACCOUNTS =====
+NAMESPACE              NAME                                          SECRETS   AGE
+ai-automation          default                                       0         7d17h
+ai-interfaces          default                                       0         7d17h
+ai-system              ai-agent                                      0         7d17h
+ai-system              default                                       0         7d17h
+argocd                 argocd-application-controller                 0         81d
+argocd                 argocd-applicationset-controller              0         81d
+argocd                 argocd-dex-server                             0         81d
+argocd                 argocd-notifications-controller               0         81d
+argocd                 argocd-redis                                  0         81d
+argocd                 argocd-repo-server                            0         81d
+argocd                 argocd-server                                 0         81d
+argocd                 default                                       0         81d
+argocd                 mcp-agent                                     0         7d11h
+cert-manager           cert-manager                                  0         82d
+cert-manager           cert-manager-cainjector                       0         82d
+cert-manager           cert-manager-webhook                          0         82d
+cert-manager           default                                       0         82d
+cnpg-system            cnpg-manager                                  0         82d
+cnpg-system            default                                       0         82d
+default                default                                       0         82d
+default                postgres-ha                                   0         82d
+financeflow            default                                       0         42d
+ingress-nginx          default                                       0         82d
+ingress-nginx          ingress-nginx                                 0         82d
+ingress-nginx          ingress-nginx-admission                       0         82d
+k8s                    default                                       0         42d
+kagent                 default                                       0         6d16h
+keycloak               default                                       0         48d
+kube-node-lease        default                                       0         82d
+kube-public            default                                       0         82d
+kube-system            attachdetach-controller                       0         82d
+kube-system            bootstrap-signer                              0         82d
+kube-system            certificate-controller                        0         82d
+kube-system            cilium                                        0         82d
+kube-system            cilium-operator                               0         82d
+kube-system            clusterrole-aggregation-controller            0         82d
+kube-system            coredns                                       0         82d
+kube-system            cronjob-controller                            0         82d
+kube-system            daemon-set-controller                         0         82d
+kube-system            default                                       0         82d
+kube-system            deployment-controller                         0         82d
+kube-system            disruption-controller                         0         82d
+kube-system            endpoint-controller                           0         82d
+kube-system            endpointslice-controller                      0         82d
+kube-system            endpointslicemirroring-controller             0         82d
+kube-system            ephemeral-volume-controller                   0         82d
+kube-system            expand-controller                             0         82d
+kube-system            generic-garbage-collector                     0         82d
+kube-system            horizontal-pod-autoscaler                     0         82d
+kube-system            job-controller                                0         82d
+kube-system            kube-proxy                                    0         82d
+kube-system            legacy-service-account-token-cleaner          0         82d
+kube-system            metrics-server                                0         82d
+kube-system            namespace-controller                          0         82d
+kube-system            node-controller                               0         82d
+kube-system            persistent-volume-binder                      0         82d
+kube-system            pod-garbage-collector                         0         82d
+kube-system            pv-protection-controller                      0         82d
+kube-system            pvc-protection-controller                     0         82d
+kube-system            replicaset-controller                         0         82d
+kube-system            replication-controller                        0         82d
+kube-system            resourcequota-controller                      0         82d
+kube-system            root-ca-cert-publisher                        0         82d
+kube-system            service-account-controller                    0         82d
+kube-system            service-controller                            0         82d
+kube-system            statefulset-controller                        0         82d
+kube-system            token-cleaner                                 0         82d
+kube-system            ttl-after-finished-controller                 0         82d
+kube-system            ttl-controller                                0         82d
+kube-system            validatingadmissionpolicy-status-controller   0         82d
+kubernetes-dashboard   admin-user                                    0         82d
+kubernetes-dashboard   default                                       0         82d
+kubernetes-dashboard   kubernetes-dashboard                          0         82d
+kyverno                default                                       0         6d17h
+kyverno                kyverno-admission-controller                  0         6d17h
+kyverno                kyverno-background-controller                 0         6d17h
+kyverno                kyverno-cleanup-controller                    0         6d17h
+kyverno                kyverno-reports-controller                    0         6d17h
+local-path-storage     default                                       0         82d
+local-path-storage     local-path-provisioner-service-account        0         82d
+metallb-system         controller                                    0         82d
+metallb-system         default                                       0         82d
+metallb-system         speaker                                       0         82d
+observability          default                                       0         48d
+observability          loki                                          0         48d
+observability          loki-canary                                   0         48d
+observability          loki-grafana-agent                            0         48d
+observability          loki-grafana-agent-operator                   0         48d
+observability          minio-sa                                      0         48d
+observability          prometheus-stack-grafana                      0         48d
+observability          prometheus-stack-kube-prom-alertmanager       0         48d
+observability          prometheus-stack-kube-prom-operator           0         48d
+observability          prometheus-stack-kube-prom-prometheus         0         48d
+observability          prometheus-stack-kube-state-metrics           0         48d
+observability          prometheus-stack-prometheus-node-exporter     0         48d
+observability          promtail                                      0         48d
+openclaw               default                                       0         5d18h
+openclaw               openclaw-agent                                0         28h
+saas-app               default                                       0         42d
+saas-beautypro         default                                       0         41d
+saas-financeflow       default                                       0         42d
+saas-iis               default                                       0         42d
+saas-techcrm           default                                       0         41d
+saas-web-app           default                                       0         44d
+saas-web-iis           default                                       0         44d
+===== CLUSTERROLES (filtro) =====
+ai-agent-reader                                                        2026-06-07T02:33:22Z
+ai-agent-readonly                                                      2026-06-08T00:45:36Z
+cert-manager-cainjector                                                2026-03-24T05:32:50Z
+loki-grafana-agent                                                     2026-04-27T13:07:29Z
+loki-grafana-agent-operator                                            2026-04-27T13:07:29Z
+openclaw-agent                                                         2026-06-13T15:24:21Z
+openclaw-k8s-access                                                    2026-06-13T16:45:30Z
+promtail                                                               2026-04-27T13:17:34Z
+===== CLUSTERROLEBINDINGS (filtro) =====
+ai-agent-reader-binding                                         ClusterRole/ai-agent-reader                                                        7d17h
+ai-agent-readonly                                               ClusterRole/ai-agent-readonly                                                      6d19h
+cert-manager-cainjector                                         ClusterRole/cert-manager-cainjector                                                82d
+loki-grafana-agent                                              ClusterRole/loki-grafana-agent                                                     48d
+loki-grafana-agent-operator                                     ClusterRole/loki-grafana-agent-operator                                            48d
+openclaw-agent                                                  ClusterRole/openclaw-agent                                                         28h
+openclaw-k8s-access-binding                                     ClusterRole/openclaw-k8s-access                                                    27h
+promtail                                                        ClusterRole/promtail                                                               48d
+===== ALL ai-system =====
+NAME                                  READY   STATUS    RESTARTS      AGE
+pod/langgraph-666d5888d5-2z29r        1/1     Running   5 (20h ago)   6d5h
+pod/mcp-kubernetes-67697b9bdf-bfxgk   1/1     Running   5 (20h ago)   6d18h
+pod/ollama-5f8d77497c-2bbq6           1/1     Running   0             3h4m
+pod/ollama-agents-85bd5ccddf-jmr9p    1/1     Running   0             6h58m
+pod/redis-5d5cf4f7fd-kz82z            1/1     Running   5 (20h ago)   4d22h
+
+NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+service/langgraph        ClusterIP   10.106.39.193    <none>        80/TCP      6d15h
+service/mcp-kubernetes   ClusterIP   10.109.208.184   <none>        8000/TCP    6d19h
+service/ollama           ClusterIP   10.99.158.71     <none>        11434/TCP   7d4h
+service/ollama-agents    ClusterIP   10.100.195.233   <none>        11434/TCP   6d22h
+service/redis            ClusterIP   10.102.183.164   <none>        6379/TCP    6d15h
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/langgraph        1/1     1            1           6d15h
+deployment.apps/mcp-kubernetes   1/1     1            1           6d19h
+deployment.apps/ollama           1/1     1            1           7d4h
+deployment.apps/ollama-agents    1/1     1            1           6d22h
+deployment.apps/redis            1/1     1            1           6d15h
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/langgraph-5747b5bc98        0         0         0       6d15h
+replicaset.apps/langgraph-575d54d894        0         0         0       6d15h
+replicaset.apps/langgraph-59f94d5bff        0         0         0       6d15h
+replicaset.apps/langgraph-657b7599c9        0         0         0       6d15h
+replicaset.apps/langgraph-666d5888d5        1         1         1       6d5h
+replicaset.apps/langgraph-744fbc68cd        0         0         0       6d14h
+replicaset.apps/langgraph-859fdcb876        0         0         0       6d14h
+replicaset.apps/langgraph-99f5c577b         0         0         0       6d14h
+replicaset.apps/mcp-kubernetes-574b985d75   0         0         0       6d19h
+replicaset.apps/mcp-kubernetes-67697b9bdf   1         1         1       6d18h
+replicaset.apps/mcp-kubernetes-779d94566b   0         0         0       6d19h
+replicaset.apps/mcp-kubernetes-864cf87554   0         0         0       6d18h
+replicaset.apps/mcp-kubernetes-f99f6fc85    0         0         0       6d19h
+replicaset.apps/ollama-5687f8fc4            0         0         0       18h
+replicaset.apps/ollama-57b948f8bb           0         0         0       6d21h
+replicaset.apps/ollama-5f8d77497c           1         1         1       3h4m
+replicaset.apps/ollama-6fc895bb7            0         0         0       18h
+replicaset.apps/ollama-agents-7f67c48c99    0         0         0       4d3h
+replicaset.apps/ollama-agents-85bd5ccddf    1         1         1       6d21h
+replicaset.apps/ollama-bb69f865             0         0         0       4h1m
+replicaset.apps/redis-5d5cf4f7fd            1         1         1       6d15h
+===== ALL ai-automation =====
+NAME                      READY   STATUS    RESTARTS      AGE
+pod/n8n-6858b8d97-pnvrd   1/1     Running   7 (20h ago)   7d4h
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/n8n   ClusterIP   10.99.164.141   <none>        80/TCP    7d4h
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/n8n   1/1     1            1           7d4h
+
+NAME                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/n8n-6858b8d97   1         1         1       7d4h
+===== ARGOCD APPS =====
+NAME                 SYNC STATUS   HEALTH STATUS
+ai-automation        Synced        Healthy
+ai-interfaces        Synced        Healthy
+ai-system            Synced        Healthy
+grafana-dashboards   Synced        Healthy
+kagent               Unknown       Healthy
+keycloak             Synced        Healthy
+kyverno              OutOfSync     Healthy
+loki                 OutOfSync     Healthy
+minio                Synced        Healthy
+openclaw             Synced        Healthy
+prometheus-stack     OutOfSync     Healthy
+promtail             OutOfSync     Healthy
+saas-app             Synced        Healthy
+saas-beautypro       Synced        Healthy
+saas-financeflow     Synced        Healthy
+saas-iis             Synced        Healthy
+saas-techcrm         Synced        Healthy
