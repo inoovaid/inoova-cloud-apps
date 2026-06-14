@@ -25,7 +25,7 @@ data:
         "defaults": {
           "workspace": "/home/node/.openclaw/workspace",
           "model": {
-            "primary": "ollama/qwen2.5:32b-instruct",
+            "primary": "ollama/qwen2.5-7b-64k",
             "fallbacks": ["ollama/qwen2.5-coder:7b"]
           },
           "memorySearch": { "enabled": false }
@@ -50,7 +50,7 @@ data:
             "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
             "models": [
               {
-                "id": "qwen2.5:32b-instruct",
+                "id": "qwen2.5-7b-64k",
                 "name": "Qwen2.5 32B Instruct",
                 "api": "openai-completions",
                 "contextWindow": 32768,
