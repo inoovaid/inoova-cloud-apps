@@ -11,21 +11,39 @@ data:
     {
       "gateway": {
         "mode": "local",
-        "auth": { "mode": "token", "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864" },
+        "auth": {
+          "mode": "token",
+          "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864"
+        },
         "port": 18789,
         "bind": "lan",
-        "trustedProxies": ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"],
-        "controlUi": { "allowedOrigins": ["https://openclaw.dnn.lat", "http://openclaw.dnn.lat"] }
+        "trustedProxies": [
+          "10.0.0.0/8",
+          "192.168.0.0/16",
+          "172.16.0.0/12"
+        ],
+        "controlUi": {
+          "allowedOrigins": [
+            "https://openclaw.dnn.lat",
+            "http://openclaw.dnn.lat"
+          ]
+        }
       },
       "agents": {
         "defaults": {
           "workspace": "/home/node/.openclaw/workspace",
           "model": {
             "primary": "ollama-coder/qwen2.5:14b-instruct-q4_K_M",
-            "fallbacks": ["ollama-general/llama3.1:8b-instruct-q5_K_M"]
+            "fallbacks": [
+              "ollama-general/llama3.1:8b-instruct-q5_K_M"
+            ]
           },
-          "compaction": { "reserveTokensFloor": 4096 },
-          "memorySearch": { "enabled": false }
+          "compaction": {
+            "reserveTokensFloor": 4096
+          },
+          "memorySearch": {
+            "enabled": false
+          }
         }
       },
       "mcp": {
@@ -33,7 +51,9 @@ data:
           "kubernetes": {
             "transport": "streamable-http",
             "url": "http://mcp-kubernetes.ai-system.svc.cluster.local:8000/mcp",
-            "headers": { "Accept": "application/json, text/event-stream" },
+            "headers": {
+              "Accept": "application/json, text/event-stream"
+            },
             "connectionTimeoutMs": 15000
           }
         }
