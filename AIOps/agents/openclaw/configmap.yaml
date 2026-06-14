@@ -67,8 +67,8 @@ data:
             "apiKey": "ollama-local",
             "models": [
               {
-                "id": "qwen2.5:14b-instruct-q4_K_M",
-                "name": "Qwen2.5 14B Instruct (inst.1 - tools)",
+                "id": "llama3.1:8b-instruct-q5_K_M",
+                "name": "llama3.1:8b-instruct-q5_K_M (inst.1 - tools)",
                 "api": "ollama",
                 "contextWindow": 65536,
                 "maxTokens": 4096,
@@ -84,13 +84,13 @@ data:
             "apiKey": "ollama-local",
             "models": [
               {
-                "id": "llama3.1:8b-instruct-q5_K_M",
-                "name": "Llama 3.1 8B Instruct (inst.2 - fallback tools)",
+                "id": "qwen2.5:7b",
+                "name": "qwen2.5:7b (inst.2 - fallback tools)",
                 "api": "ollama",
-                "contextWindow": 65536,
+                "contextWindow": 32768,
                 "maxTokens": 4096,
                 "params": {
-                  "num_ctx": 65536
+                  "num_ctx": 32768
                 }
               }
             ]
