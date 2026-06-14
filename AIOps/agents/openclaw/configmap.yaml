@@ -1,79 +1,61 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: openclaw-config
-  namespace: openclaw
-  labels:
-    app: openclaw
-data:
-  openclaw.json: |
-    {
-      "gateway": {
-        "mode": "local",
-        "auth": {
-          "mode": "token",
-          "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864"
-        },
-        "port": 18789,
-        "bind": "lan",
-        "trustedProxies": ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"],
-        "controlUi": {
-          "allowedOrigins": ["https://openclaw.dnn.lat", "http://openclaw.dnn.lat"]
-        }
+{
+  "gateway": {
+    "mode": "local",
+    "auth": { "mode": "token", "token": "96a05fc16a428fdb389edd73713c541316992ca860d9d864" },
+    "port": 18789,
+    "bind": "lan",
+    "trustedProxies": ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"],
+    "controlUi": { "allowedOrigins": ["https://openclaw.dnn.lat", "http://openclaw.dnn.lat"] }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/node/.openclaw/workspace",
+      "model": {
+        "primary": "ollama-coder/qwen2.5:14b-instruct-q4_K_M",
+        "fallbacks": ["ollama-general/llama3.1:8b-instruct-q5_K_M"]
       },
-      "agents": {
-        "defaults": {
-          "workspace": "/home/node/.openclaw/workspace",
-          "model": {
-            "primary": "ollama-coder/qwen2.5-coder:7b",
-            "fallbacks": ["ollama-general/deepseek-r1:8b"]
-          },
-          "compaction": {
-            "reserveTokensFloor": 4096
-          },
-          "memorySearch": { "enabled": false }
-        }
-      },
-      "mcp": {
-        "servers": {
-          "kubernetes": {
-            "transport": "streamable-http",
-            "url": "http://mcp-kubernetes.ai-system.svc.cluster.local:8000/mcp",
-            "headers": {
-              "Accept": "application/json, text/event-stream"
-            },
-            "connectionTimeoutMs": 15000
-          }
-        }
-      },
-      "models": {
-        "mode": "merge",
-        "providers": {
-          "ollama-coder": {
-            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
-            "models": [
-              {
-                "id": "qwen2.5-coder:7b",
-                "name": "Qwen2.5 Coder 7B (inst.1 - coding)",
-                "api": "openai-completions",
-                "contextWindow": 65536,
-                "maxTokens": 8192
-              }
-            ]
-          },
-          "ollama-general": {
-            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434/v1",
-            "models": [
-              {
-                "id": "deepseek-r1:8b",
-                "name": "DeepSeek R1 8B (inst.2 - geral)",
-                "api": "openai-completions",
-                "contextWindow": 65536,
-                "maxTokens": 8192
-              }
-            ]
-          }
-        }
+      "compaction": { "reserveTokensFloor": 4096 },
+      "memorySearch": { "enabled": false }
+    }
+  },
+  "mcp": {
+    "servers": {
+      "kubernetes": {
+        "transport": "streamable-http",
+        "url": "http://mcp-kubernetes.ai-system.svc.cluster.local:8000/mcp",
+        "headers": { "Accept": "application/json, text/event-stream" },
+        "connectionTimeoutMs": 15000
       }
     }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama-coder": {
+        "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
+        "models": [
+          {
+            "id": "qwen2.5:14b-instruct-q4_K_M",
+            "name": "Qwen2.5 14B Instruct (inst.1 - tools)",
+            "api": "openai-chat",
+            "contextWindow": 32768,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "ollama-general": {
+        "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434/v1",
+        "models": [
+          {
+            "id": "llama3.1:8b-instruct-q5_K_M",
+            "name": "Llama 3.1 8B Instruct (inst.2 - fallback tools)",
+            "api": "openai-chat",
+            "contextWindow": 32768,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  }
+}
 
