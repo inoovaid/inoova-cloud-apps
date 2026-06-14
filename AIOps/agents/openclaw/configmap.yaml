@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: openclaw-config
   namespace: openclaw
+  labels:
+    app: openclaw
 data:
   openclaw.json: |
     {
@@ -16,20 +18,29 @@ data:
         "bind": "lan",
         "trustedProxies": ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"],
         "controlUi": {
-          "allowedOrigins": [
-            "https://openclaw.dnn.lat",
-            "http://openclaw.dnn.lat"
-          ]
+          "allowedOrigins": ["https://openclaw.dnn.lat", "http://openclaw.dnn.lat"]
         }
       },
       "agents": {
         "defaults": {
           "workspace": "/home/node/.openclaw/workspace",
           "model": {
-            "primary": "ollama/qwen2.5-coder:7b",
-            "fallbacks": ["ollama/qwen2.5:32b-instruct"]
+            "primary": "ollama/qwen2.5:32b-instruct",
+            "fallbacks": ["ollama/qwen2.5-coder:7b"]
           },
           "memorySearch": { "enabled": false }
+        }
+      },
+      "mcp": {
+        "servers": {
+          "kubernetes": {
+            "transport": "streamable-http",
+            "url": "http://mcp-kubernetes.ai-system.svc.cluster.local:8000/mcp",
+            "headers": {
+              "Accept": "application/json, text/event-stream"
+            },
+            "connectionTimeoutMs": 15000
+          }
         }
       },
       "models": {
@@ -39,15 +50,15 @@ data:
             "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
             "models": [
               {
-                "id": "qwen2.5-coder:7b",
-                "name": "Qwen2.5 Coder 7B",
+                "id": "qwen2.5:32b-instruct",
+                "name": "Qwen2.5 32B Instruct",
                 "api": "openai-completions",
                 "contextWindow": 32768,
                 "maxTokens": 32768
               },
               {
-                "id": "qwen2.5:32b-instruct",
-                "name": "Qwen2.5 32B Instruct",
+                "id": "qwen2.5-coder:7b",
+                "name": "Qwen2.5 Coder 7B",
                 "api": "openai-completions",
                 "contextWindow": 32768,
                 "maxTokens": 32768
