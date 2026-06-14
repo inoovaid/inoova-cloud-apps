@@ -62,24 +62,26 @@ data:
         "mode": "merge",
         "providers": {
           "ollama-coder": {
-            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434/v1",
+            "baseUrl": "http://ollama.ai-system.svc.cluster.local:11434",
+            "apiKey": "ollama-local",
             "models": [
               {
                 "id": "qwen2.5:14b-instruct-q4_K_M",
                 "name": "Qwen2.5 14B Instruct (inst.1 - tools)",
-                "api": "openai-chat",
+                "api": "ollama",
                 "contextWindow": 32768,
                 "maxTokens": 8192
               }
             ]
           },
           "ollama-general": {
-            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434/v1",
+            "baseUrl": "http://ollama-agents.ai-system.svc.cluster.local:11434",
+            "apiKey": "ollama-local",
             "models": [
               {
                 "id": "llama3.1:8b-instruct-q5_K_M",
                 "name": "Llama 3.1 8B Instruct (inst.2 - fallback tools)",
-                "api": "openai-chat",
+                "api": "ollama",
                 "contextWindow": 32768,
                 "maxTokens": 8192
               }

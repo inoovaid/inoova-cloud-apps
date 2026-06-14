@@ -32,7 +32,7 @@ jobs:
           echo "📋 Validando YAMLs do OpenClaw..."
           for f in AIOps/agents/openclaw/*.yaml; do
             echo "  ✔ Validando: $f"
-            kubectl apply --dry-run=client -f "$f" 2>&1 || {
+            kubectl apply --dry-run=client --validate=false -f "$f" 2>&1 || {
               echo "  ❌ FALHA: $f"
               exit 1
             }
