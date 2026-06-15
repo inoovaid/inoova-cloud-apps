@@ -87,10 +87,10 @@ data:
                 "id": "qwen2.5:7b-instruct",
                 "name": "qwen2.5:7b-instruct (principal)",
                 "api": "ollama",
-                "contextWindow": 32768,
+                "contextWindow": 65536,
                 "maxTokens": 4096,
                 "params": {
-                  "num_ctx": 32768
+                  "num_ctx": 65536
                 }
               }
             ]
