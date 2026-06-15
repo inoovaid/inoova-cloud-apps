@@ -40,7 +40,7 @@ data:
       "agents": {
         "defaults": {
           "workspace": "/home/node/.openclaw/workspace",
-          "model": "ollama-general/gemma3:4b",
+          "model": "ollama-general/qwen2.5:3b",
           "memorySearch": {
             "enabled": false
           }
