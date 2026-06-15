@@ -40,7 +40,7 @@ data:
       "agents": {
         "defaults": {
           "workspace": "/home/node/.openclaw/workspace",
-          "model": "ollama-coder/qwen2.5:14b-instruct-q4_K_M",
+          "model": "ollama-general/qwen2.5:7b-instruct",
           "memorySearch": {
             "enabled": false
           }
@@ -85,7 +85,7 @@ data:
             "models": [
               {
                 "id": "qwen2.5:7b-instruct",
-                "name": "qwen2.5:7b-instruct (inst.2 - fallback tools)",
+                "name": "qwen2.5:7b-instruct (principal)",
                 "api": "ollama",
                 "contextWindow": 32768,
                 "maxTokens": 4096,
