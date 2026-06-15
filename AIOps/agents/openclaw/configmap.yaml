@@ -84,8 +84,8 @@ data:
             "apiKey": "ollama-local",
             "models": [
               {
-                "id": "gemma3:4b",
-                "name": "gemma3:4b (principal)",
+                "id": "qwen2.5:7b-instruct",
+                "name": "qwen2.5:7b-instruct (principal)",
                 "api": "ollama",
                 "contextWindow": 65536,
                 "maxTokens": 4096,
