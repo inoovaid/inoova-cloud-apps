@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: paperclip
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/inoovaid/inoova-cloud-apps
+    targetRevision: main
+    path: AIOps/agents/paperclip
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: paperclip
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
