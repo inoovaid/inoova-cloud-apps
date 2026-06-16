@@ -4,16 +4,18 @@ metadata:
   name: paperclip
   namespace: paperclip
   annotations:
+    # ❌ REMOVER esta linha (deixa o cert-manager criar cert duplicado):
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - paperclip.dnn.lat        # 👈 novo domínio
-      secretName: paperclip-dnn-tls # 👈 novo secret de cert (ver passo 3)
+        - paperclip.dnn.lat
+      secretName: wildcard-dnn        # ✅ usa o wildcard já existente
   rules:
-    - host: paperclip.dnn.lat       # 👈 novo domínio
+    - host: paperclip.dnn.lat
       http:
         paths:
           - path: /
@@ -22,4 +24,4 @@ spec:
               service:
                 name: paperclip
                 port:
-                  number: 3100      # 👈 porta corrigida
+                  number: 3100
