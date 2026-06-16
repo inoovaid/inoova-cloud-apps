@@ -17,14 +17,17 @@ spec:
     spec:
       containers:
         - name: paperclip
-          image: ghcr.io/inoovaid/paperclip:latest   # 🔧 AJUSTAR imagem/tag
+          image: ghcr.io/inoovaid/paperclip:latest
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 8080                      # 🔧 AJUSTAR porta da app
+              containerPort: 3100          # ✅ porta real da app
+          env:
+            - name: PAPERCLIP_ALLOWED_HOSTNAMES
+              value: "localhost,127.0.0.1,paperclip,paperclip.paperclip,paperclip.paperclip.svc,paperclip.paperclip.svc.cluster.local,paperclip.dnn.lat"   # ✅ ADICIONADO paperclip.dnn.lat
           envFrom:
             - secretRef:
-                name: paperclip-secrets                # 🔧 nome do sealed-secret descriptografado
+                name: paperclip-secrets
           resources:
             requests:
               cpu: 100m
@@ -34,13 +37,13 @@ spec:
               memory: 512Mi
           livenessProbe:
             httpGet:
-              path: /healthz                           # 🔧 AJUSTAR se houver
+              path: /api/health            # ✅ endpoint real (visto no log)
               port: http
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /healthz                           # 🔧 AJUSTAR
+              path: /api/health            # ✅ endpoint real
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -58,4 +61,4 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: http
+      targetPort: http     # ✅ aponta pra porta nomeada "http" (3100)
