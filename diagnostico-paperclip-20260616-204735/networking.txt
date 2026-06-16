@@ -1,0 +1,15 @@
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/paperclip      ClusterIP   10.106.71.220   <none>        3100/TCP   59m   app.kubernetes.io/component=server,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip
+service/paperclip-db   ClusterIP   10.108.74.206   <none>        5432/TCP   59m   app.kubernetes.io/component=database,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip
+
+NAME                     ENDPOINTS         AGE
+endpoints/paperclip      10.0.4.132:3100   59m
+endpoints/paperclip-db   10.0.4.198:5432   59m
+
+NAME                                                ADDRESSTYPE   PORTS   ENDPOINTS    AGE
+endpointslice.discovery.k8s.io/paperclip-db-svw4n   IPv4          5432    10.0.4.198   59m
+endpointslice.discovery.k8s.io/paperclip-whjf9      IPv4          3100    10.0.4.132   59m
+
+NAME                                           POD-SELECTOR                                                                                                 AGE
+networkpolicy.networking.k8s.io/paperclip      app.kubernetes.io/component=server,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip     59m
+networkpolicy.networking.k8s.io/paperclip-db   app.kubernetes.io/component=database,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip   59m

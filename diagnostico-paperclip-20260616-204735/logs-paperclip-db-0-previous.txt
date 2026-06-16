@@ -1,0 +1,1 @@
+Error from server (BadRequest): previous terminated container "postgres" in pod "paperclip-db-0" not found

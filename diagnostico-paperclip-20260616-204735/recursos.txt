@@ -1,0 +1,44 @@
+NAME                 READY   STATUS    RESTARTS   AGE   IP           NODE            NOMINATED NODE   READINESS GATES
+pod/paperclip-0      1/1     Running   0          59m   10.0.4.132   k8s-worker-ai   <none>           <none>
+pod/paperclip-db-0   1/1     Running   0          59m   10.0.4.198   k8s-worker-ai   <none>           <none>
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/paperclip      ClusterIP   10.106.71.220   <none>        3100/TCP   59m   app.kubernetes.io/component=server,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip
+service/paperclip-db   ClusterIP   10.108.74.206   <none>        5432/TCP   59m   app.kubernetes.io/component=database,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip
+
+NAME                            READY   AGE   CONTAINERS   IMAGES
+statefulset.apps/paperclip      1/1     59m   paperclip    ghcr.io/paperclipai/paperclip:latest
+statefulset.apps/paperclip-db   1/1     59m   postgres     postgres:17-alpine
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      66m
+
+NAME                                  TYPE     DATA   AGE
+secret/paperclip-auth                 Opaque   1      66m
+secret/paperclip-db-credentials       Opaque   1      59m
+secret/paperclip-secrets-master-key   Opaque   1      59m
+
+NAME                                  CLASS   HOSTS                    ADDRESS        PORTS     AGE
+ingress.networking.k8s.io/paperclip   nginx   paperclip.inoova.cloud   10.10.30.200   80, 443   66m
+
+NAME                                      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/paperclip-data      Bound    pvc-7b7596a6-ee54-4696-a8e2-5a33937b279e   5Gi        RWO            local-path     <unset>                 59m   Filesystem
+persistentvolumeclaim/paperclip-db-data   Bound    pvc-bfdf1cdf-6f16-4c58-908d-9009891dc510   10Gi       RWO            local-path     <unset>                 59m   Filesystem
+
+NAME                       SECRETS   AGE
+serviceaccount/default     0         66m
+serviceaccount/paperclip   0         59m
+
+NAME                                                            CREATED AT
+role.rbac.authorization.k8s.io/paperclip-leader-election-role   2026-06-16T20:06:20Z
+
+NAME                                                                          ROLE                                  AGE   USERS   GROUPS   SERVICEACCOUNTS
+rolebinding.rbac.authorization.k8s.io/paperclip-leader-election-rolebinding   Role/paperclip-leader-election-role   41m                    paperclip-operator-system/paperclip-operator
+
+NAME                                           POD-SELECTOR                                                                                                 AGE
+networkpolicy.networking.k8s.io/paperclip      app.kubernetes.io/component=server,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip     59m
+networkpolicy.networking.k8s.io/paperclip-db   app.kubernetes.io/component=database,app.kubernetes.io/instance=paperclip,app.kubernetes.io/name=paperclip   59m
+
+NAME                     ENDPOINTS         AGE
+endpoints/paperclip      10.0.4.132:3100   59m
+endpoints/paperclip-db   10.0.4.198:5432   59m

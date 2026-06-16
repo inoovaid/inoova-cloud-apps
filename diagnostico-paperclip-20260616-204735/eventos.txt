@@ -1,0 +1,43 @@
+LAST SEEN   TYPE      REASON                  OBJECT                                    MESSAGE
+59m         Normal    SuccessfulCreate        statefulset/paperclip                     create Pod paperclip-0 in StatefulSet paperclip successful
+59m         Normal    SuccessfulCreate        statefulset/paperclip-db                  create Pod paperclip-db-0 in StatefulSet paperclip-db successful
+59m         Normal    Provisioning            persistentvolumeclaim/paperclip-db-data   External provisioner is provisioning volume for claim "paperclip/paperclip-db-data"
+59m         Normal    ExternalProvisioning    persistentvolumeclaim/paperclip-db-data   Waiting for a volume to be created either by the external provisioner 'rancher.io/local-path' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+59m         Normal    WaitForFirstConsumer    persistentvolumeclaim/paperclip-db-data   waiting for first consumer to be created before binding
+59m         Normal    ExternalProvisioning    persistentvolumeclaim/paperclip-data      Waiting for a volume to be created either by the external provisioner 'rancher.io/local-path' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+59m         Normal    Provisioning            persistentvolumeclaim/paperclip-data      External provisioner is provisioning volume for claim "paperclip/paperclip-data"
+59m         Normal    WaitForFirstConsumer    persistentvolumeclaim/paperclip-data      waiting for first consumer to be created before binding
+59m         Normal    ProvisioningSucceeded   persistentvolumeclaim/paperclip-db-data   Successfully provisioned volume pvc-bfdf1cdf-6f16-4c58-908d-9009891dc510
+59m         Normal    ProvisioningSucceeded   persistentvolumeclaim/paperclip-data      Successfully provisioned volume pvc-7b7596a6-ee54-4696-a8e2-5a33937b279e
+59m         Normal    Scheduled               pod/paperclip-0                           Successfully assigned paperclip/paperclip-0 to k8s-worker-ai
+59m         Normal    Scheduled               pod/paperclip-db-0                        Successfully assigned paperclip/paperclip-db-0 to k8s-worker-ai
+59m         Normal    Pulling                 pod/paperclip-db-0                        Pulling image "postgres:17-alpine"
+59m         Warning   FailedMount             pod/paperclip-0                           MountVolume.SetUp failed for volume "kube-api-access-5vljl" : failed to sync configmap cache: timed out waiting for the condition
+59m         Normal    Pulling                 pod/paperclip-0                           Pulling image "fedora:latest"
+59m         Normal    Pulled                  pod/paperclip-db-0                        Successfully pulled image "postgres:17-alpine" in 6.177s (6.177s including waiting). Image size: 111185591 bytes.
+59m         Normal    Created                 pod/paperclip-db-0                        Created container: postgres
+59m         Normal    Started                 pod/paperclip-db-0                        Started container postgres
+59m         Normal    Pulled                  pod/paperclip-0                           Successfully pulled image "fedora:latest" in 4.771s (9.418s including waiting). Image size: 69320596 bytes.
+59m         Normal    Created                 pod/paperclip-0                           Created container: selinux-relabel
+59m         Normal    Started                 pod/paperclip-0                           Started container selinux-relabel
+59m         Normal    Pulling                 pod/paperclip-0                           Pulling image "ghcr.io/paperclipai/paperclip:latest"
+58m         Normal    Created                 pod/paperclip-0                           Created container: onboard
+58m         Normal    Started                 pod/paperclip-0                           Started container onboard
+58m         Normal    Pulled                  pod/paperclip-0                           Successfully pulled image "ghcr.io/paperclipai/paperclip:latest" in 42.354s (42.354s including waiting). Image size: 1268421985 bytes.
+58m         Normal    Pulled                  pod/paperclip-0                           Container image "ghcr.io/paperclipai/paperclip:latest" already present on machine
+58m         Normal    Started                 pod/paperclip-0                           Started container paperclip
+58m         Normal    Created                 pod/paperclip-0                           Created container: paperclip
+58m         Warning   Unhealthy               pod/paperclip-0                           Startup probe failed: dial tcp 10.0.4.132:3100: connect: connection refused
+7m19s       Normal    Scheduled               pod/debug-net                             Successfully assigned paperclip/debug-net to k8s-worker-ai
+7m19s       Normal    Pulling                 pod/debug-net                             Pulling image "nicolaka/netshoot"
+7m8s        Normal    Pulled                  pod/debug-net                             Successfully pulled image "nicolaka/netshoot" in 10.384s (10.384s including waiting). Image size: 212842400 bytes.
+7m8s        Normal    Created                 pod/debug-net                             Created container: debug-net
+7m8s        Normal    Started                 pod/debug-net                             Started container debug-net
+4m36s       Normal    ReconcileSucceeded      instance/paperclip                        All managed resources reconciled successfully
+3m39s       Normal    Killing                 pod/debug-net                             Stopping container debug-net
+3m28s       Normal    Scheduled               pod/debug-net                             Successfully assigned paperclip/debug-net to k8s-worker-ai
+3m27s       Normal    Pulling                 pod/debug-net                             Pulling image "nicolaka/netshoot"
+3m26s       Normal    Pulled                  pod/debug-net                             Successfully pulled image "nicolaka/netshoot" in 837ms (837ms including waiting). Image size: 212842400 bytes.
+3m26s       Normal    Created                 pod/debug-net                             Created container: debug-net
+3m26s       Normal    Started                 pod/debug-net                             Started container debug-net
+2m46s       Normal    Killing                 pod/debug-net                             Stopping container debug-net
