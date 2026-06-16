@@ -5,6 +5,7 @@ namespace: paperclip
 
 resources:
   - namespace.yaml
+  - leader-election-role.yaml   # Role + RoleBinding (juntos no mesmo arquivo)
   - sealed-secrets.yaml
   - instance.yaml
   - ingress.yaml
