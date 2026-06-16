@@ -13,7 +13,7 @@ spec:
   auth:
     secretRef:
       name: paperclip-auth
-      key: BETTER_AUTH_SECRET: AgDcnNqHbCe6jiDvMhmG0jj4r2mMXbJP5T7qijOwQWTK9cdUQakhFehi7CynK9A2Gz9/haFj/sPHLizXNucDcyKYVUI6ZEjNZIwRGojzA8JrvPhUruel8CyoFEbCO4P85h2wQ1H2T3ikL7iRsxRIAE8D+LnaEeORiWcyXcQlSoQp9hnKeGqbKjLY3/JuhKPaZ64t92Tn+zNxdJWxmqljRyOS5UVH28MRnOmRcgjbye87ajvVgSKj3IarARdTyCbQGu4/OBg6nFjQz7AepbQ3eTGnLWwcISpZqlWgtEalrVa0WIE5L+Im4yhsYxRG8MNs1X3NrwyD3SnNGJ3/tw2m7FzT5p2rotrkEK6Fy10qPzVDzqloqu3T2qayVyKhnziI8vebaxcAoxiBc9iEUg7WYq8DwoP8cjS7VbybayWOZt/gHh0gIv3a3QB8c7XVse1exiDgsn0UKP3kELB0A70XyBOCRYsmLa9Alzb81Mod/R2D78iJCW1NrOm5ME1tw8inxTz8Zx9zxRMuZfFqjJ7HLxaxNS79JwksNbPkXKkd9mur2yFUjmE217emV3vCviJU/p5TCX29FdoR9Y0InlXWmSJOI6Lv5P86QyO3W8x7aChMo7IaWgy4t72B6AFY6vWQVSYSgye33OJTXzJaxUGk2C3blnRb/v7wnwMpZ+tZvRvOH2/KsA5JfJL8jVo+WXkUVe8VuGT9gsWwMH6p28qDX/A81hzt0tE33BnkBxu3jomq/A11Iht/Oc0FW0LTpg==
+      key: BETTER_AUTH_SECRET
   adapters:
     apiKeysSecretRef:
       name: paperclip-api-keys
