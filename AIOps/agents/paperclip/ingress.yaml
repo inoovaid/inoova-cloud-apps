@@ -4,16 +4,16 @@ metadata:
   name: paperclip
   namespace: paperclip
   annotations:
-    kubernetes.io/ingress.class: nginx                 # 🔧 ou traefik, conforme seu cluster
+    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx                              # 🔧 AJUSTAR
+  ingressClassName: nginx
   tls:
     - hosts:
-        - paperclip.inoova.cloud                       # 🔧 AJUSTAR domínio
-      secretName: wildcard-inoova-tls                  # 🔧 nome do seu wildcard cert
+        - paperclip.dnn.lat        # 👈 novo domínio
+      secretName: paperclip-dnn-tls # 👈 novo secret de cert (ver passo 3)
   rules:
-    - host: paperclip.inoova.cloud                     # 🔧 AJUSTAR
+    - host: paperclip.dnn.lat       # 👈 novo domínio
       http:
         paths:
           - path: /
@@ -22,4 +22,4 @@ spec:
               service:
                 name: paperclip
                 port:
-                  number: 80
+                  number: 3100      # 👈 porta corrigida
