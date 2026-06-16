@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paperclip
+  namespace: paperclip
+  annotations:
+    kubernetes.io/ingress.class: nginx                 # 🔧 ou traefik, conforme seu cluster
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx                              # 🔧 AJUSTAR
+  tls:
+    - hosts:
+        - paperclip.inoova.cloud                       # 🔧 AJUSTAR domínio
+      secretName: wildcard-inoova-tls                  # 🔧 nome do seu wildcard cert
+  rules:
+    - host: paperclip.inoova.cloud                     # 🔧 AJUSTAR
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: paperclip
+                port:
+                  number: 80
