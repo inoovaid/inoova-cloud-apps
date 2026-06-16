@@ -10,8 +10,9 @@ spec:
     tag: latest
   deployment:
     mode: authenticated
-  externalURL: https://paperclip.dnn.lat
-  allowedHostnames:
+    exposure: public          # ✅ habilita acesso externo
+  publicURL: https://paperclip.dnn.lat   # ✅ URL pública (obrigatória com exposure=public)
+  allowedHostnames:           # ✅ CORS (mantém, é útil)
     - paperclip.dnn.lat
   database:
     mode: managed
