@@ -8,15 +8,37 @@ spec:
     tag: latest
   deployment:
     mode: authenticated
+
+  # URL pública canônica (Better Auth usa como base URL — essencial pro login)
+  externalURL: https://paperclip.dnn.lat
+
+  # Hostnames aceitos pela aplicação (origens confiáveis / CORS)
+  allowedHostnames:
+    - paperclip.dnn.lat
+
+  # Operator gerencia o Ingress (Opção A)
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - paperclip.dnn.lat
+    tls:
+      - secretName: paperclip-dnn-tls
+        hosts:
+          - paperclip.dnn.lat
+
   database:
     mode: managed
+
   auth:
     secretRef:
       name: paperclip-auth
       key: BETTER_AUTH_SECRET
+
   adapters:
     apiKeysSecretRef:
       name: paperclip-api-keys
+
   storage:
     persistence:
       enabled: true
