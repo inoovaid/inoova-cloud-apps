@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: paperclip
+  namespace: paperclip
+spec:
+  template:
+    spec:
+      containers:
+        - name: paperclip
+          env:
+            - name: OPENAI_BASE_URL
+              value: "http://ollama-paperclip.ai-system.svc.cluster.local:11434/v1"
+            - name: OPENAI_API_BASE
+              value: "http://ollama-paperclip.ai-system.svc.cluster.local:11434/v1"
+            - name: OPENAI_API_BASE_URL
+              value: "http://ollama-paperclip.ai-system.svc.cluster.local:11434/v1"
+            - name: OPENAI_MODEL
+              value: "qwen2.5-coder:7b"
+            - name: OPENAI_API_KEY
+              value: "ollama-local"
+            - name: OPENCODE_ALLOW_ALL_MODELS
+              value: "true"
+      initContainers:
+        - name: onboard
+          env:
+            - name: OPENAI_BASE_URL
+              value: "http://ollama-paperclip.ai-system.svc.cluster.local:11434/v1"
+            - name: OPENAI_API_BASE
+              value: "http://ollama-paperclip.ai-system.svc.cluster.local:11434/v1"
+            - name: OPENAI_API_BASE_URL
+              value: "http://ollama-paperclip.ai-system.svc.cluster.local:11434/v1"
+            - name: OPENAI_MODEL
+              value: "qwen2.5-coder:7b"
+            - name: OPENAI_API_KEY
+              value: "ollama-local"
+            - name: OPENCODE_ALLOW_ALL_MODELS
+              value: "true"

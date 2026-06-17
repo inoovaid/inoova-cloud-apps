@@ -1,0 +1,6 @@
+
+patches:
+  - path: patches/paperclip-ollama-openai-env.yaml
+    target:
+      kind: StatefulSet
+      name: paperclip
