@@ -11,6 +11,7 @@ spec:
   deployment:
     mode: authenticated
     exposure: public
+    baseUrlMode: explicit          # 👈 ADICIONAR ESTA LINHA
     publicURL: https://paperclip.dnn.lat
     allowedHostnames:
       - paperclip.dnn.lat
