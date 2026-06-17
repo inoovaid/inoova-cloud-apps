@@ -1,3 +1,0 @@
-instances.paperclip.inc                       2026-06-16T19:08:18Z
-paperclipclusterdefaults.paperclip.inc        2026-06-16T19:08:18Z
-paperclipselfconfigs.paperclip.inc            2026-06-16T19:08:18Z

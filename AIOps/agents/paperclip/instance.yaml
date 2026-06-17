@@ -18,6 +18,7 @@ spec:
   database:
     mode: managed
   auth:
+    baseUrlMode: explicit
     secretRef:
       name: paperclip-auth
       key: BETTER_AUTH_SECRET
