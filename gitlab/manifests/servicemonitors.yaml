@@ -1,0 +1,80 @@
+# ServiceMonitors do GitLab para o kube-prometheus-stack.
+# O chart GitLab gera ServiceMonitors proprios, porem sem o label
+# `release: prometheus-stack` (selector real do Prometheus aqui);
+# estes replicam os endpoints com o label correto.
+# Endpoints verificados via `helm template` do chart 10.2.1.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gitlab-webservice
+  namespace: gitlab
+  labels:
+    release: prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [gitlab]
+  selector:
+    matchLabels:
+      app: webservice
+      release: gitlab
+  endpoints:
+    - port: http-metrics-ws
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gitlab-gitaly
+  namespace: gitlab
+  labels:
+    release: prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [gitlab]
+  selector:
+    matchLabels:
+      app: gitaly
+      release: gitlab
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gitlab-exporter
+  namespace: gitlab
+  labels:
+    release: prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [gitlab]
+  selector:
+    matchLabels:
+      app: gitlab-exporter
+      release: gitlab
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: gitlab-sidekiq
+  namespace: gitlab
+  labels:
+    release: prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [gitlab]
+  selector:
+    matchLabels:
+      app: sidekiq
+      release: gitlab
+  podMetricsEndpoints:
+    - port: http-metrics
+      path: /metrics
+      interval: 30s
