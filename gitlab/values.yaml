@@ -208,3 +208,9 @@ gitlab:
     metrics:
       serviceMonitor:
         enabled: true
+
+# Fresh install (banco novo, sem release anterior): o hook pre-upgrade
+# upgradeCheck falha porque o ConfigMap gitlab-gitlab-chart-info nao existe.
+# Reativar antes de upgrades futuros.
+upgradeCheck:
+  enabled: false
