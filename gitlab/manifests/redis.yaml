@@ -1,0 +1,89 @@
+# Redis externo para o GitLab (chart 10.x nao traz mais bundled).
+# O Secret gitlab-redis (chave redis-password) e criado fora do ArgoCD.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitlab-redis-data
+  namespace: gitlab
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-redis
+  namespace: gitlab
+  labels:
+    app: gitlab-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab-redis
+  template:
+    metadata:
+      labels:
+        app: gitlab-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.2-alpine
+          command:
+            - sh
+            - -c
+            - exec redis-server --requirepass "$(cat /etc/redis-pass/redis-password)" --appendonly yes
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - 'redis-cli -a "$(cat /etc/redis-pass/redis-password)" ping | grep -q PONG'
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - 'redis-cli -a "$(cat /etc/redis-pass/redis-password)" ping | grep -q PONG'
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: redis-password
+              mountPath: /etc/redis-pass
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitlab-redis-data
+        - name: redis-password
+          secret:
+            secretName: gitlab-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab-redis
+  namespace: gitlab
+spec:
+  selector:
+    app: gitlab-redis
+  ports:
+    - port: 6379
+      targetPort: 6379

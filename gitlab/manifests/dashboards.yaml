@@ -1,0 +1,196 @@
+# GitLab Overview dashboard para Grafana.
+# O sidecar do Grafana (label grafana_dashboard) carrega ConfigMaps de todos os namespaces.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-dashboards
+  namespace: gitlab
+  labels:
+    grafana_dashboard: "1"
+data:
+  gitlab-overview.json: |
+    {
+      "id": null,
+      "title": "GitLab Overview (Inoova)",
+      "schemaVersion": 38,
+      "version": 1,
+      "refresh": "10s",
+      "tags": ["gitlab"],
+      "time": { "from": "now-3h", "to": "now" },
+      "timezone": "browser",
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "type": "query",
+            "datasource": "Prometheus",
+            "query": "label_values(gitlab_http_requests_total, namespace)",
+            "includeAll": true,
+            "allValue": ".+",
+            "multi": true,
+            "current": { "text": "gitlab", "value": "gitlab" }
+          },
+          {
+            "name": "pod",
+            "type": "query",
+            "datasource": "Prometheus",
+            "query": "label_values(gitlab_http_requests_total{namespace=~\"$namespace\"}, pod)",
+            "includeAll": true,
+            "allValue": ".+",
+            "multi": true
+          }
+        ]
+      },
+      "annotations": { "list": [] },
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Sidekiq Queue Size",
+          "datasource": "Prometheus",
+          "targets": [
+            { "expr": "sum(sidekiq_queue_size{namespace=~\"$namespace\"})", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" } },
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+        },
+        {
+          "type": "stat",
+          "title": "Sidekiq Running Jobs",
+          "datasource": "Prometheus",
+          "targets": [
+            { "expr": "sum(sidekiq_running_jobs{namespace=~\"$namespace\"})", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" } },
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 }
+        },
+        {
+          "type": "stat",
+          "title": "Gitaly RPC Rate (1m)",
+          "datasource": "Prometheus",
+          "targets": [
+            { "expr": "sum(rate(grpc_server_handled_total{grpc_type=\"unary\",namespace=~\"$namespace\"}[1m]))", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "reqps" } },
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 }
+        },
+        {
+          "type": "stat",
+          "title": "Web HTTP Requests/s",
+          "datasource": "Prometheus",
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{namespace=~\"$namespace\"}[5m]))", "refId": "A" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "reqps" } },
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "HTTP Requests/sec by code",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum by (code) (rate(http_requests_total{namespace=~\"$namespace\"}[5m]))",
+              "legendFormat": "{{code}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "reqps" } },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 }
+        },
+        {
+          "type": "timeseries",
+          "title": "HTTP Request Duration p95 (s)",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])))",
+              "legendFormat": "p95",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])))",
+              "legendFormat": "p50",
+              "refId": "B"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "s" } },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Sidekiq Jobs Processed vs Failed",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum(rate(sidekiq_jobs_processed_total{namespace=~\"$namespace\"}[5m]))",
+              "legendFormat": "processed",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(sidekiq_jobs_failed_total{namespace=~\"$namespace\"}[5m]))",
+              "legendFormat": "failed",
+              "refId": "B"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 }
+        },
+        {
+          "type": "timeseries",
+          "title": "Sidekiq Queue Latency (s)",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "max(sidekiq_queue_latency_seconds{namespace=~\"$namespace\"}) by (pod)",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "s" } },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "CPU usage by pod (cores)",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", container!=\"\"}[5m]))",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 }
+        },
+        {
+          "type": "timeseries",
+          "title": "Memory by pod (GiB)",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=~\"$namespace\", container!=\"\"}) / 1073741824",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "deckbytes" } },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Redis client exceptions",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum(rate(gitlab_redis_client_exceptions_total{namespace=~\"$namespace\"}[5m]))",
+              "legendFormat": "exceptions",
+              "refId": "A"
+            }
+          ],
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 }
+        }
+      ]
+    }

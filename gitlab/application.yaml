@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitlab
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://github.com/inoovaid/inoova-cloud-apps
+      targetRevision: main
+      ref: values
+
+    - chart: gitlab/gitlab
+      repoURL: https://charts.gitlab.io
+      targetRevision: 10.2.1
+      helm:
+        releaseName: gitlab
+        valueFiles:
+          - $values/gitlab/values.yaml
+
+    - repoURL: https://github.com/inoovaid/inoova-cloud-apps
+      targetRevision: main
+      path: gitlab/manifests
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gitlab
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
