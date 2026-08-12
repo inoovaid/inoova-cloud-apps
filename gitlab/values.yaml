@@ -190,11 +190,11 @@ gitlab:
           key: connection
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
+        cpu: 250m
+        memory: 1Gi
       limits:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 2000m
+        memory: 2Gi
 
   migrations:
     resources:
