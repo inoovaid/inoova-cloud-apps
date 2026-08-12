@@ -31,6 +31,9 @@ global:
   monitoring:
     enabled: true
 
+  kas:
+    enabled: false
+
   psql:
     host: postgres-ha-rw.default.svc.cluster.local
     port: 5432
@@ -127,8 +130,6 @@ registry:
   enabled: false
 
 gitlab:
-  kas:
-    enabled: false
 
   webservice:
     resources:
