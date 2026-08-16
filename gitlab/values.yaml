@@ -146,6 +146,9 @@ gitlab:
         enabled: true
 
   sidekiq:
+    concurrency: 5
+    minReplicas: 2
+    maxReplicas: 3
     resources:
       requests:
         cpu: 250m
