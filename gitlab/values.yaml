@@ -5,6 +5,8 @@
 # MinIO por feature via global.appConfig (object_store.enabled=false).
 
 global:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-worker5
   edition: ce
   gitlabVersion: "19.2.1"
 
